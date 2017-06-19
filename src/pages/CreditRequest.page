@@ -1,0 +1,427 @@
+<apex:page StandardController="Credit_Request__c" extensions="CreditRequestCX">
+<style>
+    .header {
+        font-size:18px;
+    }
+    .headerContainer {
+        padding-top: 10px;
+        padding-bottom: 5px;
+        width: 100%;
+        height: 30px;
+    }
+    .buttonContainer {
+        padding-left: 400px;
+        height: 30px;
+        margin-top: -24px;
+    }
+    .buttonClass{
+        padding-top: 4px;
+        padding-right: 3px;
+        font-size: 11px;
+    }
+    #ajax-output, #delete-line-msg{
+        display: none;
+    }
+#preloader, #preloader-bg{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 99;
+}
+    #preloader-bg{
+        position: absolute;
+        background-color: #fff;
+        z-index: 1;
+    }
+    #preloader-content{
+        position: relative;
+        margin: 0px auto;
+        width: 300px;
+        padding: 60px 30px 50px 30px;
+        margin-top: 200px;
+        background-color: #fff;
+        border: 1px solid #ededed;
+        text-align: center;
+        font-size: 13px;
+        z-index: 2;
+    }
+        #OkBtn{
+            padding: 2px 10px 2px 10px;
+            font-size: 12px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+</style>
+<apex:includeScript value="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/jquery.js')}" />
+<script>
+var IsSave = false;
+var PreloaderMsg = "{!$Label.Loading}";
+function adJustBG(){
+    if($("#preloader").height() < $("body").height()){
+        $("#preloader").height($("body").height());
+    }
+}
+function ShowPreloader(){
+    $("body").append("<div id='preloader'><div id='preloader-bg'></div><div id='preloader-content'>"+PreloaderMsg+"</div></div>");
+    $("#preloader-bg").css("opacity",".5");
+    adJustBG();
+}
+function HidePreloader(){
+    if($("#ajax-output").html() == "" || $("#ajax-output").html() == null){
+        $("#preloader").remove();
+    }else{
+        var content = IsSave ? processSaveOutput($("#ajax-output").html()) : $("#ajax-output").html();
+        $("#preloader-content").html(content + "<br /><button id='OkBtn'>Ok</button>");
+        $("#OkBtn").click(function(){
+            $("#ajax-output").html("");
+            $("#preloader").remove();
+        });
+    }
+    adJustBG();
+}
+</script>
+<html>
+<body>
+    <apex:form id="formId" >
+        <div class="headerContainer">
+            <h1 class="header">{!$Label.Credit_Request_Detail}</h1>
+        </div>
+        <apex:pageMessages id="error"/>
+        <apex:pageBlock title="{!$Label.Credit_Request_Information}">
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton value="{!$Label.Save}" onclick="saveRecord(); return false;" />
+                <apex:commandButton value="{!$Label.Cancel}" onclick="history.go(-1); return false;" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="2">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Credit_Request__c.Fields.Order__c.Label}" />
+                    <apex:outputField value="{!CreditRequest.Order__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Credit_Request__c.Fields.BillingAccount__c.Label}" />
+                    <apex:outputField value="{!CreditRequest.BillingAccount__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Credit_Request__c.Fields.BillingCustomerNumber__c.Label}" />
+                    <apex:outputField value="{!CreditRequest.BillingCustomerNumber__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Credit_Request__c.Fields.OrderDate__c.Label}" />
+                    <apex:outputField value="{!CreditRequest.OrderDate__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Credit_Request__c.Fields.SalesChannel__c.Label}" />
+                    <apex:outputField value="{!CreditRequest.SalesChannel__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Credit_Request__c.Fields.SalesRep__c.Label}" />
+                    <apex:outputField value="{!CreditRequest.SalesRep__c}"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock title="{!$Label.Credit_Request_Details}">
+            <apex:pageBlockSection columns="2">
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Credit_Request__c.Fields.CreditScenario__c.Label}" />
+
+                    <apex:inputField id="scenario" value="{!CreditRequest.CreditScenario__c}" onchange="refreshtable(); javascript:getScenarioValue('{!$Component.scenario}');" required="true"/>
+
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Credit_Request__c.Fields.CreditReason__c.Label}"/>
+                    <apex:actionRegion >
+                        <apex:inputField value="{!CreditRequest.CreditReason__c}" onchange="refreshtable();" />
+                    </apex:actionRegion>
+               <!-- </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Payment Term" />
+                    <apex:inputField value="{!CreditRequest.PaymentTerm__c}"/>-->
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem rendered="{!OR($Label.Change_in_Standard_Payment_Terms == CreditRequest.CreditReason__c,
+                $Label.Payment_type_incorrect == CreditRequest.CreditReason__c)}">
+                    <apex:outputLabel value="Payment Term" />
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:inputField value="{!CreditRequest.PaymentTerm__c}"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem rendered="{!OR($Label.Change_in_Standard_Payment_Terms == CreditRequest.CreditReason__c,
+                $Label.Payment_type_incorrect == CreditRequest.CreditReason__c)}">
+                    <apex:outputLabel value="Payment Method" />
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:inputField value="{!CreditRequest.Payment_Method__c}"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem rendered="{!OR($Label.Change_in_Standard_Payment_Terms == CreditRequest.CreditReason__c,
+                $Label.Payment_type_incorrect == CreditRequest.CreditReason__c)}">
+                    <apex:outputLabel value="Payment Frequency" />
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:inputField value="{!CreditRequest.Payment_Frequency__c}"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem rendered="{!OR($Label.Change_in_Standard_Payment_Terms == CreditRequest.CreditReason__c,
+                $Label.Payment_type_incorrect == CreditRequest.CreditReason__c)}">
+                    <apex:outputLabel value="New Number of Installments" />
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                        <apex:inputField value="{!CreditRequest.New_Number_of_Installments__c}"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem rendered="{!$Label.Billing_Start_Date_Correction == CreditRequest.CreditReason__c}">
+                    <apex:outputLabel value="Billing Start Date " />
+                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                         <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                             <apex:inputField value="{!CreditRequest.Billing_Start_Date__c}" />
+                          </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock title="{!$Label.Information}">
+            <apex:pageBlockSection columns="2">
+                 <!--<apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Credit Type" />
+                    <apex:inputField value="{!CreditRequest.CreditType__c}"/>
+                </apex:pageBlockSectionItem> -->
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Credit_Request__c.Fields.DetailedCreditReason__c.Label}" />
+                    <apex:inputField value="{!CreditRequest.DetailedCreditReason__c}"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Credit_Request__c.Fields.InvoiceNumber__c.Label}" />
+                    <apex:outputField value="{!CreditRequest.InvoiceNumber__c}"/>
+                </apex:pageBlockSectionItem>
+                <!--<apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Credit Request Case" />
+                    <apex:inputField value="{!CreditRequest.CreditRequestCase__c}"/>
+                </apex:pageBlockSectionItem> -->
+
+
+                <!--  As per I-228924, who caused credit would be hidden
+                  <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="{!$ObjectType.Credit_Request__c.Fields.Whocausedthecredit__c.Label}" />
+                        <apex:inputField value="{!CreditRequest.Whocausedthecredit__c}" />
+                    </apex:pageBlockSectionItem> -->
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Credit_Request__c.Fields.ApprovalStatus__c.Label}" />
+                    <apex:outputField value="{!CreditRequest.ApprovalStatus__c}"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock title="{!$Label.Product_Data}" id="pbtId" rendered="{!ISBLANK(CreditRequest.CreditScenario__c)==false && ISBLANK(CreditRequest.CreditReason__c)==false}" >
+            <div id="ajax-output"><apex:repeat value="{!AjaxOutput}" var="str">{!str}<br /></apex:repeat></div>
+            <div id="delete-line-msg">{!LineDeleteMsg}</div>
+            <apex:pageBlockSection >
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.Credit_Request__c.Fields.Credit_Type__c.Label}" /><!-- updated by Jlaurio 20141201 value="Credit Condition " to value="Credit Type " -->
+                    <apex:selectList id="country" size="1" value="{!CreditCondition}" onchange="SelectAll()">
+                        <apex:selectOptions value="{!listCreditCondition}" />
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="" />
+                        <apex:outputLabel value="" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="" />
+                        <apex:outputLabel value="" />
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+
+            <apex:outputPanel rendered="{!CreditRequestLineItemList.size > 0}">
+          <!-- fdgf {!CreditRequestLineItemList}-->
+                <apex:pageBlockTable id="pbt" value="{!CreditRequestLineItemList}" var="item" columnsWidth="3%,8%, 8%, 13.8%, 8%,8%,8%,8%,7%,7%,7%,7%,7% " rendered="{!CreditRequestLineItemList.size > 0}">
+
+                <apex:column headerValue="{!$Label.Select}" >
+
+                    <apex:inputCheckbox id="selectedResults" onclick="javaScrpt()" value="{!item.selected}" disabled="{!AND(NOT(showOutputField),CreditCondition ='Full')}"/>
+                 </apex:column>
+
+                <apex:column headerValue="{!$ObjectType.CreditRequestLineItem__c.Fields.CreditType__c.Label}" rendered="{!NOT(LicenseModel.IsInsert)}">
+                    <apex:outputField id="type0" value="{!item.cr.CreditType__c}" />
+                </apex:column>
+                <apex:column headerValue="{!$ObjectType.CreditRequestLineItem__c.Fields.CreditType__c.Label}" rendered="{!LicenseModel.IsInsert}">
+                    <apex:inputField id="type1" value="{!item.cr.CreditType__c}" onchange="javaScrpt()" rendered="{!AND(item.selected,NOT(CreditCondition ='Tax'), NOT(CreditCondition ='Full'))}"/>
+                </apex:column>
+
+                <apex:column headerValue="{!$ObjectType.Order_Line_Item__c.Label}" >
+                    <apex:outputField id="OLIN" value="{!item.cr.Order_Line_Item__c}"/>
+                </apex:column>
+                <apex:column headerValue="{!$ObjectType.CreditRequestLineItem__c.Fields.ProductName__c.Label}" >
+                    <apex:outputField id="Product" value="{!item.cr.ProductName__c}"/>
+                </apex:column>
+                <apex:column headerValue="{!$ObjectType.Order_Line_Item__c.Fields.Multi_License__c.Label}">
+                    <apex:outputField id="Multi-Product" value="{!item.ParentLineItem.Multi_License__c}"/>
+                </apex:column>
+                 <apex:column >  <!-- rendered="{!HasOption}"> -->
+
+                    <apex:facet name="header">{!$ObjectType.Order_Line_Item__c.Fields.OptionId__c.Label}</apex:facet>
+                    <apex:outputField id="type2" value="{!item.ParentLineItem.OptionId__c}"/>
+                </apex:column>
+                <apex:column headerValue="{!$ObjectType.CreditRequestLineItem__c.Fields.Xcode__c.Label}" >
+                    <apex:outputField id="Xcode" value="{!item.cr.Xcode__c}"/>
+                </apex:column>
+                <apex:column headerValue="{!$Label.Credit_Qty}" >
+                    <!--changed for task E2027
+                    <apex:inputField id="QuantityI" value="{!item.cr.Quantity__c}" rendered="{!AND(item.selected,IF(item.cr.CreditType__c = 'Inventory',true, false))}" onchange="CompareQuantity()" style="width: 97%"/>
+                    <apex:outputField id="QuantityO" value="{!item.cr.Quantity__c}" rendered="{!IF(item.cr.CreditType__c != 'Inventory',true, false)}"/>
+                    -->
+                   <!--  <apex:outputField id="QuantityI" value="{!item.cr.Quantity__c}" rendered="{IF(CreditCondition != 'Full',true, false)}" style="width: 97%"/> -->
+                   <apex:outputField id="QuantityI" value="{!item.cr.Quantity__c}" style="width: 97%"/>
+                    <!--<apex:outputField id="QuantityO" value="{!item.ParentLineItem.AvailableInventory__c}" rendered="{IF(CreditCondition == 'Full',true, false)}" style="width: 97%"/>-->
+                    <!-- <apex:outputField id="QuantityI" value="{!IF(CreditCondition =='Full','','')}"  style="width: 97%"/> -->
+                </apex:column>
+                <!-- updated START by Vivek for I-185131 Jeff L commented out after some feedback from Monster
+                <apex:column headerValue="Avail Qty." >
+                    <apex:outputField id="AvailItemQuantity" value="{!item.ParentLineItem.AvailableInventory__c}"/>
+                </apex:column>
+                updated END by Vivek for I-185131 -->
+                <apex:column headerValue="{!$Label.Orig_Qty}" >
+                     <!--<apex:outputPanel rendered="{!IF(CreditCondition != 'Tax',true,false)}"> -->
+                        <apex:outputField id="ItemQuantity" value="{!item.cr.OrderLineItemQuantity__c}"/>
+                    <!-- </apex:outputPanel> -->
+                </apex:column>
+                <apex:column headerValue="{!$ObjectType.CreditRequestLineItem__c.Fields.CreditAmount__c.Label}" >
+                    <apex:inputField id="AmountI" value="{!item.cr.CreditAmount__c}" rendered="{!AND(item.selected,IF(item.cr.CreditType__c = 'Amount',true, false))}" onchange="CompareQuantity()" style="width: 97%"/>
+                    <apex:outputField id="AmountO" value="{!item.cr.CreditAmount__c}" rendered="{!IF(item.cr.CreditType__c != 'Amount',true, false)}"/>
+                </apex:column>
+                <apex:column headerValue="{!$ObjectType.CreditRequestLineItem__c.Fields.NetCreditAmount__c.Label}" >
+                    <apex:outputField id="NetCredAmount" value="{!item.cr.NetCreditAmount__c}"/>
+                </apex:column>
+                  <apex:column headerValue="{!$ObjectType.CreditRequestLineItem__c.Fields.Unit_Price__c.Label}" >
+                    <!-- <apex:outputPanel rendered="{!IF(CreditCondition != 'Tax',true,false)}"> -->
+                        <apex:outputField id="unitprice" value="{!item.cr.Unit_Price__c}"/>
+                    <!-- </apex:outputPanel> -->
+                </apex:column>
+                <apex:column headerValue="{!$ObjectType.CreditRequestLineItem__c.Fields.AvailableCreditAmount__c.Label}" >
+                    <!-- <apex:outputPanel rendered="{!IF(CreditCondition != 'Tax',true,false)}"> -->
+                        <apex:outputField id="RemCredit" value="{!item.cr.AvailableCreditAmount__c}"/>
+                    <!-- </apex:outputPanel> -->
+                </apex:column>
+                <apex:column headerValue="{!$ObjectType.CreditRequestLineItem__c.Fields.NetTotalAmount__c.Label}" >
+                    <apex:outputField id="OrderAmount" value="{!item.cr.NetTotalAmount__c}"/>
+                </apex:column>
+                <apex:column headerValue="{!$ObjectType.CreditRequestLineItem__c.Fields.TaxAmount__c.Label}" >
+                    <apex:outputField id="TaxAmount" value="{!item.cr.TaxAmount__c}" /> <!-- rendered="{!AND(item.selected,CreditCondition = 'Tax')}"/> -->
+                </apex:column>
+
+                <!-- <apex:column headerValue="Notes" >
+                    <apex:inputField id="NotesI" value="{!item.cr.Notes__c}" rendered="{!AND(item.selected,CreditCondition ='Partial')}" style="width: 97%"/>
+                    <apex:outputField id="NotesO" value="{!item.cr.Notes__c}" rendered="{!AND(NOT(item.selected),showOutputField)}"/>
+                </apex:column> -->
+                </apex:pageBlockTable>
+
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!CreditRequestLineItemList.size == 0}">
+                <apex:pageblockTable value="{!1}" var="noData" >
+                    <apex:column >
+                        <apex:outputLabel value="{!$Label.No_Items_available}"/>
+                    </apex:column>
+                </apex:pageblockTable>
+            </apex:outputPanel>
+
+           <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="{!$Label.Save}" onclick="saveRecord('{!CreditCondition}'); return false;" />
+                <apex:commandButton value="{!$Label.Cancel}" onclick="history.go(-1); return false;" />
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+
+        <!-- License ID part -->
+        <apex:pageBlock Id="LicenseBlock" title="{!$Objecttype.LicenseID__c.labelplural}">
+            <div style="color: #f00;"><apex:repeat value="{!LicenseModel.testList}" var="t">{!t}<br /></apex:repeat></div>
+            <apex:outputText value="{!$Label.No_Selected_msg}" rendered="{!LicenseModel.ShowEmptyMessage}" />
+            <apex:repeat value="{!LicenseModel.LicenseIDList}" var="wrapList">
+                <apex:pageBlockSection title="{!wrapList.Title}" columns="1" rendered="{!wrapList.Render}">
+                    <apex:pageBlockTable value="{!wrapList.LicenseList}" var="wrap" width="100%" >
+                        <apex:column width="20%"><apex:outputLink value="/{!wrap.License.Id}">{!wrap.License.Name}</apex:outputLink></apex:column>
+                        <apex:column width="20%" headerValue="{!$ObjectType.CreditRequestLineItem__c.Fields.Quantity__c.Label}">
+                            <apex:inputText onchange="ComputeCreditquantity();" value="{!wrap.Quantity}" disabled="{!CreditCondition =='Full'}" />
+                        </apex:column>
+                        <apex:column width="20%" value="{!wrap.License.AvailableInventory__c}" />
+                        <apex:column width="20%" value="{!wrap.License.OrderLineItem__c}" />
+                        <apex:column width="20%" value="{!wrap.License.Xcode__c}" />
+                    </apex:pageBlockTable>
+                </apex:pageBlockSection>
+            </apex:repeat>
+            
+            <!-- Added by Vikas Menon on 7 Feb, 2017 (refer to S-445863)  for non message OLI --> 
+            
+            <apex:repeat value="{!NonMsgOLIWrapList}" var="wrap">
+                  <apex:pageBlockSection title="{!wrap.title}" columns="1">
+                    <apex:pageBlockTable value="{!wrap.crLineItems}" var="wcr" width="100%">
+                       <apex:column width="20%"> </apex:column>
+                        <apex:column width="20%" headerValue="{!$ObjectType.CreditRequestLineItem__c.Fields.Quantity__c.Label}">
+                            <!-- <apex:inputText  value="{!wcr.Quantity__c}" disabled="{!CreditCondition =='Full'}" /> -->
+                            <apex:inputText onchange="ComputeCreditquantityForNonMsg();" value="{!wcr.Quantity__c}" disabled="{!CreditCondition =='Full'}" />
+
+                        </apex:column>
+                        
+                        <apex:column width="20%" headerValue="Available Inventory">
+                            <apex:outputText value="{!wrap.ParentWrapper.ParentLineItem.NonMessaging_Available_Quantity__c}" />
+                        </apex:column>
+                        
+                        <apex:column width="20%" value="{!wcr.Order_Line_Item__c}" />
+                        <apex:column width="20%" value="{!wcr.Xcode__c}" /> 
+                    </apex:pageBlockTable>
+                  </apex:pageBlockSection>
+            </apex:repeat>  
+                     
+           
+            
+        </apex:pageBlock>
+
+
+        <apex:actionFunction name="SelectAllRec"  action="{!SelectAllRecord}" reRender="pbtId, LicenseBlock" status="ajax-status" />
+        <apex:actionFunction name="actionFunName" action="{!ComputeCreditAmount}" rerender="pbtId, LicenseBlock" status="ajax-status" />
+        <apex:actionFunction name="saveAllRecord"  action="{!save}"  status="ajax-status" />
+        <apex:actionFunction name="CompareQuantity" action="{!ComputeCreditAmount}" rerender="pbtId, LicenseBlock" status="ajax-status" />
+        <apex:actionFunction name="ComputeCreditquantity" action="{!ComputeCreditquantity}" rerender="pbtId, LicenseBlock" status="ajax-status" />
+        <apex:actionFunction name="ComputeCreditquantityForNonMsg" action="{!ComputeCreditquantityForNonMsg}" rerender="pbtId, LicenseBlock" status="ajax-status" />
+
+        <apex:actionFunction name="refreshCRLI" action="{!refreshCreditCondition}" rerender="formId,opsave"  status="ajax-status"/>
+        <apex:actionStatus id="ajax-status" onstart="ShowPreloader();" onstop="HidePreloader();" />
+    </apex:form>
+
+
+    <script>
+      function refreshtable(){
+        refreshCRLI();
+      }
+      function ShowChanges(){
+        CompareQuantity();
+      }
+      function javaScrpt(){
+       actionFunName();
+      }
+      var scenarioValue;
+      function getScenarioValue(field) {
+        scenarioValue = document.getElementById(field).value;
+      }
+      function saveRecord(creditType){
+
+      var deleteErrorMsg = $("#delete-line-msg").html();
+      deleteErrorMsg = deleteErrorMsg != "" ? "\n" + deleteErrorMsg + "\n" : "";
+       if(confirm('{!$Label.Credit_Confirm}\n'+deleteErrorMsg+'\n{!$Label.Proceed_MSG}')){
+        if('{!fullVerifiedOrderFlag}' == 'true' && creditType == 'Full'){
+            alert('Please note that there is already a verified full credit order existing for this related order.Therefore we can not proceed and create this credit request.');
+        }else if('{!ecommCreditRebill}' == 'true' && scenarioValue == 'Credit and Rebill'){
+                    alert('Sorry, Ecomm orders are not eligible for Credit & Rebill');
+        }else{
+            saveAllRecord();
+        }
+       }
+      }
+      function SelectAll(){
+       SelectAllRec();
+      }
+    </script>
+
+</body>
+</html>
+</apex:page>

@@ -1,0 +1,149 @@
+<apex:page applyBodyTag="false" showHeader="false" sideBar="false" StandardController="Account" Extensions="externalBaseController,vfKeywordSearchController">
+<head>
+<script>
+function setHome(){
+    window.location.href = '/apex/ExternalKnowledgebaseHome?Brand={!brand}&Lang={!lang}';
+
+}
+function setAnswers(){
+    window.location.href = '/apex/ExternalKnowledgebaseAnswers?Brand={!brand}&Lang={!lang}';
+
+}
+function setContact(){
+    window.location.href = '/apex/ExternalKnowledgebaseContactUs?Brand={!brand}&Lang={!lang}';
+
+}
+function setVideo(){
+    window.location.href = '/apex/ExternalKnowledgebaseHT?Brand={!brand}&Lang={!lang}';
+
+}
+
+</script>
+        <style>
+            @page{
+                size: 1200px;
+                margin: 1mm;
+                
+            }
+            div{
+                padding-left: 50px;
+                padding-right: 50px;
+                margin-bottom: 10px;
+            }
+            
+            .section{
+            // margin-bottom: 20px;
+           // margin-bottom: 10px;
+            background-color: #8d66b3;
+            color: #fff;
+            font-weight: bold;
+            margin-bottom: 10px;
+            
+            font-size: 10px;
+                
+            }
+                .section_title{
+                    // background-color: #8d66b3;
+                    color: #fff;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                    padding-top: 10px;
+                    padding-left: 15px;
+                    //float:left;
+                    font-size: 25px;
+                }
+                .sectionbottom{
+                background-color:#fff;
+                }
+                .srch{
+                    color: #fff;
+                    font-weight: bold;
+                    margin-bottom: 35px;
+                    padding-top: 50px;
+                    padding-left: 250px;
+                    float:center;
+                    font-size: 10px;
+                
+                }
+                .container_no_border{
+                    font-size: 13px;
+                    vertical-align: top;
+                    text-align: left;
+                }
+                
+                .activeTab {background-color: #543d6b;color:#fff;padding-right:20px;padding-top:10px;padding-bottom:10px;padding-left:20px;font-size: 160%;background-image:none}
+                .inactiveTab { background-color: #8d66b3;color:#fff;padding-right:20px;padding-left:20px;padding-top:10px;padding-bottom:10px;font-size: 160%;background-image:none}
+                .rich-tab-active {border-color: #543d6b;}
+                .rich-tab-inactive {border-color: #8d66b3;}
+            
+        </style>
+    </head>
+    <body>
+    <apex:form >
+    <apex:pageBlock >
+    
+        <div class="section" >
+            <div class="section_title">MONSTER HELP CENTER</div>
+            
+        <br />
+        
+        <script>
+         console.log('Map key:{!tabs}');
+        </script>
+        <apex:commandButton value="Home" onclick="setHome(); return false;" style="border:none !important; background-color: #8d66b3;color:#fff;padding-right:20px;padding-top:10px;padding-bottom:10px;padding-left:20px;font-size: 160%;background-image:none" />
+      
+        <apex:repeat value="{!tabs}" var="fieldKey">
+        <apex:commandButton value="Answers" onclick="setAnswers(); return false;" rendered="{!IF(fieldKey == "Answers","true","false")}" style="border:none !important;background-color: #8d66b3;color:#fff;padding-right:20px;padding-top:10px;padding-bottom:10px;padding-left:20px;font-size: 160%;background-image:none"/>
+        <apex:commandButton value="Help and Training" onclick="setVideo(); return false;" rendered="{!IF(fieldKey == "Help and Training","true","false")}" style="border:none !important;background-color: #8d66b3;color:#fff;padding-right:20px;padding-top:10px;padding-bottom:10px;padding-left:20px;font-size: 160%;background-image:none"/>
+        <apex:commandButton value="Contact Us" onclick="setContact(); return false;" rendered="{!IF(fieldKey == "Contact Us","true","false")}" style="border:none !important;background-color: #8d66b3;color:#fff;padding-right:20px;padding-top:10px;padding-bottom:10px;padding-left:20px;font-size: 160%;background-image:none"/>
+    
+</apex:repeat>
+        
+          
+</div>
+
+<div class="sectionbottom" >
+
+<div class="srch">
+            <div class="section_title" style="color: #543d6b" >How Can We Help You ?</div>
+            
+            <apex:inputText value="{!searchstring}" id="theSearchstring" maxlength="50" size="40" style="align-items: center;"/>
+            <apex:commandButton value="Search" id="submitButton" style="width:50" reRender="theSearchResults" />
+</div>
+<div style="padding-left: 151px;font-size: 17px;">
+<apex:panelGroup id="theSearchResults" >
+        <apex:panelGrid width="100%">
+         <table width="99%">
+            <tr>
+            <th width="33%">Title</th>
+            <th width="33%">Article Type</th>
+            <th width="33%">Summary</th>
+            </tr>
+        </table>
+        <knowledge:articleList articleVar="article" pageNumber="{!currentPageNumber}" Keyword="{!searchstring}" hasMoreVar="false" pageSize="10">
+        <table width="99%">
+            <tr>
+            <td width="33%">
+                <apex:outputLink target="_blank" value="{!URLFOR($Action.KnowledgeArticle.View,
+                article.id,['popup' = 'true'])}">{!article.title}</apex:outputLink>
+            </td>
+            <td width="33%"><apex:outputText >{!article.articleTypeLabel}</apex:outputText></td>
+            <td width="33%"><apex:outputText >{!article.abstract}</apex:outputText></td>
+            </tr>
+        </table>
+        </knowledge:articleList>
+        </apex:panelGrid>
+        
+            <apex:panelGrid columns="2">
+                <apex:commandLink action="{!previous}" value="Previous" style="{!IF(prevRequired =
+                true,'display:block','display:none')}" reRender="theSearchResults"/>
+                <apex:commandLink action="{!next}" value="Next" style="{!IF(nextRequired =
+                true,'display:block','display:none')}" reRender="theSearchResults"/>
+            </apex:panelGrid>
+        </apex:panelGroup>
+   </div>     
+</div>
+</apex:pageBlock>
+</apex:form>
+    </body>
+</apex:page>

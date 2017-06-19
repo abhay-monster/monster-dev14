@@ -1,0 +1,38 @@
+<!-- 
+    Apttus Approvals Management
+    CustomCaseApprovalSummary
+     
+    @2012-2013 Apttus Inc. 
+
+ -->
+<apex:page standardController="Apttus_Approval__Approval_Request__c"
+		   extensions="CustomCaseApprovalSummaryController"
+		   showHeader="true" 
+		   sidebar="true"
+		   cache="false" 
+		   tabstyle="Apttus_Approval__Approval_Request__c" >
+		
+	<apex:sectionHeader title="{!$Label.Apttus_Approval__ApprovalRequest}" 
+						subtitle="{!$ObjectType.Case.Label} {!Apttus_Approval__Approval_Request__c.Apttus_Approval__Object_Name__c}" />
+	
+	<apex:pageBlock title="{!$ObjectType.Case.Label} {!$Label.Apttus_Approval__Information}">
+		
+		<apex:pageBlockSection columns="1">
+			<apex:outputField value="{!CaseSO.CaseNumber}" />
+			<apex:outputField value="{!CaseSO.Subject}" />
+			<apex:outputField value="{!CaseSO.Type}"/>
+			<apex:outputField value="{!CaseSO.AccountId}" />
+			<apex:outputField value="{!CaseSO.OwnerId}" />
+			<apex:outputField value="{!CaseSO.Origin}" />
+			<apex:outputField value="{!CaseSO.Reason}" />
+			<apex:outputField value="{!CaseSO.Description}" />
+			<p/>&nbsp;	
+		</apex:pageBlockSection>
+		
+		<apex:include pageName="Apttus_Approval__ApprovalAction" />
+		
+	</apex:pageBlock>
+	
+	<apex:include pageName="Apttus_Approval__ApprovalRequestsList"/>
+		
+</apex:page>

@@ -1,0 +1,59 @@
+<apex:page Controller="OpenLookupPopupCtrl"  showHeader="false" sidebar="false">
+    
+    <style>
+        .lookupHeader{
+            padding:10px;
+        }
+        
+        .searchResult{
+            padding: 10px;
+            font-family: 'Arial','Helvetica',sans-serif;
+            font-weight: bold;
+            font-size: 118%;
+        }
+        
+    </style>
+    
+    <apex:form >
+    <apex:includeScript value="/canvas/sdk/js/publisher.js" />
+        <script>
+            function reRenderParentPage(recordid){
+                window.close() ;
+                 parent.window.opener.getSelectedRecordId(recordid); 
+            }
+            function closePopupResult(){
+                window.close();
+            }
+            function closeAction() {
+                Sfdc.canvas.publisher.publish({ name : "publisher.close", payload : { refresh:"true" }});
+            }
+        </script>
+        
+      
+        <apex:outputPanel styleClass="lookupHeader" layout="block">
+            <apex:inputtext value="{!searchText}"/>
+            <apex:commandButton value="Go!" action="{!runSearch}"/>
+            <apex:commandButton value="Done"  onclick="window.close(); return false;"/>
+        </apex:outputPanel>
+        
+        <apex:outputLabel styleClass="searchResult">Search Results</apex:outputLabel>
+        <apex:pageBlock id="result" >
+            <apex:outputPanel rendered="{!listRecords.size > 0}" >
+                <apex:pageBlockTable value="{!listRecords}" var="res">
+                    <apex:column headervalue="Select Record">
+                            <input type="radio" name="selectedRecord" value="{!res.Id}" onchange="reRenderParentPage('{!res.Id}');"/>  
+                    </apex:column>
+                    <apex:repeat value="{!listFieldNames}" var="field">
+                        <apex:column value="{!res[field]}"/>
+                    </apex:repeat>
+                </apex:pageBlockTable>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!listRecords.size = 0}">
+                <apex:outputText value="No records to display" />
+            </apex:outputPanel>
+
+        </apex:pageBlock>
+        
+            
+    </apex:form>
+</apex:page>

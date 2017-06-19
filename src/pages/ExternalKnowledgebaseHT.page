@@ -1,0 +1,121 @@
+<apex:page applyBodyTag="false" showHeader="false" sideBar="false" StandardController="Account" Extensions="externalBaseController,vfKeywordSearchController">
+<head>
+<script>
+function setHome(){
+    window.location.href = '/apex/ExternalKnowledgebaseHome';
+
+}
+function setAnswers(){
+    window.location.href = '/apex/ExternalKnowledgebaseAnswers';
+
+}
+function setContact(){
+    window.location.href = '/apex/ExternalKnowledgebaseContactUs';
+
+}
+function setVideo(){
+    window.location.href = '/apex/ExternalKnowledgebaseHT';
+
+}
+
+</script>
+        <style>
+            @page{
+                size: 1200px;
+                margin: 1mm;
+                
+            }
+            div{
+                padding-left: 50px;
+                padding-right: 50px;
+                margin-bottom: 10px;
+            }
+            
+            .section{
+            // margin-bottom: 20px;
+           // margin-bottom: 10px;
+            background-color: #8d66b3;
+            color: #fff;
+            font-weight: bold;
+            margin-bottom: 10px;
+            
+            font-size: 10px;
+                
+            }
+                .section_title{
+                    // background-color: #8d66b3;
+                    color: #fff;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                    padding-top: 10px;
+                    padding-left: 15px;
+                    //float:left;
+                    font-size: 25px;
+                }
+                .sectionbottom{
+                background-color:#fff;
+                }
+                .srch{
+                    color: #fff;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                    padding-top: 10px;
+                    float:right;
+                    font-size: 10px;
+                
+                }
+                .container_no_border{
+                    font-size: 13px;
+                    vertical-align: top;
+                    text-align: left;
+                }
+                
+                .activeTab {background-color: #543d6b;color:#fff;padding-right:20px;padding-top:10px;padding-bottom:10px;padding-left:20px;font-size: 160%;background-image:none}
+                .inactiveTab { background-color: #8d66b3;color:#fff;padding-right:20px;padding-left:20px;padding-top:10px;padding-bottom:10px;font-size: 160%;background-image:none}
+                .rich-tab-active {border-color: #543d6b;}
+                .rich-tab-inactive {border-color: #8d66b3;}
+            
+        </style>
+    </head>
+    <body>
+    <apex:form >
+    <apex:pageBlock >
+    
+        <div class="section" >
+            <div class="section_title">MONSTER HELP CENTER</div>
+            
+            <div class="srch">
+            <apex:inputText value="{!searchstring}" id="theSearchstring" maxlength="20" size="20" style="align-items: right;"/>
+            <apex:commandButton value="Go" id="submitButton" style="width:30" reRender="theSearchResults" />
+            </div>
+        <br />
+ 
+        <script>
+         console.log('Map key:{!tabs}');
+        </script>
+        <apex:commandButton value="Home" onclick="setHome(); return false;" style="border:none !important; background-color: #543d6b;color:#fff;padding-right:20px;padding-top:10px;padding-bottom:10px;padding-left:20px;font-size: 160%;background-image:none" />
+      
+        <apex:repeat value="{!tabs}" var="fieldKey">
+        <apex:commandButton value="Answers" onclick="setAnswers(); return false;" rendered="{!IF(fieldKey == "Answers","true","false")}" style="border:none !important;background-color: #8d66b3;color:#fff;padding-right:20px;padding-top:10px;padding-bottom:10px;padding-left:20px;font-size: 160%;background-image:none"/>
+        <apex:commandButton value="Help and Training" onclick="setVideo(); return false;" rendered="{!IF(fieldKey == "Help and Training","true","false")}" style="border:none !important;background-color: #8d66b3;color:#fff;padding-right:20px;padding-top:10px;padding-bottom:10px;padding-left:20px;font-size: 160%;background-image:none"/>
+        <apex:commandButton value="Contact Us" onclick="setContact(); return false;" rendered="{!IF(fieldKey == "Contact Us","true","false")}" style="border:none !important;background-color: #8d66b3;color:#fff;padding-right:20px;padding-top:10px;padding-bottom:10px;padding-left:20px;font-size: 160%;background-image:none"/>
+    
+</apex:repeat>
+        
+</div>
+
+<div class="sectionbottom" >
+<br/>
+<br/>
+<br/>
+<br/>
+
+<br/>
+<br/>
+<br/>
+<br/>
+</div>
+</apex:pageBlock>
+</apex:form>
+    </body>
+</apex:page>

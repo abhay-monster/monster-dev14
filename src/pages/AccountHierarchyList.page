@@ -1,0 +1,42 @@
+<apex:page StandardController="Account" recordSetVar="accounts" extensions="AccountHierarchyListCX">
+{!NoAccountMessage}{!ShowTable}
+<apex:pageBlock title="Child Accounts" rendered="{!ShowTable}">
+    <apex:form >
+        Filter Accounts By Level
+        <apex:selectList size="1" value="{!level}">
+            <apex:selectOptions value="{!levelOptions}"/>
+            <apex:actionSupport event="onchange" rerender="updatePanel" />            
+        </apex:selectList> 
+        <apex:pageBlockSection id="updatePanel">
+            <apex:pageBlockTable value="{!accountPagination}" var="a">
+                <apex:column >
+                    <apex:facet name="header">Account Name</apex:facet>
+                    
+                        <apex:outputLink value="/apex/CS_AccountHierarchy?id={!a.Id}" id="theLink">{!a.Name}</apex:outputLink>
+                </apex:column>
+                <apex:column value="{!a.ParentId}"/>
+                <apex:column value="{!a.Last12MonthsSpend__c}"/>
+                <apex:column value="{!a.CustomerNumber__c}"/>
+                <apex:column value="{!a.AccountStatus__c}"/>
+                <apex:column value="{!a.Primary_Xcode__c}"/>
+                <apex:column value="{!a.MasterHQ__c}"/>
+                <apex:column value="{!a.AccountProgram__c}"/>
+                <apex:column value="{!a.Level__c}"/>
+                <apex:column value="{!a.DomesticHQAccount__c}"/>
+                <apex:column value="{!a.Type}"/>
+                <apex:column value="{!a.BillingCity}"/>
+                <apex:column value="{!a.BillingState}"/>
+                <apex:column value="{!a.Industry}"/>
+                <apex:column value="{!a.OwnerId}"/>
+                <apex:column value="{!a.AccountID__c}"/>
+                <apex:column value="{!a.X15DigitAccountId__c}"/>
+            </apex:pageBlockTable> 
+        </apex:pageBlockSection>
+        <apex:panelGrid columns="2">
+            <apex:commandLink action="{!previous}">Previous</apex:commandlink>
+            <apex:commandLink action="{!next}">Next</apex:commandlink>
+        </apex:panelGrid>
+        
+    </apex:form>
+</apex:pageBlock> 
+</apex:page>

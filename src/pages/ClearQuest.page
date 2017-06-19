@@ -1,0 +1,40 @@
+<apex:page StandardController="Case" extensions="ClearQuestCC" showHeader="false" sidebar="false">
+    <apex:form id="myForm" >
+        <apex:pageBlock id="pgb" title="ClearQuest Ticket Details">
+            
+            <apex:pageBlockSection columns="1">
+                <apex:pageblockSectionItem >
+                    <apex:messages />
+                </apex:pageblockSectionItem>
+                <!-- <apex:pageblockSectionItem >
+                    <apex:commandButton value="CQ Ticket Details" action="{!submitCQNumber}" rerender="myForm"/>
+                </apex:pageblockSectionItem> -->
+            </apex:pageBlockSection>
+                <apex:outputPanel >
+                    <apex:pageblockTable value="{!ProjectListToDisplay}" var="Data" >
+                        <apex:column headerValue="Id">
+                            <apex:outputText value="{!Data.ProjectId}"/>
+                        </apex:column>
+                        <apex:column headerValue="Error">
+                            <apex:outputText value="{!Data.Errormessage}"/>
+                        </apex:column> 
+                        <apex:column headerValue="Error Status"> 
+                            <apex:outputText value="{!Data.ErrorStatus}"/>
+                        </apex:column>
+                        <apex:column headerValue="Estimated Date">
+                            <apex:outputText value="{!Data.EstimatedDate}"/>
+                        </apex:column>
+                        <apex:column headerValue="Project">
+                            <apex:outputText value="{!Data.Project}"/>
+                        </apex:column> 
+                        <apex:column headerValue="State">
+                            <apex:outputText value="{!Data.State}"/>
+                        </apex:column>
+                        <apex:column headerValue="Sub-Project">
+                            <apex:outputText value="{!Data.SubProject}"/>
+                        </apex:column>  
+                    </apex:pageblockTable> 
+                </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

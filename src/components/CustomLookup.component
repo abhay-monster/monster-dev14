@@ -1,0 +1,61 @@
+<apex:component Controller="CustomLookupCtrl" id="cmp">
+    <script>
+        var newWin = null;
+        var typeNameId = '';
+        var selectedId = '';
+        var searchText = '';
+        function openLookupPopup() {
+            searchText = document.getElementById(typeNameId).value;
+            var url = "/apex/OpenLookupPopup?Object=" + '{!objName}' + "&fieldName=" + '{!fieldName}' + "&searchText=" + searchText + "&fieldSetName=" + '{!fieldSetNameAPI}';
+            newWin = window.open(url, 'Popup', 'height=500,width=600,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');
+            if (window.focus) {
+                newWin.focus();
+            }  
+        }
+
+        
+        function getSelectedRecordId(selectedId){
+           displaySelectedRecord(selectedId);
+        }
+        
+    </script>
+    
+    <apex:outputPanel id="scriptPanel">
+        <script>
+            function assignValueToParentPage(){
+                if('{!selectedId}' == null || '{!selectedId}' == ''){
+                    document.getElementById('{!fieldToPopulateId}').value = searchText;
+                } else {
+                    document.getElementById('{!fieldToPopulateId}').value = '{!selectedId}';
+                }
+                
+            } 
+        </script>
+    </apex:outputPanel>
+    
+    <apex:actionFunction name="displaySelectedRecord" action="{!getSelectedRecord}" rerender="lookupPanel, scriptPanel" onComplete="assignValueToParentPage();">
+        <apex:param name="selectId" value="" assignTo="{!selectedId}" /> 
+    </apex:actionFunction>
+
+    <apex:attribute name="objectName" type="String" required="true" assignTo="{!objName}" description="API Name of the Object for which Lookup has to be created"/> 
+    <apex:attribute name="fieldAPI" type="String" required="true" assignTo="{!fieldName}" description="API Name of the field on the basis of which you want to search"/> 
+    <apex:attribute name="fieldToPopulateId" type="String" required="true" assignTo="{!fieldPopulatingId}" description="Id of the Field whose value needs to be populated"/> 
+    <apex:attribute name="fieldSetName" type="String" required="true" assignTo="{!fieldSetNameAPI}" description="Name of the field Set whose fields need to be displayed"/>
+    
+    <apex:outputPanel id="lookupPanel">
+        
+        <apex:inputText id="targetName" value="{!selectedRecordName}" />
+        <script type="text/javascript">typeNameId = '{!$Component.targetName}';</script>
+        
+        <a href="#" id="acc3_lkwgt" onclick="openLookupPopup();" tabindex="2" 
+            title="Parent Lookup (New Window)" style="text-decoration: none;" >
+                <img src="/s.gif" alt="Parent Lookup (New Window)" 
+                class="lookupIcon" 
+                onblur="this.className = 'lookupIcon';" 
+                onfocus="this.className = 'lookupIconOn';" 
+                onmouseout="this.className = 'lookupIcon';this.className = 'lookupIcon';" 
+                onmouseover="this.className = 'lookupIconOn';this.className = 'lookupIconOn';" 
+                title="Parent Lookup (New Window)"/>
+        </a>
+    </apex:outputPanel>
+</apex:component>

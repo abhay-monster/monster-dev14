@@ -1,0 +1,93 @@
+<apex:page showHeader="false" sideBar="false" controller="AddContactController" doctype="HTML-5.0" language="{!userLangString }" cache="false">
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script>
+    
+
+        
+        $(document).ready(function(){
+            $("#download-link").attr("href", $("#download-link").attr("href") + '?ProposalId={!proId}');
+        });
+        if({!closeWindow}){
+            alert('The product user successfully inserted');
+           window.close();
+        }
+        function refresh(){
+            if(document.URL.indexOf("#")==-1 && !{!closeWindow} ){
+                url = document.URL+"#";
+                location = "#";
+                window.location.reload(true);
+            }
+        }
+        </script>
+    <style>
+    p {
+        text-indent: 50px;
+      }
+</style>
+<body onload = "refresh()">
+    <apex:form >
+    <apex:actionFunction name="rerenderPage" reRender="pbProd"/>
+    <apex:repeat value="{!debugger}" var="d">
+        {!d}<br />
+    </apex:repeat>
+        <apex:pageBlock title="{!$Label.Add_Contacts_Add_Product_Users}" mode="edit" >
+        <apex:pageMessages />
+            <apex:pageBlockTable value="{!wc}" var="con" id="pbProd">
+                <apex:column headerValue="{!$Label.Add_Contacts_Product_Name}">
+                    <apex:outputText value="{!con.ProdName}" />
+                </apex:column>
+                <apex:column headerValue="{!$Label.Add_Contacts_First_Name}">
+                    <apex:inputField value="{!con.conlist2.FirstName}" required="true"/>
+                </apex:column>
+                <apex:column headerValue="{!$Label.Add_Contacts_Last_Name}">
+                    <apex:inputField value="{!con.conlist2.LastName}" required="true"/>
+                </apex:column>
+                <apex:column headerValue="{!$Label.Add_Contacts_Email}">
+                    <apex:inputField value="{!con.conlist2.Email}" required="true"/>
+                </apex:column>
+                <apex:column headerValue="{!$Label.Add_Contacts_Phone}">
+                    <apex:inputField value="{!con.conlist2.Phone}" required="true"/>
+                </apex:column>
+            </apex:pageBlockTable>
+            <apex:pageBlockButtons location="bottom"> 
+                <apex:commandButton action="{!SaveContact}" value="Save" rendered="true" disabled="{!saveDisable}"/>
+                <apex:commandButton onclick="window.close();" value="Cancel" />
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+        <apex:pageBlock >
+            <apex:pageBlockSection columns="1">
+                <a id="download-link" href="/apex/CSVTemplate" target="_blank">{!$Label.Add_Contacts_Download_Template}</a> 
+                <apex:inputFile value="{!csvFileBody}"  filename="{!csvAsString}" disabled="{!isDisable}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons location="bottom">
+                    <apex:commandButton value="Import Users" action="{!importCSVFile}" disabled="{!isDisable}" />
+                </apex:pageBlockButtons>
+        </apex:pageBlock>
+            <p><font size="2">
+            <!--Please specify the user associated with each purchased resume product above. Providing the requested information will assist in the processing and setup of your order.
+            -->
+            {!$Label.Add_Contacts_Instructions}
+
+            </font></p>
+             <p><font size="2">
+             <!--Note: If you have more than 10 users to upload, please follow these steps:-->
+             {!$Label.Add_Contacts_Instructions_2}
+             
+             </font></p>
+
+            <p><font size="2">
+            <!--Step 1: To upload multiple users, click the download template link above, fill out the form, and save as a .csv file.<br/>
+-->
+{!$Label.Add_Contacts_Instructions_Step_1 }
+            <p><!--Step 2: Click on the Choose File button to import completed form.-->
+            {!$Label.Add_Contacts_Instructions_Step_2}
+            </p>
+            
+            </font></p>
+            
+
+
+    </apex:form>
+    </body>
+</apex:page>

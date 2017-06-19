@@ -1,0 +1,73 @@
+<!-- TKOM: added for S-435311 -->
+
+<apex:page standardController="Case" recordSetVar="cases" tabStyle="Case" extensions="massCloseCaseExtension">
+
+
+    <apex:form id="form">
+        
+        
+        <apex:pageBlock title="Mass Close Cases" mode="edit" id="block">
+         
+         <!-- Dynamic checking of Picklist Value (check for '--None--'), code adapted from: http://blog.jeffdouglas.com/2010/07/13/building-a-dynamic-search-page-in-visualforce/ -->
+         <script type="text/javascript">
+          function doSearch() {
+          // alert used for debugging
+          //alert(document.getElementById('{!$Component.form.block.section.sectionItem2.subStatuses}').options[document.getElementById('{!$Component.form.block.section.sectionItem2.subStatuses}').selectedIndex].value);
+          searchServer(
+          document.getElementById('{!$Component.form.block.section.sectionItem2.subStatuses}').options[document.getElementById('{!$Component.form.block.section.sectionItem2.subStatuses}').selectedIndex].value
+          );
+      }
+      </script> 
+
+      <apex:actionFunction name="searchServer" action="{!verifySubStatus}" rerender="messages,savebtn">
+          <apex:param name="subStatus" value="" />
+      </apex:actionFunction>
+
+
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton id="savebtn" value="Save" action="{!save}" disabled="{!disableSaveBtn}"/>
+                <apex:commandButton value="Cancel" action="{!cancel}"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="Case Information" columns="1" id="section">
+        <apex:pageMessage id="messageInfo" summary="Please choose a SubStatus that will be applied to all selected cases. There are {!SelectedSize} records selected for update." severity="information" strength="1" />
+        <!-- <apex:pagemessage Id="messageError" summary="{!errMessage}" severity="error" strength="1" rendered="{!renderErrMsg}" /> -->
+        <apex:pageMessages id="messages"/>            
+                    
+            <apex:pageBlockSectionItem id="sectionItem1">
+                <apex:outputLabel value="Status" />
+                <apex:inputField id="statusval" value="{!case.Status}" required="true" />
+            </apex:pageBlockSectionItem>
+            
+            <!-- removed the following inputfield and replaces with SelectList.  Not all picklist values were displaying due to picklist value/record type assignments.  Selectlist shows ALL values regardless of record type. -->
+            <!-- <apex:inputField required="true" Value="{!case.SubStatus__c}"/> -->
+            <apex:pageBlockSectionItem id="sectionItem2">
+                <!-- need to force the "required" red bar to appear, code adapted from: http://blog.jeffdouglas.com/2008/11/16/displaying-the-required-red-bar-for-a-control/ -->
+                <apex:outputLabel value="SubStatus" />
+                <apex:outputPanel styleClass="requiredInput" layout="block" id="outputPanel1">
+                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                    <apex:selectList id="subStatuses" value="{!case.SubStatus__c}" size="1" required="true" onchange="doSearch();" >
+                        <apex:selectOptions value="{!subStatuses}"/>
+                    </apex:selectList>
+                </apex:outputPanel>
+
+            
+
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Resolution Code" rendered="{!CONTAINS($Profile.Name, 'Standards & Security') || CONTAINS($Profile.Name, 'System Administrator') }"/>
+                <apex:inputField Value="{!case.ResolutionCode__c}" rendered="{!CONTAINS($Profile.Name, 'Standards & Security') || CONTAINS($Profile.Name, 'System Administrator')}" required="{!CONTAINS($Profile.Name, 'Standards & Security')|| CONTAINS($Profile.Name, 'System Administrator') }" onchange="doSearch();" />
+            </apex:pageBlockSectionItem>
+              
+            </apex:pageBlockSection>
+
+        </apex:pageBlock>
+    </apex:form>
+    
+    
+    <!-- javascript to pre-default the value of Status field to "Closed".  This code must come AFTER the apex form, otherwise it doesn't work! -->
+    <script type="text/javascript">
+        document.getElementById('{!$Component.form.block.section.sectionItem1.statusval}').value = 'Closed';
+        document.getElementById('{!$Component.form.block.section.sectionItem1.statusval}').disabled = true; // Sets the Status picklist to disabled - prevents users from selecting any other value.
+    </script>
+
+    </apex:page>

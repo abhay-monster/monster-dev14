@@ -1,0 +1,37 @@
+<apex:page controller="AccountTeamCC" action="{!DeleteAll}" tabstyle="Account">
+<apex:pageMessages id="pageMessages" />
+<apex:sectionHeader title="{!TeamAccount.Name}" subtitle="New Account Team Members"/>
+<apex:form id="frm" >
+    <apex:pageBlock mode="edit">
+    <apex:pageBlockButtons location="top"> 
+        <apex:commandButton action="{!OnClick_Save}" value="Save" rerender="pageMessages"/>
+        <apex:commandButton action="{!OnClick_SaveAndMore}" value="Save & More"/>
+        <apex:commandButton action="{!OnClick_Cancel}" value="Cancel"/>
+    </apex:pageBlockButtons>
+    <apex:pageBlockSection columns="2">
+        <apex:pageBlockTable columns="5" value="{!CustomAccountTeamMemberList}" var="atm">
+            <apex:column >
+                <apex:facet name="header">Team Member</apex:facet>
+                <apex:InputField value="{!atm.UserId__c}" />
+            </apex:column>
+            <apex:column >
+                <apex:facet name="header">Account Access</apex:facet>
+                <apex:InputField value="{!atm.AccountAccessLevel__c}"/>
+            </apex:column>
+            <apex:column >
+                <apex:facet name="header">Opportunity Access</apex:facet>
+                <apex:InputField value="{!atm.OpportunityAccessLevel__c}"/>
+            </apex:column>
+            <apex:column >
+                <apex:facet name="header">Case Access</apex:facet>
+                <apex:InputField value="{!atm.CaseAccessLevel__c}"/>
+            </apex:column>
+            <apex:column >
+                <apex:facet name="header">Team Role</apex:facet>
+                <apex:InputField value="{!atm.TeamMemberRole__c}"/>
+            </apex:column>      
+        </apex:pageBlockTable>
+        </apex:pageBlockSection>
+    </apex:pageBlock>
+</apex:form>
+</apex:page>

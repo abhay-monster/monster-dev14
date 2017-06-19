@@ -1,0 +1,22 @@
+<!-- 
+/*
+** @author : Cloud Sherpas Inc.
+** @date : 07/03/2014
+** @description :This page overrides the URL upon clicking the Create Credit Order button in Credit Request. 
+*/
+-->
+<apex:page standardController="Credit_Request__c" extensions="CreateCreditOrderFromCreditRequest" action="{!executeMethod}">
+<script>
+    window.onload = function(){
+    	
+    	if({!showAlert} == false){
+    		
+            location.assign("{!stringURL}");
+        }else{
+             //alert("An Error occured while creating Credit Order. Credit Order not created."+"{!ErrorMessage}");
+             alert("{!ErrorMessage}");
+            location.assign("{!stringURL}");
+        }
+    }
+</script>
+</apex:page>

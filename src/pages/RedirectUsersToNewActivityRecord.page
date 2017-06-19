@@ -1,0 +1,14 @@
+<!--
+/**=====================================================================
+ * Appirio, Inc
+ * Page Name: RedirectUsersToNewActivityRecord
+ * Description: RedirectUsersToNewActivityRecord Page used in Custom New Task / Event button to redirect users to the desired custom URL
+ * Created Date: [08/June/2015]
+ * Created By: Gaurav Gupta (Appirio)
+ *
+ * Date Modified                Modified By                  Description of the update
+ =====================================================================*/
+ -->
+
+<apex:page StandardCOntroller="Task" extensions="RedirectUsersToNewActivityRecord" action="{!redirectUser}">
+</apex:page>

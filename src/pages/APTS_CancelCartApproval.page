@@ -1,0 +1,13 @@
+<apex:page controller="APTS_CancelCartApprovalController" Action="{!CancelApprovalRequest}" tabStyle="Apttus_Proposal__Proposal__c">
+<script language="javascript">
+     window.onload = function() { 
+     if('{!IsApprovalCancelled}' == 'true')
+     {
+         alert('Approvals are cancelled');     
+     }
+     
+      window.location = '/' + '{!proposalId}';
+     
+   }       
+   </script> 
+</apex:page>

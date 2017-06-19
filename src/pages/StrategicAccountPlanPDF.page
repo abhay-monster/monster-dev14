@@ -1,0 +1,873 @@
+<apex:page applyBodyTag="false" showHeader="false" renderAs="PDF" title="Strategic Account Plan: {!SAModel.StrategicAccount.Name}" StandardController="Account" extensions="StrategicAccountPlanCC">
+    <head>
+        <style>
+            @page{
+                size: 1200px;
+                margin: 1mm;
+            }
+            div{
+                padding: 5px;
+            }
+            table{
+                width: 100%;
+            }
+                .light_blue_table{
+                    margin-bottom: 10px;
+                }
+            .section{
+                
+            }
+                .section_title{
+                    background-color: #8d66b3;
+                    color: #fff;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                    font-size: 16px;
+                }
+                .container_no_border{
+                    font-size: 13px;
+                    vertical-align: top;
+                    text-align: left;
+                }
+            .label{
+                font-size: 14px;
+                color: #000;
+                font-weight: bold;
+            }
+            .detail_label{
+                font-size: 13px;
+                color: #000;
+                font-weight: bold;
+                text-align: right;
+                vertical-align: top;
+            }
+            .detail_value{
+                font-size: 13px;
+                text-align: left;
+                vertical-align: top;
+            }
+            .light_blue_label{
+                font-size: 13px;
+                color: #000;
+                font-weight: bold;
+                text-align: center;
+                padding: 8px;
+                background-color: #bdd1f2;
+            }
+            .light_blue_value{
+                margin: 0px;
+                padding: 0px;
+                font-size: 13px;
+                color: #000;
+                text-align: left;
+                padding: 0px 5px 0px 5px;
+                background-color: #fff;
+                border: 1px solid #bdd1f2;
+                border-left: none;
+                border-top: none;
+            }
+            .light_blue_value_left{
+                margin: 0px;
+                padding: 0px;
+                font-size: 13px;
+                color: #000;
+                text-align: left;
+                padding: 0px 5px 0px 5px;
+                background-color: #fff;
+                border: 1px solid #bdd1f2;
+                border-top: none;
+            }
+            .top_label{
+                margin: 0px;
+                padding: 0px;
+                font-size: 14px;
+                color: #000;
+                font-weight: bold;
+                margin-bottom: 8px;
+            }
+        </style>
+    </head>
+    <body>
+    <apex:form >
+    <apex:pageBlock >
+        <div class="section">
+            <div class="section_title">Strategic Account Plan</div>
+            <table>
+                <tr>
+                    <td class="container_no_border" style="width: 50%;">
+                        <p class="top_label">{!SAModel.AccountLabels['goal__c']}:</p>
+                        <apex:outputfield value="{!SAModel.StrategicAccount.Goal__c}" />
+                    </td>
+                    <td class="container_no_border"  style="width: 50%;">
+                        <p class="top_label">{!SAModel.AccountLabels['strategy__c']}:</p>
+                        <apex:outputfield value="{!SAModel.StrategicAccount.Strategy__c}" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+            
+        <div class="section">
+            <div class="section_title">Account Detail</div>
+            <table border="0" cellspacing="8">
+                <tr>
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['name']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.Name}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['nap__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.NAP__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['masterhq__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.MasterHQ__c}" />
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['sfid']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.Id}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['agencybilled__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.AgencyBilled__c}" />  
+                    </td>
+                    
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['trialcandidate__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.TrialCandidate__c}" />  
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['parentid']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.ParentId}" />
+                    </td>
+                        
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['numberoflocations__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.NumberofLocations__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['centralizedbuying__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.CentralizedBuying__c}" />
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['ownerid']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.OwnerId}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['numberofemployees']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.NumberOfEmployees}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['atriskaccount__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.AtRiskAccount__c}" />
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['primaryservicerep__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.PrimaryServiceRep__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['accountstatus__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.AccountStatus__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        &nbsp;
+                    </td>
+                    <td class="detail_value">
+                        &nbsp;
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['primarysalesmanager__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.PrimarySalesManager__c }" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['clientturnoverrate__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.ClientTurnoverRate__c }" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        &nbsp;
+                    </td>
+                    <td class="detail_value">
+                        &nbsp;
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['primaryrelatedagency__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.PrimaryRelatedAgency__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['atsvendor__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.ATSVendor__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        &nbsp;
+                    </td>
+                    <td class="detail_value">
+                        &nbsp;
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['primaryagencycontact__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.PrimaryAgencyContact__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['leveljustification__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.LevelJustification__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        &nbsp;
+                    </td>
+                    <td class="detail_value">
+                        &nbsp;
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['region__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.Region__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['additionalbudgetsource__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.AdditionalBudgetSource__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        &nbsp;
+                    </td>
+                    <td class="detail_value">
+                        &nbsp;
+                    </td>
+                </tr>
+                
+                <tr>                    
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['numberofhires__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.NumberofHires__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['totalspend1yearprior__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.TotalSpend1YearPrior__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        &nbsp;
+                    </td>
+                    <td class="detail_value">
+                        &nbsp;
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['totalaccountopportunity__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.TotalAccountOpportunity__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['totalspend2yearprior__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.TotalSpend2yearPrior__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        &nbsp;
+                    </td>
+                    <td class="detail_value">
+                        &nbsp;
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['internationalonlinebudget__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.InternationalOnlineBudget__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['last12monthsspend__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.Last12MonthsSpend__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        &nbsp;
+                    </td>
+                    <td class="detail_value">
+                        &nbsp;
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['domesticonlinebudget__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.DomesticOnlineBudget__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['hierarchy12monthspend__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.Hierarchy12MonthSpend__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        &nbsp;
+                    </td>
+                    <td class="detail_value">
+                        &nbsp;
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['additonalbudgetavailable__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.AdditonalBudgetAvailable__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['newspapervalue__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.NewspaperValue__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        &nbsp;
+                    </td>
+                    <td class="detail_value">
+                        &nbsp;
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['penetrationlevel__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.PenetrationLevel__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        {!SAModel.AccountLabels['keyinitiative__c']}
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.KeyInitiative__c}" />
+                    </td>
+                    
+                    <td class="detail_label">
+                        &nbsp;
+                    </td>
+                    <td class="detail_value">
+                        &nbsp;
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <div class="section_title">Monster Analysis</div>
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label">{!SAModel.AccountLabels['monsterbusinessobjective__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.AccountLabels['strengths__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.AccountLabels['weaknesses__c']}</td>
+                </tr>
+                <tr>
+                    <td class="light_blue_value_left">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.MonsterBusinessObjective__c}" />
+                    </td>
+                    
+                    <td class="light_blue_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.Strengths__c}" />
+                    </td>
+                    
+                    <td class="light_blue_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.Weaknesses__c}" />
+                    </td>
+                </tr>
+            </table>
+            
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label">{!SAModel.TaskLabels['description']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.TaskLabels['subject']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.TaskLabels['owner']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.TaskLabels['activitydate']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.TaskLabels['status']}</td>
+                </tr>
+                <apex:repeat value="{!SAModel.MonsterAnalysisTaskList}" var="item">
+                    <tr>                    
+                        <td class="light_blue_value_left">
+                            <apex:outputfield value="{!item.Description}" />
+                        </td>                   
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Subject}" />
+                        </td>
+                        
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Owner.Name}" />
+                        </td>
+                        
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.ActivityDate}" />
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Status}" />
+                        </td>
+                    </tr>
+                </apex:repeat>
+            </table>
+        </div>
+        
+        <div class="section">
+            <div class="section_title">Client Analysis</div>
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label">{!SAModel.AccountLabels['clientbusinessobjective__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.AccountLabels['value__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.AccountLabels['opportunityarea__c']}</td>
+                </tr>
+                <tr>
+                    <td class="light_blue_value_left">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.ClientBusinessObjective__c}" />
+                    </td>
+                    
+                    <td class="light_blue_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.Value__c}" />
+                    </td>
+                    
+                    <td class="light_blue_value">
+                        <apex:outputfield value="{!SAModel.StrategicAccount.OpportunityArea__c}" />
+                    </td>
+                </tr>
+            </table>
+            
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label">{!SAModel.TaskLabels['description']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.TaskLabels['subject']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.TaskLabels['owner']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.TaskLabels['activitydate']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.TaskLabels['status']}</td>
+                </tr>
+                
+                <apex:repeat value="{!SAModel.ClientAnalysisTaskList}" var="item">
+                    <tr>                    
+                        <td class="light_blue_value_left">
+                            <apex:outputfield value="{!item.Description}" />
+                        </td>                   
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Subject}" />
+                        </td>
+                        
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Owner.Name}" />
+                        </td>
+                        
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.ActivityDate}" />
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Status}" />
+                        </td>
+                    </tr>
+                </apex:repeat>
+            </table>
+        </div>
+        
+        <div class="section">
+        <div class="section_title">Current Solution</div>
+        <apex:outputPanel rendered="{!asRowData.size>0}">
+           <table width="100%" border="1" cellpadding="0" cellSpacing="0">
+                <tr bgcolor="#E8E8E8">
+                    <!--<td align="Center"><b>AccountName</b></td>-->
+                    <td align="Center"><b>{!$ObjectType.Order_Line_Item__c.Fields.Product__c.Label}</b></td>
+                    <td align="Center"><b>{!$ObjectType.Order_Line_Item__c.Fields.EndDate__c.Label}</b></td>
+                    <td align="Center"><b>{!$ObjectType.Order_Line_Item__c.Fields.Quantity__c.Label}</b></td>
+                    <td align="Center"><b>{!$ObjectType.Order_Line_Item__c.Fields.NetUnitPrice__c.Label}</b></td>
+                </tr>
+                
+                <apex:repeat value="{!asRowData[0]}" var="acc" >
+                    <!--<tr>
+                        <td colspan="5">{!acc.accountName}</td>       
+                    </tr>-->
+                    
+                     <apex:repeat value="{!acc.asRow}" var="pro" > 
+                         <tr>
+                             <td>{!pro.productName}</td>
+                                     <td>
+                                         <apex:outputText value="{0,date,MM/dd/YYYY}">
+                                             <apex:param value="{!pro.endDate}" />
+                                         </apex:outputText>                             
+                                     </td>
+                                     <td>{!pro.quantity}</td>
+                                     <td>{!pro.netPrice}</td>                     
+                         </tr>
+                     </apex:repeat>
+                </apex:repeat>
+                <tr bgcolor="#E8E8E8">
+                    <td colspan="2"><b>Total</b></td>
+                    <td><b>{!asRowData[1].quantity}</b></td>
+                    <td><b>{!asRowData[1].netPrice}</b></td>
+                </tr>
+            </table>
+        </apex:outputPanel>            
+        </div>
+        
+        <div class="section">
+            <div class="section_title">Proposed Solution</div>
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label">{!SAModel.ProposedSolutionLabels['productdivision__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.ProposedSolutionLabels['productgroup__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.ProposedSolutionLabels['proposedvalue__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.ProposedSolutionLabels['problemaddressed__c']}</td>
+                </tr>
+                <apex:repeat value="{!SAModel.ProposedSolutionList}" var="item" >
+                    <tr>                    
+                        <td class="light_blue_value_left">
+                            <apex:outputfield value="{!item.ProductDivision__c}"/> 
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.ProductGroup__c}"/> 
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.ProposedValue__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.ProblemAddressed__c}"/> 
+                        </td>
+                    </tr>
+                </apex:repeat>
+                <tr>                    
+                    <td class="light_blue_value_left" colspan="2">
+                        <strong>Proposed Product Total</strong>
+                    </td>
+                    
+                    <td class="light_blue_value">
+                        <apex:outputfield value="{!SAModel.ProposedProductTotal.ProposedValue__c}"/>
+                    </td>
+                    
+                    <td class="light_blue_value">
+                        &nbsp;
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <div class="section_title">Competitive Landscape</div>
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label">{!SAModel.CompetitiveLandscapeLabels['competitor__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.CompetitiveLandscapeLabels['totaljobs__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.CompetitiveLandscapeLabels['contractvalue__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.CompetitiveLandscapeLabels['expdate__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.CompetitiveLandscapeLabels['hire__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.CompetitiveLandscapeLabels['relationshipstanding__c']}</td>
+                </tr>
+                <apex:repeat value="{!SAModel.CompetitiveLandscapeList}" var="item" >
+                    <tr>                    
+                        <td class="light_blue_value_left">
+                            <apex:outputfield value="{!item.Competitor__c}"/> 
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.TotalJobs__c}"/> 
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.ContractValue__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.ExpDate__c}"/> 
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Hire__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.RelationshipStanding__c}"/>
+                        </td>
+                    </tr>
+                </apex:repeat>
+            </table>
+        </div>
+        
+        <div class="section">
+            <div class="section_title">Key Contacts</div>
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label">{!SAModel.ContactLabels['name']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.ContactLabels['jobposition__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.ContactLabels['primaryphonenumber__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.ContactLabels['email']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.ContactLabels['contacttype__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.ContactLabels['role__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.ContactLabels['coverage__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.ContactLabels['status__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.ContactLabels['potentialobjection__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.ContactLabels['businessobjective__c']}</td>
+                    
+                    <td class="light_blue_label">{!SAModel.ContactLabels['motivation__c']}</td>
+                </tr>
+                <apex:repeat value="{!SAModel.ContactList}" var="item" >
+                    <tr>                    
+                        <td class="light_blue_value_left">
+                            <apex:outputfield value="{!item.Name}"/> 
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.JobPosition__c}"/> 
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.PrimaryPhoneNumber__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Email}"/> 
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.ContactType__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Role__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Coverage__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Status__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.PotentialObjection__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.BusinessObjective__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Motivation__c}"/>
+                        </td>
+                    </tr>
+                </apex:repeat>
+            </table>
+        </div>
+        
+        <div class="section">
+            <div class="section_title">Account Intelligence</div>
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label" style="text-align: left;">{!SAModel.AccountLabels['additionalaccountcommentary__c']}</td>
+                </tr>
+                
+                <tr>
+                    <td class="light_blue_value_left">
+                        <apex:outputField value="{!SAModel.StrategicAccount.AdditionalAccountCommentary__c}" />
+                    </td>
+                </tr>
+            </table>
+            
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label">{!SAModel.AccountLabels['shorttermstrategy__c']}</td>
+                    <td class="light_blue_label">{!SAModel.AccountLabels['longtermstrategy__c']}</td>
+                </tr>
+                
+                <tr>
+                    <td class="light_blue_value_left">
+                        <apex:outputField value="{!SAModel.StrategicAccount.ShortTermStrategy__c}" />
+                    </td>
+                    <td class="light_blue_value">
+                        <apex:outputField value="{!SAModel.StrategicAccount.LongTermStrategy__c}" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <div class="section_title">What We Know</div>
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label"><apex:outputField value="{!SAModel.AccountLabels['opportunitywwk__c']}" /></td>
+                    <td class="light_blue_label"><apex:outputField value="{!SAModel.AccountLabels['technologywwk__c']}" /></td>
+                    <td class="light_blue_label"><apex:outputField value="{!SAModel.AccountLabels['recruitercontacthabbitwwk__c']}" /></td>
+                    <td class="light_blue_label"><apex:outputField value="{!SAModel.AccountLabels['objectiveswwk__c']}" /></td>
+                    <td class="light_blue_label"><apex:outputField value="{!SAModel.AccountLabels['costofnotpurchasingwwk__c']}" /></td>
+                </tr>
+                
+                <tr>
+                    <td class="light_blue_value_left"><apex:outputField value="{!SAModel.StrategicAccount.OpportunityWWK__c}" /></td>
+                    <td class="light_blue_value"><apex:outputField value="{!SAModel.StrategicAccount.TechnologyWWK__c}" /></td>
+                    <td class="light_blue_value"><apex:outputField value="{!SAModel.StrategicAccount.RecruiterContactHabbitWWK__c}" /></td>
+                    <td class="light_blue_value"><apex:outputField value="{!SAModel.StrategicAccount.ObjectivesWWK__c}" /></td>
+                    <td class="light_blue_value"><apex:outputField value="{!SAModel.StrategicAccount.CostofNotPurchasingWWK__c}" /></td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <div class="section_title">To Be Discovered</div>
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label">{!SAModel.AccountLabels['opportunitytbd__c']}</td>
+                    <td class="light_blue_label">{!SAModel.AccountLabels['technologytbd__c']}</td>
+                    <td class="light_blue_label">{!SAModel.AccountLabels['recruitercontacthabitstbd__c']}</td>
+                    <td class="light_blue_label">{!SAModel.AccountLabels['objectivestbd__c']}</td>
+                    <td class="light_blue_label">{!SAModel.AccountLabels['costofnotpurchasingtbd__c']}</td>
+                </tr>
+                
+                <tr>
+                    <td class="light_blue_value_left">{!SAModel.StrategicAccount.OpportunityTBD__c}</td>
+                    <td class="light_blue_value">{!SAModel.StrategicAccount.TechnologyTBD__c}</td>
+                    <td class="light_blue_value">{!SAModel.StrategicAccount.RecruiterContactHabitsTBD__c}</td>
+                    <td class="light_blue_value">{!SAModel.StrategicAccount.ObjectivesTBD__c}</td>
+                    <td class="light_blue_value">{!SAModel.StrategicAccount.CostofNotPurchasingTBD__c}</td>
+                </tr>
+            </table>
+        </div>
+    </apex:pageBlock>
+    </apex:form>
+    </body>
+</apex:page>

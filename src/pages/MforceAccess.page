@@ -1,0 +1,51 @@
+<apex:page showHeader="false" sidebar="false">
+
+<style>
+
+body 
+{
+background-color: #642891;
+text-align:center;
+vertical-align:middle;
+color:white;
+}
+
+div.ex2 {
+    width: 400px;
+    margin: auto;
+    text-align:center;
+    vertical-align:middle;
+    padding: 5px;
+}
+
+</style>
+
+<body>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<img src="https://monster--c.na23.content.force.com/servlet/servlet.ImageServer?id=0151600000QV2vA&oid=00DG0000000kUQ2&lastMod=1448942464000" />
+<br />
+<br />
+<br />
+<div class="ex2">
+<p><b>
+Usage Notice:
+</b>
+<br />
+<p>
+All data in the Monster Salesforce application (aka Mforce) is privileged and confidential.  It is a criminal offense to obtain access to data (or damage, delete, alter or insert data) without authorization.  Login to this service is subject to the Monster Usage Policy.
+</p>
+Users should be aware that anyone participating in a chatter conversation can save it for later use.
+</p>
+<br />
+</div>
+<form action="https://monster.my.salesforce.com/">
+    <input type="submit" value="Proceed to LOGIN" />
+</form>
+</body>
+</apex:page>

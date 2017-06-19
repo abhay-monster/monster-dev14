@@ -1,0 +1,12 @@
+<!-- 
+    Apttus Approvals Management
+    CreditRequestApprovalHistory
+     
+    @2012-2013 Apttus Inc. 
+
+ -->
+<apex:page standardController="Credit_Request__c" >
+
+    <Apttus_Approval:ApprovalHistory ctxObjectId="{!$CurrentPage.parameters.id}" />
+
+</apex:page>

@@ -1,0 +1,94 @@
+<apex:page controller="ViewArchivalOrdersController" tabStyle="Order__c" sidebar="false">           
+    <apex:includeScript value="{!URLFOR($Resource.AdvQuote ,'js/jquery-1.3.2.min.js')}" />
+    <style type="text/css">
+        body { font-family:Arial, Helvetica, Sans-Serif; font-size:0.8em;}
+        #report { border-collapse:collapse; width: 469px; height: 113px;}
+        #report h4 { margin:0px; padding:0px;}
+        #report img { float:right;}
+        #report ul { margin:10px 0 10px 40px; padding:0px;}
+        #report th { background:#8a9ebe url({!URLFOR($Resource.AdvQuote, 'images/header_bkg.png')}) repeat-x scroll center left; color:#fff; padding:7px 15px; text-align:center;}
+        #report td { background:#C7DDEE none repeat-x scroll center left; color:#000; padding:7px 5px; text-align:center; white-space:nowrap;}
+     //   #report td.alignleft { text-align:left; }
+        #report td.alignright { text-align:right; }
+        #report tr.proprow td { background:#fff url({!URLFOR($Resource.AdvQuote, 'images/row_bkg.png')}) repeat-x scroll center left; cursor:pointer; }
+        #report div.arrow { background:transparent url({!URLFOR($Resource.AdvQuote, 'images/arrows.png')}) no-repeat scroll 0px -16px; width:16px; height:16px; display:block;}
+        #report div.up { background-position:0px 0px;}
+    </style>
+    
+    <script>
+        $(document).ready(function(){
+            refreshTable();
+        });
+    
+        function refreshTable(){
+            $(".itemrow").hide();
+            $("#report tr:first-child").show();
+            
+            $("#report td.tdarrow").click(function(){
+                $(this).parent().next(".itemrow").toggle();
+                $(this).find(".arrow").toggleClass("up");
+            }); 
+        }
+
+        function setSelectedProposal(){
+            var radioVal = $('input[name=radioComp]:checked').val();
+            setRadio(radioVal);
+        }
+
+        function confirmCancel() {
+            var isCancel = confirm("Are you sure you wish to cancel?");
+            if (isCancel) return true;
+            return false;
+        }
+    </script>
+           
+    <apex:form id="FormID">
+        <apex:pageBlock title="Archival Order" id="pageBlockID">
+
+            <apex:actionFunction name="setRadio" action="{!selectQuoteID}" rerender="buttonPanelID" status="RadioStatusID">
+                <apex:param name="radioSelectValue" value="" />
+            </apex:actionFunction>            
+
+            
+            <!-- Display Quote Section -->
+            <apex:outputPanel id="displayPanelID" >
+                <apex:pageBlockSection id="QuoteSectionID" collapsible="false" rendered="{!EligibleOrderList.size > 0}">
+                   
+                   <apex:pageBlockTable value="{!EligibleOrderList}" var="dev">
+                     <apex:column headerValue="">
+                         <input type='radio' value="{!dev.Id}" id="radioComp" name="radioComp" onchange="setSelectedProposal()" /> 
+                     </apex:column>
+                     
+                     <apex:column headerValue="Order Name">
+                         <apex:outputText value="({!dev.Name})" />
+                     </apex:column>
+                     
+                     <apex:column headerValue="Order Status">
+                         <apex:outputText value="({!dev.OrderStatus__c})" />
+                     </apex:column>
+                     
+                     <!--<apex:column headerValue="Order Type">
+                         <apex:outputText value="({!dev.Order_Type__c})" />
+                     </apex:column>-->
+                     
+                     <apex:column headerValue="Net Total Amount">
+                         <apex:outputText value="({!dev.NetTotalAmount__c})" />
+                     </apex:column>
+                     
+                  </apex:pageBlockTable>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection collapsible="false" rendered="{!EligibleOrderList.size == 0}">
+                   <div>No Archived Orders.</div>
+                </apex:pageBlockSection>
+                <apex:outputPanel id="buttonPanelID">
+                    <apex:actionStatus id="RadioStatusID" startText="Please Wait..">
+                        <apex:facet name="stop">
+                            <apex:commandButton action="{!onClickNext}" value="Unarchive Order" status="RadioStatusID" rerender="buttonPanelID" rendered="{!SelectedOli != null}"/>
+                        </apex:facet>
+                    </apex:actionStatus>
+                    <apex:commandButton action="{!onClickCancel}" value="Cancel" onclick="return confirmCancel()" immediate="true"/>
+                </apex:outputPanel>
+            </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

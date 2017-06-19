@@ -1,0 +1,23 @@
+<apex:page id="page" sidebar="false" showHeader="false" standardController="Opportunity">
+  <script>
+    // George Huene, 2015-02-05 
+    if("{!$CurrentPage.parameters.accId}" != null && "{!$CurrentPage.parameters.accId}" != '')
+    {
+      var sendTo = '/006/e'+('{!$CurrentPage.URL}').split("NewOpportunityInterrupt")[1]+'&nooverride=1';
+      sendTo = sendTo.replace('&save_new=1','');
+      sendTo = sendTo.replace('&sfdc.override=1','');
+       // console.log(sendTo);
+      location.replace(sendTo);
+    }
+  </script>
+
+  <apex:pageMessage severity="ERROR" strength="3" title="Error: Opportunities can only be created from the Account Object" escape="false" 
+  summary="Please use the <b>Opportunities Related List</b> on the <b>Account</b> page to create new <b>Opportunities</b>." 
+  rendered="{!IF(OR($CurrentPage.parameters.accId != null,$CurrentPage.parameters.oppPass != ''), false, true) }" >
+  </apex:pageMessage>
+  <center>
+    <apex:image rendered="{!IF(OR($CurrentPage.parameters.accId != null,$CurrentPage.parameters.oppPass != ''), true, false) }" value="/img/loading.gif">
+      Please wait...
+    </apex:image>
+  </center>
+</apex:page>

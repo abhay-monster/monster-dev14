@@ -1,0 +1,85 @@
+<!--
+/***********************************************************************************************************
+ * Appirio, Inc
+ * Name         : ScheduleTerritoryAssignmentBatch
+ * Created By   : Rohit B. (Appirio)
+ * Purpose      : Page to schedule batch class from UI
+ * Created Date : 13/Oct/2015
+ *
+ * Date Modified                Modified By             Description of the update
+ * [Date]                       [Person Name]           [Short Description]
+ **********************************************************************************************************/ 
+ -->
+<apex:page docType="html-5.0" title="Schedule TerritoryAssignmentBatch Class" Controller="ScheduleTerritoryAssignmentBatchClass">
+  <apex:pagemessages /> 
+  <apex:form > 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            //alert("{!scheduleOption}");
+            if("{!scheduleOption}"=='Now' || "{!scheduleOption}"=='') {
+                $("[Id$='outSchedule']").hide("fast");
+                $("[Id$='inpSchedule']").hide("fast");
+            }
+            else if("{!scheduleOption}" == "Later") {
+                $("[Id$='outSchedule']").show("fast");
+                $("[id$='inpSchedule']").show("fast");
+            }
+        });
+        
+        function getConfirm(cntrl) {
+            //alert(cntrl.value);
+            if(cntrl.value=="Abort"){
+                return confirm("Are you sure to Abort this job?");
+            }
+            else if(cntrl.value=="Schedule") {
+                if($("[Id$='inpSchedule']").val().length == 0 && "{!scheduleOption}" == 'Later') {
+                    alert('Please enter a valid value in minutes to schedule..');
+                    $("[Id$='inpSchedule']").focus();
+                    return false;
+                }
+                else
+                    return true;
+            }
+            return false;
+        }
+    </script>
+    <apex:pageBlock mode="edit" title="Schedule Info" >
+     <apex:pageblockButtons >
+       <apex:commandButton value="{!btnName}" action="{!scheduleAndRedirect}" disabled="{!isEnable}" onclick="return getConfirm(this);"/>
+       <apex:commandButton value="Cancel" action="{!Cancel}" immediate="true"/>
+     </apex:pageblockButtons>
+     
+     <apex:pageblockSection columns="1">
+       <apex:pageblockSectionItem >
+          <apex:outputLabel value="Choose Schedule" for="selectScheduleOption" style="padding-top:5px;"/>
+          <apex:selectRadio id="selectScheduleOption" value="{!scheduleOption}" onClick="changeDisplay(this);">
+            <apex:selectOption itemValue="Now" itemLabel="Now"/>
+            <apex:selectOption itemValue="Later" itemLabel="Later"/>
+            <apex:actionSupport event="onchange" reRender="pbsiSchedule"/>
+          </apex:selectRadio>
+       </apex:pageblockSectionItem>
+       <apex:pageblockSectionItem >
+           <apex:outputLabel id="outSchedule" value="Minutes to Schedule" for="inpSchedule" style="display:{!if(scheduleOption!='Later','none','')}"/>
+           <apex:inputText id="inpSchedule" value="{!minToSchedule}" style="display:{!if(scheduleOption!='Later','none','')}"/> 
+       </apex:pageblockSectionItem>
+       <script type="text/javascript">
+        function changeDisplay(cntrl) {
+            //alert(cntrl.value);
+            //alert('inpSchedule : ' + $("[Id$='inpSchedule']").val());
+            //alert('outSchedule : ' + $("[Id$='outSchedule']").val());
+            if(cntrl.value == "Later") {
+                //alert('inside if');
+                $("[Id$='outSchedule']").fadeIn("slow");
+                $("[Id$='inpSchedule']").fadeIn("slow");
+            }
+            else if(cntrl.value == "Now") {
+                $("[Id$='outSchedule']").fadeOut("slow");
+                $("[id$='inpSchedule']").fadeOut("slow");
+            }
+        }
+    </script>
+     </apex:pageblockSection>
+    </apex:pageBlock>
+  </apex:form>
+</apex:page>

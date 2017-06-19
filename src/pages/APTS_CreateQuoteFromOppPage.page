@@ -1,0 +1,21 @@
+<!-- 
+    Apttus Config & Pricing
+    APTS_CreateQuoteFromOppPage
+     
+    @2010-2011 Apttus Inc. All rights reserved.
+
+-->
+<apex:page controller="APTS_CreateQuoteFromOppController" 
+           showHeader="true" 
+           sidebar="true" action="{!createAndRedirect}">    	
+	<apex:form >				
+		<apex:outputPanel id="idOutputPanel" >
+			<apex:pageBlock mode="edit" rendered="{!HasErrors}" >
+				<apex:pageMessages />
+				<apex:pageBlockButtons location="bottom" >
+					<apex:commandButton action="{!doCancel}" value="Cancel" immediate="true"/>
+				</apex:pageBlockButtons>
+			</apex:pageBlock>
+		</apex:outputPanel>					
+	</apex:form>	    
+</apex:page>

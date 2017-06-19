@@ -1,0 +1,212 @@
+<apex:page language="{!PageLanguage}" showHeader="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" controller="KnowledgeHomeCC" standardStylesheets="false">
+<apex:variable value="{!TATData}" var="TAT" />
+<html>
+    <head>
+        <style>
+            .desc .htmlDetailElementTable tr td{
+                padding: 0px;
+                margin: 0px;
+                width: auto !important;
+            }
+        </style>
+        <apex:stylesheet value="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/style.css')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/jquery.js')}" />
+        <script>
+            window.onload = function(){
+                var wrapHeight = document.getElementById("wrap").clientHeight - 125;
+                document.getElementById("right-img").style.height = wrapHeight+"px";
+                document.getElementById("left-img").style.height = wrapHeight+"px";
+                
+                $(".header-nav-button").each(function(){
+                    if(this.id == "{!CurrentTab}"){
+                        $(this).attr("style", "background-image: none; background-color: #fff;");
+                    }
+                });
+            }
+            function onTabNavClick(tab){
+                if(tab == "{!CurrentTab}"){
+                    return false;
+                }
+                return true;
+            }
+        </script>
+    </head>
+    <body>
+        <div id="wrap">
+            <div id="header">
+                <div id="header-nav">
+                    <div class="header-nav-img"><img src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/rn_contactus_logo.jpg')}" /></div>
+                    <div class="header-nav-buttons">
+                        <a onclick="return onTabNavClick('ask');" href="{!CurrentState}/ask"><div class="header-nav-button" id="ask">{!$Label.Knowledge_Contact_Us_Tab}</div></a>
+                        <a onclick="return onTabNavClick('training_tutorials');" href="{!CurrentState}/training_tutorials"><div class="header-nav-button" id="training_tutorials">{!$Label.Knowledge_Taining_And_Tutorial_Tab}</div></a>
+                        <a onclick="return onTabNavClick('answers');" href="{!CurrentState}/answers"><div class="header-nav-button" id="answers">{!$Label.Knowledge_FAQ_Tab}</div></a>
+                        <a onclick="return onTabNavClick('overview');" href="{!CurrentState}/overview"><div class="header-nav-button" id="overview">{!$Label.Knowledge_Overview_Tab}</div></a>
+                    </div>
+                    <div class="header-nav-img"><img src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/top_right.jpg')}" /></div>
+                    <div style="clear: left;"></div>
+                </div>
+                <div>
+                    <img src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/content_top.jpg')}" />
+                </div>
+            </div>
+            
+            <div id="contents">
+                <apex:outputPanel id="search-contents" rendered="{!showSearch}">
+                    <div id="search-bar">
+                        <input type="text" id="search-bar-input" />
+                        <button class="form-button">{!$Label.Knowledge_Search}</button>
+                        <div id="search-bar-input-label">Search for Help</div>
+                    </div>
+                </apex:outputPanel>
+                
+                <apex:outputPanel id="overview-contents" layout="block" rendered="{!showOverview}">
+                    <apex:repeat value="{!OverviewCats}" var="cat">
+                        <div class="overview-cat">
+                            <div class="overview-cat-title">{!cat.CategoryTitle}</div>
+                            <div class="overview-content">
+                                <ul>
+                                <apex:repeat value="{!cat.items}" var="item">
+                                    <li>
+                                        <a href="{!CurrentState}/answers/{!item.PageLink}">{!item.label}</a>
+                                        <img  class="vid-icon"  src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/video_icon.png')}" />
+                                    </li>
+                                </apex:repeat>
+                                </ul>
+                            </div>
+                            <div class="cat-view-all">
+                            <a href="#">{!$Label.Knowledge_View_All}</a></div>
+                        </div>
+                    </apex:repeat>
+                    <div style="clear: both"></div>
+                </apex:outputPanel>
+                
+                <apex:outputPanel id="answers-contents" layout="block" rendered="{!showAnswers}">
+                    <ol id="faq-contents">
+                        <li>
+                            <a class="faq-title" href="#">Tips for Improving a Job Posting</a>
+                            <img  class="vid-icon" src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/video_icon.png')}" />
+                            <p>
+                                Watch video on improving a job posting Include all the necessary details - there's plenty of
+                                room We recommend a job posting include all relevant information. It should be clear and
+                                concise. Job...
+                            </p>
+                            <span>Date Updated: 03/28/2014 </span>
+                        </li>
+                        <li>
+                            <a class="faq-title" href="#">Tips for Improving a Job Posting</a>
+                            <img  class="vid-icon" src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/video_icon.png')}" />
+                            <p>
+                                Watch video on improving a job posting Include all the necessary details - there's plenty of
+                                room We recommend a job posting include all relevant information. It should be clear and
+                                concise. Job...
+                            </p>
+                            <span>Date Updated: 03/28/2014 </span>
+                        </li>
+                        <li>
+                            <a class="faq-title" href="#">Tips for Improving a Job Posting</a>
+                            <img  class="vid-icon" src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/video_icon.png')}" />
+                            <p>
+                                Watch video on improving a job posting Include all the necessary details - there's plenty of
+                                room We recommend a job posting include all relevant information. It should be clear and
+                                concise. Job...
+                            </p>
+                            <span>Date Updated: 03/28/2014 </span>
+                        </li>
+                    </ol>
+                    <div id="faq-results">Results <b>1 - 6</b> of <b>112</b></div>
+                    <div id="faq-pagination">
+                        <a class="special-nav" href="#">&lt; previous</a>
+                        <a href="#">1</a>
+                        <a href="#">2</a>
+                        <span>3</span>
+                        <a href="#">4</a>
+                        <a href="#">5</a>
+                        <a class="special-nav" href="#">next &gt;</a>
+                    </div>
+                </apex:outputPanel>
+                
+                <apex:outputPanel id="tuts-contents" layout="block" rendered="{!showTuts}">
+                    
+                    <div id="training-tutorial-title">{!TAT.Record.Section_Title__c}</div>
+                        <div id="training-tutorial-intro">
+                            <apex:outputField value="{!TAT.Record.Summary__c}" />
+                        </div>
+                        <div id="training-tutorial-link">
+                            <table cellspacing="0">
+                                <apex:repeat value="{!TAT.Links}" var="linkList">
+                                    <tr>
+                                        <apex:repeat value="{!linkList}" var="link">
+                                            <td><a href="#{!link.HashTag}">{!link.Label}</a></td>
+                                        </apex:repeat>
+                                    </tr>
+                                </apex:repeat>
+                            </table>
+                        </div>
+                        <div id="training-tutorial-notes">
+                            <div>
+                                <p>
+                                    {!$Label.Knowledge_Adobe_Reader_Note}
+                                </p>
+                                <a href="http://get.adobe.com/reader/"><img src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/Get_Adobe_Reader.jpg')}" /></a>
+                            </div>
+                            <div>
+                                <p>
+                                    {!$Label.Knowledge_Adobe_Flash_Player_Note}
+                                </p>
+                                <a href="http://get.adobe.com/flashplayer/"><img src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/Get_Adobe_Flashplayer.png')}" /></a>
+                            </div>
+                        </div>
+                        <apex:repeat value="{!TAT.Articles}" var="articleWrap">
+                            <div class="training-tutorial-section" id="{!articleWrap.URL}">
+                                <div class='title'>{!articleWrap.Record.Section_Title__c}</div>
+                                <div class='desc'>
+                                    <apex:outputField value="{!articleWrap.Record.Summary__c}" />
+                                </div>
+                                <table cellspacing="0" cellpadding="0">
+                                    <apex:repeat value="{!articleWrap.Articles}" var="article">
+                                        <tr>
+                                            <td class="bordered">
+                                                <b>{!article.left.Record.Title}</b>
+                                                <p>
+                                                    <apex:outputField value="{!article.left.Record.ArticleBody__c}" />
+                                                </p>
+                                                <apex:repeat value="{!article.left.Icons}" var="icon">
+                                                    <apex:outputPanel rendered="{!icon.isPDF}"><a href="{!icon.URL}"><img src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/quickGuidePDF_icon.gif')}" /></a></apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!icon.isGREEN}"><a href="{!icon.URL}"><img src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/trainingModule_icon.gif')}" /></a></apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!icon.isPURPLE}"><a href="{!icon.URL}"><img src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/elearning_icon.gif')}" /></a></apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!icon.isDOC}"><a href="{!icon.URL}"><img src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/article_icon.gif')}" /></a></apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!icon.isBLUE}"><a href="{!icon.URL}"><img src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/webinar_icon.gif')}" /></a></apex:outputPanel>
+                                                </apex:repeat>
+                                            </td>
+                                            <td>
+                                                <b>{!article.right.Record.Title}</b>
+                                                <p>
+                                                    <apex:outputField value="{!article.right.Record.ArticleBody__c}" />
+                                                </p>
+                                                <apex:repeat value="{!article.right.Icons}" var="icon">
+                                                    <apex:outputPanel rendered="{!icon.isPDF}"><a href="{!icon.URL}"><img src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/quickGuidePDF_icon.gif')}" /></a></apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!icon.isGREEN}"><a href="{!icon.URL}"><img src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/trainingModule_icon.gif')}" /></a></apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!icon.isPURPLE}"><a href="{!icon.URL}"><img src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/elearning_icon.gif')}" /></a></apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!icon.isDOC}"><a href="{!icon.URL}"><img src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/article_icon.gif')}" /></a></apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!icon.isBLUE}"><a href="{!icon.URL}"><img src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/webinar_icon.gif')}" /></a></apex:outputPanel>
+                                                </apex:repeat>
+                                            </td>
+                                        </tr>
+                                    </apex:repeat>
+                                </table>
+                                
+                                <div class="back-to-top"><a href="#top">{!$Label.Knowledge_Back_to_Top}</a></div>
+                            </div>
+                        </apex:repeat>
+                </apex:outputPanel>
+            </div>
+            
+            <div id="left-img"></div>
+            <div id="right-img"></div>
+            <div id="footer"></div>
+            <div id="bottom-img"></div>
+        </div>
+        <!--<div><apex:repeat value="{!tests}" var="t"> {!t}<br /></apex:repeat></div> -->
+    </body>
+</html>
+</apex:page>

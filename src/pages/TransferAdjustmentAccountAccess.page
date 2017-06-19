@@ -1,0 +1,210 @@
+<apex:page controller="TransferAdjustmentAccountAccessCC" tabStyle="Account" docType="html-5.0">           
+    <apex:includeScript value="{!URLFOR($Resource.AdvQuote ,'js/jquery-1.3.2.min.js')}" />
+    <style type="text/css">
+        body { font-family:Arial, Helvetica, Sans-Serif; font-size:0.8em;}
+        #report { border-collapse:collapse;}
+        #report h4 { margin:0px; padding:0px;}
+        #report img { float:right;}
+        #report ul { margin:10px 0 10px 40px; padding:0px;}
+        #report th { background:#8a9ebe url({!URLFOR($Resource.AdvQuote, 'images/header_bkg.png')}) repeat-x scroll center left; color:#fff; padding:7px 15px; text-align:center;}
+        #report td { background:#C7DDEE none repeat-x scroll center left; color:#000; padding:7px 5px; text-align:center; white-space:nowrap;}
+        #report td.alignleft { text-align:left; }
+        #report td.alignright { text-align:right; }
+        #report tr.proprow td { background:#fff url({!URLFOR($Resource.AdvQuote, 'images/row_bkg.png')}) repeat-x scroll center left; cursor:pointer; }
+        #report div.arrow { background:transparent url({!URLFOR($Resource.AdvQuote, 'images/arrows.png')}) no-repeat scroll 0px -16px; width:16px; height:16px; display:block;}
+        #report div.up { background-position:0px 0px;}
+    </style>
+    <script src="../../soap/ajax/36.0/connection.js" type="text/javascript"></script>
+    <script src="../../soap/ajax/36.0/apex.js" type="text/javascript"></script>
+    <script>
+    sforce.connection.sessionId='{!GETSESSIONID()}';
+    
+    $(document).ready(function(){
+        refreshTable();
+    });
+    
+    function refreshTable(){
+        //$(".itemrow").hide();
+        //$("#report tr:first-child").show();
+        
+        $("#report td.tdarrow").click(function(){
+            $(this).parent().next(".itemrow").toggle();
+            $(this).find(".arrow").toggleClass("up");
+        }); 
+    }
+    
+    //Modifie by Mitali Nahar Appirio for S-402215 4/4/2017
+    function setSelectedProposal(checkboxId){
+        // var radioVal = $('input[name=radioComp]:checked').val();
+        //setRadio(radioVal);
+        console.log('Classname'+checkboxId);
+        $('input[type="checkbox"]').each(function(element){
+            
+            //console.log($('input[type="checkbox"]')[element].className);
+            console.log($($('input[type="checkbox"]')[element]).hasClass(checkboxId));
+            if(!$($('input[type="checkbox"]')[element]).hasClass(checkboxId)){
+                // debugger;
+                $('input[type="checkbox"]')[element].checked = false;
+            }
+        }); 
+       
+        var id = '';
+        $('.'+checkboxId+':checkbox:checked').each(function(element){
+            id +=$('.'+checkboxId+':checkbox:checked')[element].value + ',';
+            console.log($('.'+checkboxId+':checkbox:checked')[element].value);
+            
+        });
+        console.log('id'+id);
+        setRadio(id);
+        
+        }
+    
+    function confirmCancel() {
+        var isCancel = confirm("Are you sure you wish to cancel?");
+        if (isCancel) return true;
+        return false;
+    }
+    </script>
+    <apex:outputPanel id="testJSPanel">
+        <script>
+        // sforce.connection.sessionId='{!GETSESSIONID()}';
+        // var resultTest;
+        // function handleSuccess(result){
+        //     console.log(result);
+        //     resultTest = JSON.parse(result[0]);
+        
+        //     function handleTransferSuccess(result){
+        //         console.log('debugging transfer');
+        //         console.log(result);
+        //         if(result[0] === true){
+        //             refreshTable();
+        //         }
+        //     }
+        
+        //     function handleTransferError(error){
+        //         console.log(error);
+        //     }
+        
+        //     var callbackObj = {
+        //         onSuccess: handleTransferSuccess,
+        //         onFailure: handleTransferError
+        //     }
+        
+        //     sforce.apex.execute('TransferAdjustmentAccountAccessCC','parseLicIds',{jsonString:JSON.stringify(resultTest)},callbackObj);
+        
+        // }
+        // function handleError(error){
+        //     console.log(error); 
+        // }
+        /*var licTest = ['266451665','266452678','266478192','266479131','266481901','266482051','266482685','266482682','266482655','266482697','266482680','266482696','266482681','266494244','266494245','266495407','266495960','266495946','266495786','266495408','266495751','266495752','266495783','266495784','266495815','266495816','266495774','266495785','266494260','266495975','266495983','266496116','266496109','266496110','266496107','266496108','254761306','244447425','266457274','266457625','266457617','266457618','266463001','266463397','266462839','266463975','266463976','266463668','266463669','266463720','266463721','266463361','266462851','266464051','266464052','266463666','266463667','266465862','266465863','266465914','266463564','266463565','266463063','266466038','266466039','266463665','266463898','266463899','266468861','266468862','266468859','266468860'];*/
+        // var callbackTest = {
+        //     onSuccess: handleSuccess,
+        //     onFailure: handleError
+        // }
+        // var arrayTest = {!siteIdArray};
+        // if(arrayTest.length > 0){
+        //     sforce.apex.execute('TransferAdjustmentAccountAccessCC','getLicsWebService',{pSiteLicenseIdSet:arrayTest},callbackTest);
+        // }
+        
+        </script>
+    </apex:outputPanel>
+    
+    <apex:form id="FormID">
+        <apex:pageBlock title="Transfer and Adjustment Process" id="pageBlockID">
+            <apex:outputPanel id="messagePanelID">
+                <apex:pageMessage summary="{!message}" severity="info" escape="false" rendered="{!message != ''}" />
+            </apex:outputPanel>
+            
+            <apex:actionFunction name="setRadio" action="{!selectQuoteID}" rerender="messagePanelID,buttonPanelID" status="RadioStatusID">
+                <apex:param name="radioSelectValue" value="" />
+            </apex:actionFunction>      
+            
+            <apex:outputPanel id="filters">
+                <apex:pageBlockSection title="Filters" columns="1" id="pageSectionFiler" collapsible="false" >
+                    <apex:pageBlockSectionItem > 
+                        <apex:outputLabel value="Order Id" for="orderId"/>
+                        <apex:inputText value="{!orderId}" id="orderId" label="Order Id">
+                            <apex:actionsupport action="{!onSelectAction}" oncomplete="refreshTable()" event="onchange" rerender="messagePanelID,displayPanelID,buttonPanelID" status="StatusID"/>
+                        </apex:inputText>
+                    </apex:pageBlockSectionItem> 
+                    
+                    <apex:pageBlockSectionItem > 
+                        <apex:outputLabel value="Order Start Date" for="orderStartDate"/>
+                        <apex:input value="{!orderStartDate}" id="orderStartDate" type="date">
+                            <apex:actionsupport action="{!onSelectAction}" oncomplete="refreshTable()" event="onchange" rerender="messagePanelID,displayPanelID,buttonPanelID" status="StatusID"/>
+                        </apex:input>
+                        
+                    </apex:pageBlockSectionItem> 
+                    
+                    
+                    <apex:pageBlockSectionItem > 
+                        <apex:outputLabel value="Order End Date" for="orderEndDate"/>
+                        <apex:input value="{!orderEndDate}" id="orderEndDate" type="date">
+                            <apex:actionsupport action="{!onSelectAction}" oncomplete="refreshTable()" event="onchange" rerender="messagePanelID,displayPanelID,buttonPanelID" status="StatusID"/>
+                        </apex:input>
+                    </apex:pageBlockSectionItem> 
+                    
+                </apex:pageBlockSection>
+            </apex:outputPanel>            
+            
+            <!-- Select Action -->
+            <apex:pageBlockSection title="Select Action" columns="2" id="pageSectionID" collapsible="false">
+                <apex:outputPanel id="selectPanel">
+                    <apex:selectList size="1" value="{!selectedAction}">
+                        <apex:selectOptions value="{!actionList}"/>
+                        <apex:actionsupport action="{!onSelectAction}" oncomplete="refreshTable()" event="onchange" rerender="messagePanelID,displayPanelID,buttonPanelID" status="StatusID"/>
+                    </apex:selectList>
+                    <apex:actionStatus id="StatusID" startText="Please Wait.." stopText="" />
+                </apex:outputPanel>
+                
+                <!--Added by Prashant Gupta (Appirio) S-457163, 04/05/17-->
+                <apex:pageBlockSectionItem > 
+                    <apex:outputLabel value="Search By -- " for="searchBylabel"/>
+                    <apex:selectList size="1" value="{!searchMethodValue}">
+                        <apex:selectOptions value="{!searchMethodlist}"/>
+                        <apex:actionsupport action="{!SearchSelection}" event="onchange" rerender="pageSectionID" oncomplete="refreshTable()"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem> 
+                
+                <apex:pageBlockSectionItem > 
+                </apex:pageBlockSectionItem> 
+                
+                <apex:pageBlockSectionItem rendered="{!showSearchBoxText}"> 
+                    <apex:outputLabel value="Value : " for="TextValue"/>
+                    <apex:outputPanel >
+                        <apex:inputText value="{!searchText}"></apex:inputText>
+                    <apex:actionsupport action="{!onSelectAction}" oncomplete="refreshTable()" event="onchange" rerender="messagePanelID,displayPanelID,buttonPanelID" status="StatusID"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem> 
+                
+                <apex:pageBlockSectionItem rendered="{!showSearchBoxDate}"> 
+                    <apex:outputLabel value="Dates : " for="DateValue"/>
+                    <apex:outputPanel >
+                        <apex:input type="date" value="{!searchDate}"></apex:input>
+                    <apex:actionsupport action="{!onSelectAction}" oncomplete="refreshTable()" event="onchange" rerender="messagePanelID,displayPanelID,buttonPanelID" status="StatusID"/>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <!--END-->
+                
+            </apex:pageBlockSection>
+            
+            <!-- Display Quote Section -->
+            <apex:outputPanel id="displayPanelID">
+                <apex:pageBlockSection title="Select Order" id="QuoteSectionID" columns="1" collapsible="false" >
+                    <apex:outputText id="htmlTABLE" escape="false" value="{!outputHTMLTable}" />
+                </apex:pageBlockSection>
+                <apex:outputPanel id="buttonPanelID">
+                    <apex:actionStatus id="RadioStatusID" startText="Please Wait..">
+                        <apex:facet name="stop">
+                            <apex:commandButton action="{!onClickNext}" value="Next" status="RadioStatusID" rerender="buttonPanelID,messagePanelID" rendered="{!selectedProposalID != null}"/>
+                        </apex:facet>
+                    </apex:actionStatus>
+                    <apex:commandButton action="{!onClickCancel}" value="Cancel" onclick="return confirmCancel()" immediate="true"/>
+                    <apex:commandLink action="{!onClickPreviousPage}" rendered="{!pageIndex != 0}" value="Previous" oncomplete="refreshTable()" rerender="messagePanelID,displayPanelID" status="StatusID"/>
+                    &nbsp; 
+                    <apex:commandLink action="{!onClickNextPage}" value="Next" rendered="{!renderNext}" oncomplete="refreshTable()" rerender="messagePanelID,displayPanelID" status="StatusID"/>
+                </apex:outputPanel>
+            </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,29 @@
+<apex:page controller="CreateGCSOpportunityExtension" showHeader="false" sidebar="false">
+    <apex:form >
+         <apex:actionFunction name="findPartner" action="{!findPartner}" reRender="op,pb">
+        </apex:actionFunction>
+        <apex:pageBlock id="pb">
+
+            <apex:pageblockButtons >
+                <apex:commandButton action="{!Save}" value="Save"/>
+                <apex:commandButton action="{!Cancel}" value="Cancel"/>
+            </apex:pageblockButtons>
+
+            <apex:pageblocksection columns="1" title="Select Record Type">             
+                <apex:inputfield value="{!accountProposal.RecordTypeId}" onchange="findPartner();"/>
+            </apex:pageblocksection>
+
+           <apex:outputPanel id="op" rendered="{!IsNewsPaperrecordType}"> 
+
+           <apex:pageBlockSection columns="2" title="Select Related Partner"  id="partners" >
+               <apex:outputText value="Related Partner" /> 
+                <apex:selectList value="{!selectPartnerId}" size="1">
+                    <apex:selectOptions value="{!partnerListOptions}" />  
+                </apex:selectList>
+            </apex:pageBlockSection> 
+
+            </apex:outputPanel>
+
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

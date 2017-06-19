@@ -1,0 +1,671 @@
+<apex:page standardController="Account" extensions="AccountHierarchyCC,AccountHierarchyListCX"  showHeader="false" sidebar="false" readOnly="TRUE">      
+ 
+    <style>
+        .grpstyle{
+            width:30px;
+        }
+        .hiddenRow {
+         display:none;
+         visibility:hidden;
+        }
+        .visibleRow { 
+         display:;
+         visibility:visible;
+        }
+        span.tab{
+            padding: 0 20px; 
+        }
+        .customButton{
+            color: #333;
+            margin: 1px;
+            padding: 2px 3px;
+            border: 1px solid #b5b5b5;
+            border-bottom-color: #7f7f7f;
+            background: #e8e8e9 url('/img/alohaSkin/btn_sprite.png') repeat-x right top;
+            font-weight: bold;
+            font-size: .9em;
+            -moz-border-radius: 3px;
+            -webkit-border-radius: 3px;
+            border-radius: 3px;
+        }
+        #error-display{
+            padding: 10px;
+            color: #f00;
+        }}
+    </style>
+    <script src="/soap/ajax/29.0/connection.js" type="text/javascript"></script>
+    <script language="JavaScript">
+    sforce.connection.sessionId = "{!$Api.Session_ID}";
+        var CollapseAll = {};
+        CollapseAll.openruns = 0;
+        CollapseAll.maxOpenRuns = 0;
+        
+        CollapseAll.openAll = function (pImageArray){
+            CollapseAll.openruns++;
+            
+            var runAgainArray = [];
+            for(var i = 0; i < pImageArray.length; i++){
+                if(pImageArray[i].onclick){
+                    pImageArray[i].onclick();
+                }else{
+                    runAgainArray.push(pImageArray[i]);
+                }
+            }
+            if(pImageArray.length > 0 && CollapseAll.openruns <= CollapseAll.maxOpenRuns){
+                CollapseAll.openAll(runAgainArray);
+            }
+        };
+        
+        CollapseAll.init = function(){
+            try{
+                var images = document.getElementsByTagName("img");
+                CollapseAll.maxOpenRuns = images.length;
+                CollapseAll.openAll(images);
+                UpdateHandler.init(CollapseAll.maxOpenRuns );
+            }catch(e){
+                console.log("Account Hierarchy Init Expand Error: " + e);
+            }
+        };
+        
+        var UpdateHandler = {};
+        UpdateHandler.init = function(imgNum){
+            for(var i = 1; i <= imgNum; i++){
+                UpdateHandler.toggelEdit(i, false);
+            }
+        }
+        UpdateHandler.toggelEdit = function(level, isEdit){
+            var pannelShow = "output";
+            var pannelHide = "input";
+            if(isEdit){
+                pannelShow = "input";
+                pannelHide = "output";
+            }
+            var showPannelObj = document.getElementById(pannelShow + "-pannel-"+level);
+            var showObjs = document.getElementsByClassName(pannelShow + "-field-"+level);
+            UpdateHandler.updateStyle(showPannelObj, true);
+            UpdateHandler.updateStyles(showObjs, true);
+            
+            var hidePannelObj = document.getElementById(pannelHide + "-pannel-"+level);
+            var hideObjs = document.getElementsByClassName(pannelHide + "-field-"+level);
+            UpdateHandler.updateStyle(hidePannelObj, false);
+            UpdateHandler.updateStyles(hideObjs, false);
+        };
+        
+        UpdateHandler.updateStyle = function(obj, isShow){
+            isShow = isShow ? isShow : false;
+            if(!obj) return;
+            obj.style.display = isShow ? "block" : "none";
+        };
+        
+        UpdateHandler.updateStyles = function(objs, isShow){
+            if(!objs || objs.length == 0) return;
+            for(var i = 0; i < objs.length; i++){
+                UpdateHandler.updateStyle(objs[i], isShow);
+            }
+        };
+        
+        window.onload = function(){
+            CollapseAll.init();
+        }
+        
+        function showHide(HID,IMG,TR,SZ,Lel) {
+                
+                if (document.getElementById(IMG).src.indexOf('Plus') != -1) {
+                        document.getElementById(IMG).src="{!$Resource.Minus}";
+                        document.getElementById(HID).className='visibleRow';
+                        for(var i = 1 ; i <= SZ; i++){
+                            var innerelement =  document.getElementById(TR + '_'+i);
+                            if(innerelement != null)
+                           innerelement.setAttribute('class','visibleRow');
+                        }
+                        
+                        
+                        //document.getElementById(DV).setAttribute('class','hiddenRow');
+                } else {
+                        
+                        
+                        //alert(IMG);
+                        //alert(TR);
+                        //for(var i = 0 ; i < 5 ; i++){
+                            //for(var p = 1 ; p < 6 ; p++){
+                           // alert(i + ':' + 'image' + p + 'P');
+                            //alert(document.getElementById('j_id0:formid:j_id6:0:image1P'));
+                                //if(document.getElementById(i + ':' + 'image' + p + 'P' ).value != null){
+                                    //alert('yes');
+                                    //document.getElementById(i + ':' + 'image' + p + 'P' ).src="{!$Resource.Plus}";
+                               // }
+                            //}
+                        //}
+                        
+                        document.getElementById(IMG).src="{!$Resource.Plus}";
+                        document.getElementById(HID).className='hiddenRow';
+                        for(var i = 1 ; i <= SZ; i++){
+                        
+                            var innerelement =  document.getElementById(TR + '_'+i);
+                            if(innerelement != null)
+                           innerelement.setAttribute('class','hiddenRow');
+                        }
+                        //document.getElementById(DV).setAttribute('class','hiddenRow');
+                        
+                        
+                }
+        }
+        
+     
+        function updateAccount (accid, level, domesticHQ, accProg, levelNum) {
+            document.getElementById("error-display").innerHTML = "";
+            
+            sforce.connection.sessionId = "{!$Api.Session_ID}";
+
+            var newRecords = new Array();
+          
+            var accObj = new sforce.SObject("Account"); 
+            accObj.set("Id", accid); 
+            if( document.getElementById(accProg+'_lkid').value!=null ||  document.getElementById(accProg+'_lkid').value!=''){
+                accObj.AccountProgram__c = document.getElementById(accProg+'_lkid').value;  
+            }
+            else {
+                accObj.AccountProgram__c = null;
+            }
+            if( document.getElementById(level).value!=null ||  document.getElementById(level).value!=''){
+                accObj.level__c = document.getElementById(level).value;
+            }
+            else {
+                accObj.level__c = null;
+            }
+            /*if( document.getElementById(parent+'_lkid').value!=null ||  document.getElementById(parent+'_lkid').value!=''){ 
+                accObj.ParentId = document.getElementById(parent+'_lkid').value;
+            }
+            else {
+                accObj.ParentId = null;
+            }*/ 
+            if( document.getElementById(domesticHQ+'_lkid').value!=null ||  document.getElementById(domesticHQ+'_lkid').value!=''){       
+                accObj.DomesticHQAccount__c = document.getElementById(domesticHQ+'_lkid').value; 
+            }
+            else {
+                accObj.DomesticHQAccount__c = null;        
+            }
+            newRecords.push(accObj);
+          try{
+                var results = sforce.connection.update(newRecords);
+                if(results.length && results.length > 0){
+                    var errorMsg = "Error updating account: <br />";
+                    for(var i = 0; i < results.length; i++){
+                        if(results[0].success){
+                            alert("Record updated. ");
+                            window.location.reload();
+                        }
+                        if(results[i].errors){
+                            if(results[i].errors.length && results[i].errors.length > 0){
+                                for(var j = 0; j < results[i].errors.length; j++){
+                                    errorMsg += "<br /> - " + results[i].errors[j].message + "<br />";
+                                }
+                            }else{
+                                errorMsg += "<br /> - " + results[i].errors.message + "<br />";
+                            }
+                        }
+                    }
+                    if(errorMsg != "Error updating account: <br />"){
+                        document.getElementById("error-display").innerHTML = errorMsg;
+                        console.log(errorMsg);
+                    }
+                }
+            }catch(e){
+                alert("An error has occurred. Please contact your administrator.");
+                console.log("Error saving account: "+e);
+            }
+        }
+        
+        function selectedIdValue(accId, sid) {
+            document.getElementById(sid).value = accId;
+        }    
+
+    </script>
+    
+    <apex:form id="formid">
+        <apex:PageBlock title="Account Hierarchy">
+            <apex:pageblockSection title="{!PageAccount.Name}" collapsible="False">
+                The hierarchy is created by associating accounts with parent accounts.            
+            </apex:pageblockSection>
+        </apex:PageBlock>
+        
+        <div id="error-display"></div>
+        
+        <table style="border: 1px solid black">
+            <apex:outputPanel id="divMain" styleclass="visibleRow">
+                <apex:repeat value="{!accountData}" var="level_1">
+                    <tr>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">Actions</td>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$ObjectType.Account.Fields.Name.Label}</td>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">Activities</td>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$Objecttype.Contact.labelplural}</td>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$Objecttype.Opportunity.labelplural}</td>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$ObjectType.Apttus_Proposal__Proposal__c.labelplural}</td>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$Objecttype.Order__c.labelplural}</td>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$Objecttype.Case.labelplural}</td>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$ObjectType.Account.Fields.Last12MonthsSpend__c.Label}</td>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$ObjectType.Account.Fields.AccountID__c.Label}</td>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$ObjectType.Account.Fields.AccountStatus__c.Label}</td>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$ObjectType.Account.Fields.CustomerNumber__c.Label}</td>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$ObjectType.Account.Fields.Primary_Xcode__c.Label}</td>
+                        <!--<td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$ObjectType.Account.Fields.MasterHQ__c.Label}</td>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$ObjectType.Account.Fields.ParentId.Label}</td>-->
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$ObjectType.Account.Fields.AccountProgram__c.Label}</td>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$ObjectType.Account.Fields.Level__c.Label}</td>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$ObjectType.Account.Fields.DomesticHQAccount__c.Label}</td>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$ObjectType.Account.Fields.Type.Label}</td>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$ObjectType.Account.Fields.Industry.Label}</td>                    
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$ObjectType.Account.Fields.BillingCity.Label}</td>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$ObjectType.Account.Fields.BillingState.Label}</td>
+                        <td style="background-color:#E8E8E8;text-align:center;font-weight: bold;">{!$ObjectType.Account.Fields.OwnerId.Label}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center"  nowrap="nowrap">
+                            <span id="input-pannel-1">
+                                <input class="customButton"  type="button" value="Save" onclick="updateAccount('{!level_1.account.Id}', '{!$Component.lev}', '{!$Component.DomHQ}', '{!$Component.AccProg}', 1)" />&nbsp;
+                                <input class="customButton" type="button" value="Cancel" onClick="UpdateHandler.toggelEdit(1, false)" />
+                            </span>
+                            <span id="output-pannel-1">
+                                <input class="customButton" type="button" value="Edit" onClick="UpdateHandler.toggelEdit(1, true)" />
+                                <apex:commandButton value="View Child" rendered="false" onclick="selectedIdValue('{!level_1.account.Id}', '{!$Component.SelectedId}')" reRender="childAccounts"/>
+                            </span>
+                        </td>
+                        <td  nowrap="nowrap">
+                            <apex:image rendered="{!!level_1.subordinateFlag}" id="image1M" value="{!$Resource.Blank}" style="cursor:pointer;width:15px;height=15px;valign:middle"/>
+                            <apex:image rendered="{!level_1.subordinateFlag}" id="image1P" value="{!$Resource.Plus}" onClick="showHide('{!$Component.div1}','{!$Component.image1P}','Level1TR', {!level_1.size}, 1);" style="cursor:pointer;width:15px;height=15px;valign:middle"  title="Click to expand/collapse nested items."/>                        
+                            &nbsp;
+                            <apex:outputLink target="_blank" value="/{!level_1.account.Id}">{!level_1.account.name}</apex:outputLink>
+                        </td>
+                        <td><apex:outputLink value="/{!activityReport}?pv0={!level_1.account.X15DigitAccountId__c}" target="_blank">Activities</apex:outputLink></td>
+                        <td><apex:outputLink value="/{!contactReport}?pv0={!level_1.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Contact.labelplural}</apex:outputLink></td>
+                        <td><apex:outputLink value="/{!opportunityReport}?pv0={!level_1.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Opportunity.labelplural}</apex:outputLink></td>
+                        <td><apex:outputLink value="/{!quoteProposalReport}?pv0={!level_1.account.X15DigitAccountId__c}" target="_blank">{!$ObjectType.Apttus_Proposal__Proposal__c.labelplural}</apex:outputLink></td>
+                        <td><apex:outputLink value="/{!orderReport}?pv0={!level_1.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Order__c.labelplural}</apex:outputLink></td>
+                        <td><apex:outputLink value="/{!caseReport}?pv0={!level_1.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Case.labelplural}</apex:outputLink></td>
+                        <td><apex:outputField value="{!level_1.account.Last12MonthsSpend__c}"/></td>
+                        <td nowrap="true"><apex:outputField value="{!level_1.account.AccountID__c}"/></td>
+                        <td><apex:outputField value="{!level_1.account.AccountStatus__c}"/></td>
+                        <td><apex:outputField value="{!level_1.account.CustomerNumber__c}"/></td>
+                        <td><apex:outputField value="{!level_1.account.Primary_Xcode__c}"/></td>
+                        <!--<td><apex:outputField value="{!level_1.account.MasterHQ__c}"/></td>
+                        <td><apex:inputField value="{!level_1.account.ParentId}" id="parent"/></td>-->
+                        
+                        <td>
+                            <span class="input-field-1"><apex:inputField value="{!level_1.account.AccountProgram__c}" id="AccProg"/></span>
+                            <span class="output-field-1"><apex:outputField value="{!level_1.account.AccountProgram__c}" /></span>
+                        </td>
+                        <td>
+                            <span class="input-field-1"><apex:inputField value="{!level_1.account.Level__c}" id="lev"/></span>
+                            <span class="output-field-1"><apex:outputField value="{!level_1.account.Level__c}" /></span>
+                        </td>
+                        <td>
+                            <span class="input-field-1"><apex:inputField value="{!level_1.account.DomesticHQAccount__c}" id="DomHQ"/></span>
+                            <span class="output-field-1"><apex:outputField value="{!level_1.account.DomesticHQAccount__c}" /></span>
+                        </td>
+                        
+                        <td><apex:OutputField value="{!level_1.account.Type}"/></td>
+                        <td><apex:outputField value="{!level_1.account.Industry}"/></td>            
+                        <td><apex:outputField value="{!level_1.account.BillingCity}"/></td>
+                        <td><apex:outputField value="{!level_1.account.BillingState}"/></td>
+                        <td><apex:outputField value="{!level_1.account.OwnerId}"/></td>
+                    </tr>
+                    <apex:outputPanel id="div1"  styleclass="hiddenRow">  
+                    <apex:outputPanel rendered="{!level_1.subordinateFlag}">
+                    <apex:variable value="{!0}" var="first"/>
+                    <apex:repeat value="{!level_1.accountWithChilds[level_1.account.id]}" var="level_2">
+                        <apex:variable value="{!first+1}" var="first"/>
+                    <tr class="hiddenRow" id="Level1TR_{!first}">
+                        <apex:outputPanel >
+                        <td style="text-align:center"  nowrap="nowrap">
+                            <span id="input-pannel-2">
+                                <input class="customButton"  type="button" value="Save" onclick="updateAccount('{!level_2.account.Id}', '{!$Component.lev2}', '{!$Component.DomHQ2}', '{!$Component.AccProg2}',2)" />&nbsp;
+                                <input class="customButton" type="button" value="Cancel" onClick="UpdateHandler.toggelEdit(2, false)" />
+                            </span>
+                            <span id="output-pannel-2">
+                                <input class="customButton" type="button" value="Edit" onClick="UpdateHandler.toggelEdit(2, true)" />
+                                <apex:commandButton value="View Child" rendered="false" onclick="selectedIdValue('{!level_2.account.Id}', '{!$Component.SelectedId}')" reRender="childAccounts"/>
+                            </span>
+                        </td>
+                        <td  nowrap="nowrap">
+                            <span class="tab"/> 
+                            <apex:image rendered="{!level_2.subordinateFlag}" id="image2P" value="{!$Resource.Plus}" onClick="showHide('{!$Component.div2}',this.id, 'Level2TR_{!first}', {!level_2.size}, 2);" style="cursor:pointer;width:15px;height=15px" title="Click to expand/collapse nested items."/>
+                            <apex:image rendered="{!!level_2.subordinateFlag}" id="image2M" value="{!$Resource.Blank}" style="cursor:pointer;width:15px;height=15px"/>
+                            &nbsp;
+                            <apex:outputLink target="_blank" value="/{!level_2.account.Id}">{!level_2.account.name}</apex:outputLink>&nbsp;
+                       </td>
+                       <td><apex:outputLink value="/{!activityReport}?pv0={!level_2.account.X15DigitAccountId__c}" target="_blank">Activities</apex:outputLink></td> 
+                       <td><apex:outputLink value="/{!contactReport}?pv0={!level_2.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Contact.labelplural}</apex:outputLink></td>
+                       <td><apex:outputLink value="/{!opportunityReport}?pv0={!level_2.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Opportunity.labelplural}</apex:outputLink></td>
+                       <td><apex:outputLink value="/{!quoteProposalReport}?pv0={!level_2.account.X15DigitAccountId__c}" target="_blank">{!$ObjectType.Apttus_Proposal__Proposal__c.labelplural}</apex:outputLink></td>
+                       <td><apex:outputLink value="/{!orderReport}?pv0={!level_2.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Order__c.labelplural}</apex:outputLink></td>
+                       <td><apex:outputLink value="/{!caseReport}?pv0={!level_2.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Case.labelplural}</apex:outputLink></td>
+                       <td><apex:outputField value="{!level_2.account.Last12MonthsSpend__c}"/></td>
+                       <td nowrap="true" ><apex:outputField value="{!level_2.account.AccountID__c}"/></td>
+                       <td><apex:outputField value="{!level_2.account.AccountStatus__c}"/></td>
+                       <td><apex:outputField value="{!level_2.account.CustomerNumber__c}"/></td>
+                       <td><apex:outputField value="{!level_2.account.Primary_Xcode__c}"/></td>
+                       <!--<td><apex:outputField value="{!level_2.account.MasterHQ__c}"/></td>
+                       <td><apex:inputField value="{!level_2.account.ParentId}" id="parent2"/></td>-->
+                       
+                       <td>
+                            <span class="input-field-2"><apex:inputField value="{!level_2.account.AccountProgram__c}" id="AccProg2"/></span>
+                            <span class="output-field-2"><apex:outputField value="{!level_2.account.AccountProgram__c}" /></span>
+                        </td>
+                        <td>
+                            <span class="input-field-2"><apex:inputField value="{!level_2.account.Level__c}" id="lev2"/></span>
+                            <span class="output-field-2"><apex:outputField value="{!level_2.account.Level__c}" /></span>
+                        </td>
+                        <td>
+                            <span class="input-field-2"><apex:inputField value="{!level_2.account.DomesticHQAccount__c}" id="DomHQ2"/></span>
+                            <span class="output-field-2"><apex:outputField value="{!level_2.account.DomesticHQAccount__c}" /></span>
+                        </td>
+                        
+                       <td></td>
+                       <td></td>
+                       <td></td>
+                       
+                       <td><apex:outputField value="{!level_2.account.Type}"/></td>
+                       <td><apex:outputField value="{!level_2.account.Industry}"/></td>                        
+                       <td><apex:outputField value="{!level_2.account.BillingCity}"/></td>
+                       <td><apex:outputField value="{!level_2.account.BillingState}"/></td>
+                       <td><apex:outputField value="{!level_2.account.OwnerId}"/></td>                       
+                    </apex:outputPanel>  
+                </tr> 
+                    <apex:outputPanel id="div2"  styleclass="hiddenRow">  
+                <apex:outputPanel rendered="{!level_2.subordinateFlag}">
+                    <apex:variable value="{!0}" var="second"/>
+                    <apex:repeat value="{!level_2.accountWithChilds[level_2.account.id]}" var="level_3">
+                        <apex:variable value="{!second+1}" var="second"/>
+                            <tr class="hiddenRow" id="Level2TR_{!first}_{!second}">
+                                <apex:outputPanel >
+                                <td style="text-align:center"  nowrap="nowrap">
+                                    <span id="input-pannel-3">
+                                        <input class="customButton"  type="button" value="Save" onclick="updateAccount('{!level_3.account.Id}', '{!$Component.lev3}', '{!$Component.DomHQ3}', '{!$Component.AccProg3}', 3)" />&nbsp;
+                                        <input class="customButton" type="button" value="Cancel" onClick="UpdateHandler.toggelEdit(3, false)" />
+                                    </span>
+                                    <span id="output-pannel-3">
+                                        <input class="customButton" type="button" value="Edit" onClick="UpdateHandler.toggelEdit(3, true)" />
+                                        <apex:commandButton value="View Child" rendered="false" onclick="selectedIdValue('{!level_3.account.Id}', '{!$Component.SelectedId}')" reRender="childAccounts"/>
+                                    </span>                                    
+                                </td>
+                                <td  nowrap="nowrap">                
+                                    <span class="tab" /><span class="tab"/>
+                                    <apex:image rendered="{!level_3.subordinateFlag}" id="image3P" value="{!$Resource.Plus}" onClick="showHide('{!$Component.div3}',this.id, 'Level3TR_{!first}_{!second}', {!level_3.size}, 3);" style="cursor:pointer;width:15px;height=15px" title="Click to expand/collapse nested items."/>
+                                    <apex:image rendered="{!!level_3.subordinateFlag}" id="image3M" value="{!$Resource.Blank}"  style="cursor:pointer;width:15px;height=15px"/>
+                                    &nbsp;
+                                    <apex:outputLink target="_blank" value="/{!level_3.account.Id}">{!level_3.account.name}</apex:outputLink>                               
+                                </td>
+                                <td><apex:outputLink value="/{!activityReport}?pv0={!level_3.account.X15DigitAccountId__c}" target="_blank">Activities</apex:outputLink></td>
+                                <td><apex:outputLink value="/{!contactReport}?pv0={!level_3.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Contact.labelplural}</apex:outputLink></td>
+                                <td><apex:outputLink value="/{!opportunityReport}?pv0={!level_3.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Opportunity.labelplural}</apex:outputLink></td>
+                                <td><apex:outputLink value="/{!quoteProposalReport}?pv0={!level_3.account.X15DigitAccountId__c}" target="_blank">{!$ObjectType.Apttus_Proposal__Proposal__c.labelplural}</apex:outputLink></td>
+                                <td><apex:outputLink value="/{!orderReport}?pv0={!level_3.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Order__c.labelplural}</apex:outputLink></td>
+                                <td><apex:outputLink value="/{!caseReport}?pv0={!level_3.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Case.labelplural}</apex:outputLink></td>
+                                <td><apex:outputField value="{!level_3.account.Last12MonthsSpend__c}"/></td>
+                                <td nowrap="true"><apex:outputField value="{!level_3.account.AccountID__c}"/></td>
+                                <td><apex:outputField value="{!level_3.account.AccountStatus__c}"/></td>
+                                <td><apex:outputField value="{!level_3.account.CustomerNumber__c}"/></td>
+                                <td><apex:outputField value="{!level_3.account.Primary_Xcode__c}"/></td>
+                                <!--<td><apex:outputField value="{!level_3.account.MasterHQ__c}"/></td>
+                                <td><apex:inputField value="{!level_3.account.ParentId}" id="parent3"/></td>-->
+                                
+                                <td>
+                                    <span class="input-field-3"><apex:inputField value="{!level_3.account.AccountProgram__c}" id="AccProg3"/></span>
+                                    <span class="output-field-3"><apex:outputField value="{!level_3.account.AccountProgram__c}" /></span>
+                                </td>
+                                <td>
+                                    <span class="input-field-3"><apex:inputField value="{!level_3.account.Level__c}" id="lev3"/></span>
+                                    <span class="output-field-3"><apex:outputField value="{!level_3.account.Level__c}" /></span>
+                                </td>
+                                <td>
+                                    <span class="input-field-3"><apex:inputField value="{!level_3.account.DomesticHQAccount__c}" id="DomHQ3"/></span>
+                                    <span class="output-field-3"><apex:outputField value="{!level_3.account.DomesticHQAccount__c}" /></span>
+                                </td>
+                                
+                                <td><apex:outputField value="{!level_3.account.Type}"/></td>
+                                <td><apex:outputField value="{!level_3.account.Industry}"/></td>                                
+                                <td><apex:outputField value="{!level_3.account.BillingCity}"/></td>
+                                <td><apex:outputField value="{!level_3.account.BillingState}"/></td>
+                                <td><apex:outputField value="{!level_3.account.OwnerId}"/> </td>                                
+                                </apex:outputPanel> 
+                            </tr>
+                            <apex:outputPanel id="div3"  styleclass="hiddenRow">  
+                            <apex:outputPanel rendered="{!level_3.subordinateFlag}">
+                                <apex:variable value="{!0}" var="third"/>
+                                <apex:repeat value="{!level_3.accountWithChilds[level_3.account.id]}" var="level_4">
+                                    <apex:variable value="{!third+1}" var="third"/>
+                                <tr class="hiddenRow" id="Level3TR_{!first}_{!second}_{!third}">
+                                    <apex:outputPanel >
+                                    <td style="text-align:center"  nowrap="nowrap">
+                                        <span id="input-pannel-4">
+                                            <input class="customButton"  type="button" value="Save" onclick="updateAccount('{!level_4.account.Id}', '{!$Component.lev4}', '{!$Component.DomHQ4}', '{!$Component.AccProg4}', 4)" />&nbsp;
+                                            <input class="customButton" type="button" value="Cancel" onClick="UpdateHandler.toggelEdit(4, false)" />
+                                        </span>
+                                        <span id="output-pannel-4">
+                                            <input class="customButton" type="button" value="Edit" onClick="UpdateHandler.toggelEdit(4, true)" />
+                                        <apex:commandButton value="View Child" rendered="false" onclick="selectedIdValue('{!level_4.account.Id}', '{!$Component.SelectedId}')" reRender="childAccounts"/>
+                                        </span>
+                                    </td>
+                                    <td  nowrap="nowrap">                                   
+                                        <span class="tab"/><span class="tab"/><span class="tab"/>
+                                        <apex:image rendered="{!level_4.subordinateFlag}" id="image4P" value="{!$Resource.Plus}" onClick="showHide('{!$Component.div4}',this.id, 'Level4TR_{!first}_{!second}_{!third}', {!level_4.size}, 4);" style="cursor:pointer;width:15px;height=15px" title="Click to expand/collapse nested items."/>
+                                        <apex:image rendered="{!!level_4.subordinateFlag}" id="image4M" value="{!$Resource.Blank}"  style="cursor:pointer;width:15px;height=15px"/>
+                                        &nbsp;
+                                        <apex:outputLink target="_blank" value="/{!level_4.account.Id}">{!level_4.account.name}</apex:outputLink>
+                                    </td>
+                                    <td><apex:outputLink value="/{!activityReport}?pv0={!level_4.account.X15DigitAccountId__c}" target="_blank">Activities</apex:outputLink></td>
+                                    <td><apex:outputLink value="/{!contactReport}?pv0={!level_4.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Contact.labelplural}</apex:outputLink></td>
+                                    <td><apex:outputLink value="/{!opportunityReport}?pv0={!level_4.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Opportunity.labelplural}</apex:outputLink></td>
+                                    <td><apex:outputLink value="/{!quoteProposalReport}?pv0={!level_4.account.X15DigitAccountId__c}" target="_blank">{!$ObjectType.Apttus_Proposal__Proposal__c.labelplural}</apex:outputLink></td>
+                                    <td><apex:outputLink value="/{!orderReport}?pv0={!level_4.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Order__c.labelplural}</apex:outputLink></td>
+                                    <td><apex:outputLink value="/{!caseReport}?pv0={!level_4.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Case.labelplural}</apex:outputLink></td>
+                                    <td><apex:outputField value="{!level_4.account.Last12MonthsSpend__c}"/></td>
+                                    <td nowrap="true"><apex:outputField value="{!level_4.account.AccountID__c}"/></td>
+                                    <td><apex:outputField value="{!level_4.account.AccountStatus__c}"/></td>
+                                    <td><apex:outputField value="{!level_4.account.CustomerNumber__c}"/></td>
+                                    <td><apex:outputField value="{!level_4.account.Primary_Xcode__c}"/></td>
+                                    <!--<td><apex:outputField value="{!level_4.account.MasterHQ__c}"/></td>
+                                    <td><apex:inputField value="{!level_4.account.ParentId}" id="parent4"/></td>-->
+                                    
+                                    <td>
+                                        <span class="input-field-4"><apex:inputField value="{!level_4.account.AccountProgram__c}" id="AccProg4"/></span>
+                                        <span class="output-field-4"><apex:outputField value="{!level_4.account.AccountProgram__c}" /></span>
+                                    </td>
+                                    <td>
+                                        <span class="input-field-4"><apex:inputField value="{!level_4.account.Level__c}" id="lev4"/></span>
+                                        <span class="output-field-4"><apex:outputField value="{!level_4.account.Level__c}" /></span>
+                                    </td>
+                                    <td>
+                                        <span class="input-field-4"><apex:inputField value="{!level_4.account.DomesticHQAccount__c}" id="DomHQ4"/></span>
+                                        <span class="output-field-4"><apex:outputField value="{!level_4.account.DomesticHQAccount__c}" /></span>
+                                    </td>
+                                    
+                                    <td><apex:outputField value="{!level_4.account.Type}"/></td>
+                                    <td><apex:outputField value="{!level_4.account.Industry}"/></td>                                    
+                                    <td><apex:outputField value="{!level_4.account.BillingCity}"/></td>
+                                    <td><apex:outputField value="{!level_4.account.BillingState}"/></td>
+                                    <td><apex:outputField value="{!level_4.account.OwnerId}"/></td>                                                                     
+                                    </apex:outputPanel> 
+                                </tr>  
+                            <apex:outputPanel id="div4"  styleclass="hiddenRow">  
+                            <apex:outputPanel rendered="{!level_4.subordinateFlag}">
+                                <apex:variable value="{!0}" var="fourth"/>
+                                <apex:repeat value="{!level_4.accountWithChilds[level_4.account.id]}" var="level_5">
+                                    <apex:variable value="{!fourth+1}" var="fourth"/>
+                                <tr class="hiddenRow" id="Level4TR_{!first}_{!second}_{!third}_{!fourth}">
+                                    <apex:outputPanel >
+                                    <td style="text-align:center"  nowrap="nowrap">
+                                        <span id="input-pannel-5">
+                                            <input class="customButton"  type="button" value="Save" onclick="updateAccount('{!level_5.account.Id}', '{!$Component.lev5}', '{!$Component.DomHQ5}', '{!$Component.AccProg5}', 5)" />&nbsp;
+                                            <input class="customButton" type="button" value="Cancel" onClick="UpdateHandler.toggelEdit(5, false)" />
+                                        </span>
+                                        <span id="output-pannel-5">
+                                            <input class="customButton" type="button" value="Edit" onClick="UpdateHandler.toggelEdit(5, true)" />
+                                            <apex:commandButton value="View Child" rendered="false" onclick="selectedIdValue('{!level_5.account.Id}', '{!$Component.SelectedId}')" reRender="childAccounts"/>
+                                        </span>
+                                    </td>
+                                    <td  nowrap="nowrap">                                   
+                                        <span class="tab"/><span class="tab"/><span class="tab"/><span class="tab"/>
+                                        <apex:image rendered="{!level_5.subordinateFlag}" id="image5P" value="{!$Resource.Plus}" onClick="showHide('{!$Component.div5}',this.id, 'Level5TR_{!first}_{!second}_{!third}_{!fourth}', {!level_5.size}, 5);" style="cursor:pointer;width:15px;height=15px" title="Click to expand/collapse nested items."/>
+                                        <apex:image rendered="{!!level_5.subordinateFlag}" id="image5M" value="{!$Resource.Blank}"  style="cursor:pointer;width:15px;height=15px"/>
+                                        &nbsp;
+                                        <apex:outputLink target="_blank" value="/{!level_5.account.Id}">{!level_5.account.name}</apex:outputLink>
+                                    </td>  
+                                            <td><apex:outputLink value="/{!activityReport}?pv0={!level_5.account.X15DigitAccountId__c}" target="_blank">Activities</apex:outputLink></td>
+                                            <td><apex:outputLink value="/{!contactReport}?pv0={!level_5.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Contact.labelplural}</apex:outputLink></td>
+                                            <td><apex:outputLink value="/{!opportunityReport}?pv0={!level_5.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Opportunity.labelplural}</apex:outputLink></td>
+                                            <td><apex:outputLink value="/{!quoteProposalReport}?pv0={!level_5.account.X15DigitAccountId__c}" target="_blank">{!$ObjectType.Apttus_Proposal__Proposal__c.labelplural}</apex:outputLink></td>
+                                            <td><apex:outputLink value="/{!orderReport}?pv0={!level_5.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Order__c.labelplural}</apex:outputLink></td>
+                                            <td><apex:outputLink value="/{!caseReport}?pv0={!level_5.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Case.labelplural}</apex:outputLink></td>
+                                            <td> <apex:outputField value="{!level_5.account.Last12MonthsSpend__c}"/></td>  
+                                            <td nowrap="true"><apex:outputField value="{!level_5.account.AccountID__c}"/></td>  
+                                            <td><apex:outputField value="{!level_5.account.AccountStatus__c}"/></td>  
+                                            <td><apex:outputField value="{!level_5.account.CustomerNumber__c}"/></td>  
+                                            <td><apex:outputField value="{!level_5.account.Primary_Xcode__c}"/></td>  
+                                            <!--<td><apex:outputField value="{!level_5.account.MasterHQ__c}"/></td>-->  
+                                            <!--<td><apex:inputField value="{!level_5.account.ParentId}" id="parent5"/></td>-->
+                                            
+                                            <td>
+                                                <span class="input-field-5"><apex:inputField value="{!level_5.account.AccountProgram__c}" id="AccProg5"/></span>
+                                                <span class="output-field-5"><apex:outputField value="{!level_5.account.AccountProgram__c}" /></span>
+                                            </td>
+                                            <td>
+                                                <span class="input-field-5"><apex:inputField value="{!level_5.account.Level__c}" id="lev5"/></span>
+                                                <span class="output-field-5"><apex:outputField value="{!level_5.account.Level__c}" /></span>
+                                            </td>
+                                            <td>
+                                                <span class="input-field-5"><apex:inputField value="{!level_5.account.DomesticHQAccount__c}" id="DomHQ5"/></span>
+                                                <span class="output-field-5"><apex:outputField value="{!level_5.account.DomesticHQAccount__c}" /></span>
+                                            </td>
+                                            
+                                            <td><apex:outputField value="{!level_5.account.Type}"/></td>  
+                                            <td><apex:outputField value="{!level_5.account.Industry}"/></td>                                              
+                                            <td><apex:outputField value="{!level_5.account.BillingCity}"/></td>  
+                                            <td><apex:outputField value="{!level_5.account.BillingState}"/></td>  
+                                            <td><apex:outputField value="{!level_5.account.OwnerId}"/> </td>                                                                              
+                                            </apex:outputPanel>   
+                                    </tr>
+
+                                    <apex:outputPanel id="div5"  styleclass="hiddenRow">  
+                                    <apex:outputPanel rendered="{!level_5.subordinateFlag}">
+                                        <apex:variable value="{!0}" var="fifth"/>
+                                            <apex:repeat value="{!level_5.accountWithChilds[level_5.account.id]}" var="level_6">
+                                            <apex:variable value="{!fifth+1}" var="fifth"/>
+                                            <tr class="hiddenRow" id="Level5TR_{!first}_{!second}_{!third}_{!fourth}_{!fifth}">
+                                            <apex:outputPanel >
+                                                <td style="text-align:center"  nowrap="nowrap">
+                                                    <span id="input-pannel-6">
+                                                        <input class="customButton"  type="button" value="Save" onclick="updateAccount('{!level_6.account.Id}', '{!$Component.lev6}', '{!$Component.DomHQ6}', '{!$Component.AccProg6}' , 6)" />&nbsp;
+                                                        <input class="customButton" type="button" value="Cancel" onClick="UpdateHandler.toggelEdit(6, false)" />
+                                                    </span>
+                                                    <span id="output-pannel-6">
+                                                        <input class="customButton" type="button" value="Edit" onClick="UpdateHandler.toggelEdit(6, true)" />
+                                                        <apex:commandButton value="View Child" rendered="false" onclick="selectedIdValue('{!level_6.account.Id}', '{!$Component.SelectedId}')" reRender="childAccounts" />
+                                                    </span>                                                     
+                                                </td>
+                                                <td  nowrap="nowrap">                                             
+                                                    <span class="tab"/><span class="tab"/><span class="tab"/><span class="tab"/><span class="tab"/> 
+                                                    <apex:image rendered="{!level_6.subordinateFlag}" id="image6P" value="{!$Resource.Plus}" onClick="showHide('{!$Component.div6}',this.id);" style="cursor:pointer;width:15px;height=15px" title="Click to expand/collapse nested items."/>                                                   
+                                                    <apex:image rendered="{!!level_6.subordinateFlag}" id="image6M" value="{!$Resource.Blank}"  style="cursor:pointer;width:15px;height=15px"/>
+                                                    &nbsp;
+                                                    <apex:outputLink target="_blank" value="/{!level_6.account.Id}">{!level_6.account.name}</apex:outputLink>
+                                                </td>  
+                                                <td><apex:outputLink value="/{!activityReport}?pv0={!level_6.account.X15DigitAccountId__c}" target="_blank">Activities</apex:outputLink></td>
+                                                <td><apex:outputLink value="/{!contactReport}?pv0={!level_6.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Contact.labelplural}</apex:outputLink></td>
+                                                <td><apex:outputLink value="/{!opportunityReport}?pv0={!level_6.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Opportunity.labelplural}</apex:outputLink></td>
+                                                <td><apex:outputLink value="/{!quoteProposalReport}?pv0={!level_6.account.X15DigitAccountId__c}" target="_blank">{!$ObjectType.Apttus_Proposal__Proposal__c.labelplural}</apex:outputLink></td>
+                                                <td><apex:outputLink value="/{!orderReport}?pv0={!level_6.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Order__c.labelplural}</apex:outputLink></td>
+                                                <td><apex:outputLink value="/{!caseReport}?pv0={!level_6.account.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Case.labelplural}</apex:outputLink></td>
+                                                <td> <apex:outputField value="{!level_6.account.Last12MonthsSpend__c}"/></td>  
+                                                <td nowrap="true"><apex:outputField value="{!level_6.account.AccountID__c}"/></td>  
+                                                <td><apex:outputField value="{!level_6.account.AccountStatus__c}"/></td>  
+                                                <td><apex:outputField value="{!level_6.account.CustomerNumber__c}"/></td>  
+                                                <td><apex:outputField value="{!level_6.account.Primary_Xcode__c}"/></td>  
+                                                <!--<td><apex:outputField value="{!level_6.account.MasterHQ__c}"/></td>                                                  
+                                                <td><apex:inputField value="{!level_6.account.ParentId}" id="parent6"/></td>-->
+                                            
+                                                <td>
+                                                    <span class="input-field-6"><apex:inputField value="{!level_6.account.AccountProgram__c}" id="AccProg6"/></span>
+                                                    <span class="output-field-6"><apex:outputField value="{!level_6.account.AccountProgram__c}" /></span>
+                                                </td>
+                                                <td>
+                                                    <span class="input-field-6"><apex:inputField value="{!level_6.account.Level__c}" id="lev6"/></span>
+                                                    <span class="output-field-6"><apex:outputField value="{!level_6.account.Level__c}" /></span>
+                                                </td>
+                                                <td>
+                                                    <span class="input-field-6"><apex:inputField value="{!level_6.account.DomesticHQAccount__c}" id="DomHQ6"/></span>
+                                                    <span class="output-field-6"><apex:outputField value="{!level_6.account.DomesticHQAccount__c}" /></span>
+                                                </td>
+                                                
+                                                <td><apex:outputField value="{!level_6.account.Type}"/></td>  
+                                                <td><apex:outputField value="{!level_6.account.Industry}"/></td>                                              
+                                                <td><apex:outputField value="{!level_6.account.BillingCity}"/></td>  
+                                                <td><apex:outputField value="{!level_6.account.BillingState}"/></td>  
+                                                <td><apex:outputField value="{!level_6.account.OwnerId}"/> </td>                                                                              
+                                                </apex:outputPanel>   
+                                         </tr>
+                                       </apex:repeat>
+                                    </apex:outputPanel>
+                                    </apex:outputPanel>
+                                    </apex:repeat>
+                                  </apex:outputPanel>
+                                  </apex:outputPanel>
+                                  </apex:repeat>
+                            </apex:outputPanel>
+                            </apex:outputPanel>
+                            </apex:repeat>
+                    </apex:outputPanel>
+                    </apex:outputPanel>
+                    </apex:repeat>
+            </apex:outputPanel>
+            </apex:outputPanel>
+            </apex:repeat> 
+        </apex:outputPanel>
+        </table>
+
+
+        <apex:outputPanel id="childAccounts">
+        <apex:inputHidden value="{!selectedId}" id="selectedId"/>
+        Filter Accounts By Level
+        <apex:selectList size="1" value="{!level}">
+            <apex:selectOptions value="{!levelOptions}"/>
+            <apex:actionSupport event="onchange" rerender="updatePanel" />            
+        </apex:selectList> 
+        
+        <apex:pageBlock >
+         {!NoAccountMessage}
+        <apex:pageBlockSection id="updatePanel" >
+            <apex:pageBlockTable rendered="{!ShowTable}" value="{!accountPagination}" var="a">
+                <apex:column >
+                    <apex:facet name="header">Action</apex:facet>
+                        <apex:outputLink value="/apex/CS_AccountHierarchy?id={!a.Id}" id="theLink" >Select</apex:outputLink>
+                </apex:column>            
+                <apex:column >
+                    <apex:facet name="header">Account Name</apex:facet>
+                        <apex:outputLink value="/{!a.Id}" target="_blank">{!a.Name}</apex:outputLink>
+                </apex:column>
+                <apex:column value="{!a.ParentId}"/>
+                <apex:column value="{!a.Last12MonthsSpend__c}"/>
+                <apex:column value="{!a.CustomerNumber__c}"/>
+                <apex:column value="{!a.AccountStatus__c}"/>
+                <apex:column value="{!a.Primary_Xcode__c}"/>
+                <apex:column value="{!a.MasterHQ__c}"/>
+                <apex:column value="{!a.AccountProgram__c}"/>
+                <apex:column value="{!a.Level__c}"/>
+                <apex:column value="{!a.DomesticHQAccount__c}"/>
+                <apex:column value="{!a.Type}"/>
+                <apex:column value="{!a.BillingCity}"/>
+                <apex:column value="{!a.BillingState}"/>
+                <apex:column value="{!a.Industry}"/>
+                <apex:column value="{!a.OwnerId}"/>
+                <apex:column value="{!a.AccountID__c}"/>
+            </apex:pageBlockTable>
+        </apex:pageBlockSection>
+    
+        <apex:commandLink rendered="{!hasPrevious}" action="{!previous}">Previous</apex:commandlink>
+        <span style="padding: 0px 10px 0px 10px;">{!PageStatistics}</span>
+        <apex:commandLink rendered="{!hasNext}" action="{!next}">Next</apex:commandlink>
+</apex:pageBlock></apex:outputPanel> 
+    </apex:form>    
+    
+</apex:page>

@@ -1,0 +1,47 @@
+<apex:page controller="APTS_ApprovalSubmissionController" Action="{!PreviewApprovals}" tabStyle="Apttus_Proposal__Proposal__c">
+  <apex:Form > 
+      <apex:pageBlock id="ApprovalStepsPageBlock">                            
+                <apex:pageBlockButtons >
+                     <apex:commandButton action="{!BackToProposal}" value="Return To Proposal" />
+                    
+                     	<apex:commandButton action="{!SubmitApproval}" value="Submit" reRender="ApprovalStepsPageBlock" rendered="{!ShowApprovalStepSection}" />
+                   
+                    	<apex:commandButton action="{!doOk}" value="Ok" id="okbutton" style="width:50px;"  rendered="{!ShowOkButtonAndCommentSection}" />
+                   
+                </apex:pageBlockButtons>            
+            <div style="margin:0px;padding:0px;">
+                 <apex:pageMessages id="idMessages" />
+            </div>                        
+         <apex:outputPanel id="idStepsPanel" >
+             <apex:repeat value="{!AllApprovalSteps}" var="step" rendered="{!ShowApprovalStepSection}">
+             	<apex:pageBlock title="{!step.StepSequence + ': ' + step.StepName}"  >
+                     <apex:pageBlockSection id="idApprovals"                                            
+                                            columns="1" 
+                                            collapsible="false">
+                         <apex:PageBlockTable value="{!step.requestsUnderCurrentStep}" var="request" >                        
+                             <apex:column value="{!request.Apttus_Approval__StepLabel__c}" headerValue="Step Label"  />
+                             <apex:column value="{!request.Apttus_Approval__Sequence__c}" headerValue="Sub-Sequence" width="80" />
+                             <apex:column value="{!request.Apttus_Approval__Approval_Status__c}" headerValue="Status" width="100" />
+                             <apex:column value="{!request.Apttus_Approval__Assigned_To_Name__c}" headerValue="Assigned To" width="150"  />
+                             <apex:column value="{!request.Apttus_Approval__Request_Comments__c}" headerValue="Approval Details" width="150"  />
+                             <apex:column headerValue="Approval History" width="150"  />
+                         </apex:PageBlockTable>
+                         
+                        <apex:inputTextarea Value="{!step.Comment}" rendered="{!step.VisibleCommentField}" style="width:400px;height:40px;"  />
+                     </apex:pageBlockSection>
+                 </apex:pageBlock>
+             </apex:repeat>
+        
+             <apex:pageBlockSection columns="1" title="Please Insert a Comment for Approval/Discount Justification" rendered="{!ShowOkButtonAndCommentSection}">       
+                     <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Comments for Approval" for="ApprovalComments"/>
+                        <apex:inputTextarea id="ApprovalComments" value="{!SubmitComment}" style="width:400px; height:150px;"/>   
+                    </apex:pageBlockSectionItem>            
+            </apex:pageBlockSection>
+                        
+         </apex:outputPanel>
+               
+               
+        </apex:pageBlock>
+  </apex:Form> 
+</apex:page>

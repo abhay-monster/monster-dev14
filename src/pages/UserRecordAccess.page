@@ -1,0 +1,16 @@
+<apex:page standardController="User" extensions="UserRecordAccessController" showHeader="false" >
+    <br/>
+    <apex:form >
+        <apex:pageMessages />
+        <apex:pageBlock >
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton action="{!Save}" value="Save" id="saveButton" />
+            </apex:pageBlockButtons>
+             <apex:pageBlockSection >
+                <apex:repeat value="{!$ObjectType.User.FieldSets.Non_Admin_Edit_Access_to_User_Profile}" var="field">
+                    <apex:inputField value="{!subjectUser[field]}"/>
+                       </apex:repeat>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

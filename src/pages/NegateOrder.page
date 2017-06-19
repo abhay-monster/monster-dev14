@@ -1,0 +1,31 @@
+<apex:page controller="NegateOrderCC" action="{!cloneOrder}">
+<head>
+        <style>
+            @page{
+                size: 1200px;
+                margin: 1mm;
+            }
+            .section{
+            border: 1px solid black;
+                
+            }
+            
+            </style>
+    </head>
+    
+    <apex:messages />
+    <apex:form >
+    <apex:pageBlock >
+    
+        <div class="section" >
+        <apex:outputLabel value="Please choose Change type for cloned Order: "></apex:outputLabel>
+        <apex:selectList id="countries" value="{!ChangeTypeLabel}" size="1">
+          <apex:selectOptions value="{!ChangeTypeVal}"/>
+        </apex:selectList><br/>
+        <apex:CommandButton value="Back" action="{!backToParentOrder}" rendered="{!showBackButton}"/>
+        <apex:CommandButton id="savebutton" value="Save" action="{!Save}" />
+        </div>
+        </apex:pageBlock>
+    </apex:form>
+     
+</apex:page>

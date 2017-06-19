@@ -1,0 +1,6 @@
+<apex:page standardController="Payment_Details__c">
+<script>
+    var prefix = "{!$ObjectType.Payment_Details__c.KeyPrefix}";
+    location.assign("/" +prefix+ "/e?retURL=%2F"+prefix+"%2Fo&Name=Leave%20Blank&nooverride=1");
+</script>
+</apex:page>

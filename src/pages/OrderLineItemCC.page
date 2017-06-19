@@ -1,0 +1,26 @@
+<!--@Author: CloudSherpas
+    @Description: Custom Lookup for Queue.
+    @Date: 06/19/2014
+--->
+<apex:page sidebar="false" showheader="false" standardController="Order_Line_Item__c" extensions="OrderLineItemCC">
+    <style>
+        p.thick {font-weight:700;}
+        div{display: inline-block;}
+    </style>
+    <apex:form > 
+        <table width="100%">
+            <tr>
+                <td>
+                           <div> 
+                            <p class="thick">Queue            </p>
+                            </div>
+                            <div>
+                            <apex:inputText value="{!selectedQueue}" rendered="{!showinput}"/>
+                            <apex:outputText value="{!selectedQueue}" rendered="{!showoutput}"/>
+                            <apex:commandButton value="Select Queue" action="{!searchQueue}" rendered="{!showinput}"/>
+                           </div>
+                </td>
+            </tr>
+      </table>  
+    </apex:form>
+</apex:page>

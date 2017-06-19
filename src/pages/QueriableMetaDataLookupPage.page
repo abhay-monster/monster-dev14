@@ -1,0 +1,60 @@
+<!-- Page Name: GH_QueriableMetaDataLookupPage -->
+<apex:page controller="GH_QueriableMetaDataLookupController">
+  
+  <style>
+    
+    .labelClass{
+      font-weight: bold;
+    }
+    
+    .queryClass{
+      font-weight: bold;
+      font-family: 'Courier New', Courier, 'Lucida Sans Typewriter', 'Lucida Typewriter',monospace;
+    }
+
+  </style>
+  
+  <apex:pageBlock id="block" title="Queriable Meta-Data">
+    <br/><br/>
+    <apex:form >
+      <center>
+        <apex:outputPanel >
+          <span class="labelClass">This queries on the Name field. Must include positive before checking negative.</span>
+          <br/><br/>
+          <span>Object Type:&nbsp;</span>
+          <apex:selectList multiselect="false" size="1" value="{!currentTypeStr}">
+            <apex:selectOptions value="{!typeOptions}"/>
+          </apex:selectList>
+          <span>&nbsp;&nbsp;Contains:&nbsp;</span>
+          <apex:inputText value="{!queryStr}"/>
+          <span>&nbsp;&nbsp;Does Not Contain:&nbsp;</span>
+          <apex:inputText value="{!notQueryStr}"/>&nbsp;&nbsp;
+          <apex:commandButton status="loading" rerender="block" action="{!updateResults}" value="Search"/>&nbsp;&nbsp;
+          <apex:outputText styleClass="labelClass" value=" Results: {!numOfResults}"/>
+          <br/><br/>
+          <apex:outputText styleClass="queryClass" value="{!soqlStr}"/>
+        </apex:outputPanel>
+      </center>
+    </apex:form>
+    <center>
+    <br/>
+      <apex:actionStatus id="loading">
+        <apex:facet name="stop">
+        </apex:facet>
+        <apex:facet name="start">
+          <apex:image value="/img/loading.gif"/>
+        </apex:facet>
+      </apex:actionStatus>
+    <br/>
+    </center>
+    <apex:outputPanel id="theTable">
+      <apex:pageBlockTable value="{!results}" var="r">
+        <apex:column headerValue="Id">
+          <apex:outputLink value="/{!r.objId}">{!r.objId}</apex:outputLink>
+        </apex:column>
+        <apex:column value="{!r.objNamespacePrefix}" headerValue="Namespace Prefix"/>
+        <apex:column value="{!r.objName}" headerValue="Name"/>
+      </apex:pageBlockTable>
+    </apex:outputPanel>
+  </apex:pageBlock>
+</apex:page>

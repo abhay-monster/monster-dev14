@@ -1,0 +1,22 @@
+<apex:page controller="PaypalRedirectController" >
+    <head>   
+        <title>PageTitle</title>
+        <script>
+            window.onload = function(){
+                document.forms['paypalForm'].submit();
+                }
+        </script>
+    </head>  
+    <body> 
+        <form id="paypalForm" method="post" action="https://payflowlink.paypal.com"> 
+            <input type="hidden" value="{!secureToken}" 
+             name="SECURETOKEN"/>       
+            <input type="hidden" value="{!secureTokenId}" 
+             name="SECURETOKENID"/>
+            <input type="hidden" value="{!quoteId}" 
+             name="USER1"/>
+            <!--<input type="hidden" value="TEST" 
+             name="MODE"/>-->
+        </form>         
+    </body> 
+</apex:page>

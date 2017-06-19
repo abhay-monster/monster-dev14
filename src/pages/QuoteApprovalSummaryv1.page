@@ -1,0 +1,164 @@
+<!-- 
+    /*
+    * @description This is a replicate of QuoteApprovalSummary page.
+    * @author Cloudsherpas
+    * @date 7-29-2014
+    * @param none
+    * @returns none
+    */
+
+ -->
+<apex:page standardController="Apttus_Approval__Approval_Request__c"
+		   showHeader="true" 
+		   sidebar="true"
+		   cache="false" 
+		   tabstyle="Apttus_Approval__Approval_Request__c" extensions="Apttus_Approval.ApprovalActionController2,QuoteApprovalSummaryv1CC">
+		
+	<apex:sectionHeader title="{!$Label.Apttus_Approval__ApprovalRequest}" 
+						subtitle="{!$ObjectType.Apttus_Proposal__Proposal__c.Label} {!Apttus_Approval__Approval_Request__c.Apttus_QPApprov__ProposalId__r.Apttus_Proposal__Proposal_Name__c}"
+						rendered="{!IF(Apttus_Approval__Approval_Request__c.Apttus_Approval__Object_Type__c == 'Apttus_Proposal__Proposal__c',true,false)}"/>
+	<apex:sectionHeader title="{!$Label.Apttus_Approval__ApprovalRequest}" 
+            			subtitle="{!$ObjectType.Opportunity.Label} {!Apttus_Approval__Approval_Request__c.Apttus_Approval__Related_Opportunity__r.Name}"
+            			rendered="{!IF(Apttus_Approval__Approval_Request__c.Apttus_Approval__Object_Type__c == 'Opportunity',true, false)}"/>
+	<apex:form >
+	<apex:pageBlock title="{!$ObjectType.Apttus_Proposal__Proposal__c.Label} {!$Label.Apttus_Approval__Information}" rendered="{!IF(Apttus_Approval__Approval_Request__c.Apttus_Approval__Object_Type__c == 'Apttus_Proposal__Proposal__c',true,false)}">
+		
+		<apex:pageBlockSection columns="1">
+			<apex:outputField value="{!Apttus_Approval__Approval_Request__c.Apttus_QPApprov__ProposalId__c}" />
+			<apex:outputField value="{!Apttus_Approval__Approval_Request__c.Apttus_QPApprov__ProposalId__r.Apttus_Proposal__Account__c}"/>
+			<apex:outputField value="{!Apttus_Approval__Approval_Request__c.Apttus_QPApprov__ProposalId__r.RecordType.Name}" />
+			<apex:outputField value="{!Apttus_Approval__Approval_Request__c.Apttus_QPApprov__ProposalId__r.OwnerId}" />
+			<apex:outputField value="{!Apttus_Approval__Approval_Request__c.Apttus_QPApprov__ProposalId__r.Apttus_Proposal__Description__c}" />
+			<apex:outputField value="{!Apttus_Approval__Approval_Request__c.Apttus_QPApprov__ProposalId__r.Apttus_Proposal__Primary__c}" />
+			<apex:outputField value="{!Apttus_Approval__Approval_Request__c.Apttus_QPApprov__ProposalId__r.Apttus_Proposal__Primary_Contact__c}" />
+			<apex:outputField value="{!Apttus_Approval__Approval_Request__c.Apttus_QPApprov__ProposalId__r.Apttus_Proposal__Valid_Until_Date__c}" />
+			<apex:outputField value="{!Apttus_Approval__Approval_Request__c.Apttus_QPApprov__ProposalId__r.Apttus_Proposal__Grand_Total__c}" /> 
+			<p/>&nbsp;
+		</apex:pageBlockSection>
+		
+		<apex:pageBlock title="{!IF(isPageModeApproveRequest, $Label.Apttus_Approval__ApproveRejectRequest, $Label.Apttus_Approval__AddCommentsToRequest)}" >
+
+			<apex:pageMessages />
+			
+			 <apex:pageBlockButtons >
+				
+				<apex:commandButton action="{!doAttachFile}" 
+									value="{!$Label.Apttus_Approval__AttachFile}" 
+									rendered="{!(isPageModeApproveRequest)}" /><!--	rendered= "{!and(isPageModeApproveRequest, isUserAuthorized)}"-->
+				<apex:commandButton action="{!approve}" 
+									value="{!$Label.Apttus_Approval__Approve}" 
+									rendered="{!(isPageModeApproveRequest)}" /><!--	rendered="{!and(isPageModeApproveRequest, isUserAuthorized)}"-->
+				<!-- <apex:commandButton action="{!doApprove}" oncomplete="saveAll();"
+				action="{!doApprove}" -->
+				<apex:commandButton action="{!save}"
+				                    value="{!$Label.Apttus_Approval__Reject}" 
+									rendered="{!(isPageModeApproveRequest)}"
+									/><!--	rendered= "{!and(isPageModeApproveRequest, isUserAuthorized)}"-->
+				<apex:commandButton action="{!doAddComment}" 
+									value="{!$Label.Apttus_Approval__AddComment}" />
+				<apex:commandButton action="{!doCancel}"  
+									value="{!$Label.Apttus_Approval__Cancel}" />
+			
+			</apex:pageBlockButtons> 
+
+			<apex:pageBlockSection columns="1">
+				<apex:outputField value="{!Apttus_Approval__Approval_Request__c.Apttus_Approval__Request_Comments__c}"
+								  style="font-weight:bold;" />
+				<apex:inputField value="{!apptus.RejectedReason__c}" id="rejectionid"/>	
+				<apex:inputField value="{!apptus.Apttus_Approval__Approver_Comments__c}"
+								 style="height:100px;width:400px;" />
+			</apex:pageBlockSection>
+			
+			<apex:pageBlockSection columns="1" 
+								   title="{!$ObjectType.Attachment.LabelPlural}" 
+								   rendered="{!AND((arAttachments.size > 0), isUserAuthorized)}">
+								   
+				<apex:pageBlockTable value="{!arAttachments}" var="arAttachment" >
+				
+			        <apex:column >
+			            <apex:facet name="header">{!$Label.Apttus_Approval__FileName}</apex:facet>
+			            <apex:outputLink target="_blank" value="/{!arAttachment.Id}">{!arAttachment.Name}</apex:outputLink>
+			        </apex:column>
+			        <apex:column value="{!arAttachment.Description}" />
+			        <apex:column value="{!arAttachment.CreatedDate}" />
+			        <apex:column value="{!arAttachment.BodyLength}" />
+			        
+				</apex:pageBlockTable>
+				
+			</apex:pageBlockSection>
+			
+		</apex:pageBlock>
+		
+	</apex:pageBlock>
+	<apex:pageBlock title="{!$ObjectType.Opportunity.Label} {!$Label.Apttus_Approval__Information}" rendered="{!IF(Apttus_Approval__Approval_Request__c.Apttus_Approval__Object_Type__c == 'Opportunity',true, false)}">
+		
+		<apex:pageBlockSection columns="1" >
+			<apex:outputField value="{!Apttus_Approval__Approval_Request__c.Apttus_Approval__Related_Opportunity__r.Name}"/>
+            <apex:outputField value="{!Apttus_Approval__Approval_Request__c.Apttus_Approval__Related_Opportunity__r.AccountId}"/>
+            <apex:outputField value="{!Apttus_Approval__Approval_Request__c.Apttus_Approval__Related_Opportunity__r.OwnerId}"/>
+            <apex:outputText value="{!Apttus_Approval__Approval_Request__c.Apttus_Approval__Related_Opportunity__r.Amount}"/>
+            <apex:outputField value="{!Apttus_Approval__Approval_Request__c.Apttus_Approval__Related_Opportunity__r.TotalOpportunityQuantity}"/>
+            <p/>&nbsp;  
+            <apex:outputField value="{!Apttus_Approval__Approval_Request__c.Apttus_Approval__Related_Opportunity__r.Apttus_Approval__Approval_Status__c}"/>
+            <apex:outputField value="{!Apttus_Approval__Approval_Request__c.Apttus_Approval__Related_Opportunity__r.Description}"/>
+		</apex:pageBlockSection>
+		
+		<apex:pageBlock title="{!IF(isPageModeApproveRequest, $Label.Apttus_Approval__ApproveRejectRequest, $Label.Apttus_Approval__AddCommentsToRequest)}" >
+
+			<apex:pageMessages />
+			
+			 <apex:pageBlockButtons >
+				
+				<apex:commandButton action="{!doAttachFile}" 
+									value="{!$Label.Apttus_Approval__AttachFile}" 
+									rendered="{!and(isPageModeApproveRequest, isUserAuthorized)}" />
+				<apex:commandButton action="{!doApprove}" 
+									value="{!$Label.Apttus_Approval__Approve}" 
+									rendered="{!and(isPageModeApproveRequest, isUserAuthorized)}" />
+				<apex:commandButton value="{!$Label.Apttus_Approval__Reject}" 
+									rendered="{!AND(isPageModeApproveRequest, isUserAuthorized)}" />
+				<apex:commandButton action="{!doAddComment}" 
+									value="{!$Label.Apttus_Approval__AddComment}" />
+				<apex:commandButton action="{!doCancel}"  
+									value="{!$Label.Apttus_Approval__Cancel}" />
+			
+			</apex:pageBlockButtons> 
+
+			<apex:pageBlockSection columns="1">
+				<apex:outputField value="{!Apttus_Approval__Approval_Request__c.Apttus_Approval__Request_Comments__c}"
+								  style="font-weight:bold;" />
+				<apex:inputField value="{!apptus.RejectedReason__c}"/>	
+				<apex:inputField value="{!apptus.Apttus_Approval__Approver_Comments__c}"
+								 style="height:100px;width:400px;" />
+			</apex:pageBlockSection>
+			
+			<apex:pageBlockSection columns="1" 
+								   title="{!$ObjectType.Attachment.LabelPlural}" 
+								   rendered="{!AND((arAttachments.size > 0), isUserAuthorized)}">
+								   
+				<apex:pageBlockTable value="{!arAttachments}" var="arAttachment" >
+			        <apex:column >
+			            <apex:facet name="header">{!$Label.Apttus_Approval__FileName}</apex:facet>
+			            <apex:outputLink target="_blank" value="/{!arAttachment.Id}">{!arAttachment.Name}</apex:outputLink>
+			        </apex:column>
+			        <apex:column value="{!arAttachment.Description}" />
+			        <apex:column value="{!arAttachment.CreatedDate}" />
+			        <apex:column value="{!arAttachment.BodyLength}" />
+				</apex:pageBlockTable>
+				
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+	</apex:pageBlock>
+<!--	<apex:actionFunction name="refreshCRLI" action="{!save}" />-->
+	</apex:form>
+	<apex:include pageName="Apttus_QPApprov__QuoteApprovalRequestsList" />     
+	<script type="text/javascript">
+      function saveall(){
+      	alert('YES!');
+        refreshCRLI();
+        alert('YES!');
+      }
+      
+      
+    </script>
+</apex:page>

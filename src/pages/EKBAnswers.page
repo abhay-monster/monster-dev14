@@ -1,0 +1,100 @@
+<apex:page showHeader="false" standardStylesheets="false" controller="EKBController" action="{!getResults}">
+
+	<apex:composition template="{!$Site.Template}">
+
+	<apex:define name="body">
+    <apex:form >
+	    <div id="rn_Body">
+            <div id="rn_PageContent" class="rn_Home">
+                <br/>
+	              <div id="rn_Body">
+			      	<div id="rn_MainColumn" role="main">
+            			<a id="rn_MainContent"></a>
+                    	<div id="rn_PageTitle2" class="mn_AnswersHeader">
+							<c:EKBSearch />
+						</div>
+						<div id="rn_PageContent" class="rn_AnswerList">
+    						<div class="rn_Padding">
+        						<h2 class="rn_ScreenReaderOnly">{!$Label.EKBSearchResults}</h2>
+		        					<!--<div id="rn_TopicWords2_14" class="rn_TopicWords2 rn_Hidden" >
+    									<div class="rn_Title">Recommended Links</div>
+    								</div>-->
+            				        
+                                    <div id="rn_Multiline2_15" class="rn_Multiline2">
+    									<div id="rn_Multiline2_15_Alert" role="alert" class="rn_ScreenReaderOnly"></div>
+    									<div id="rn_Multiline2_15_Loading"></div>
+    									<div id="rn_Multiline2_15_Content">
+				                            <ol start="1" >
+				                            	<apex:repeat value="{!SearchResults}" var="Result" id="Results">
+					                            	<li>
+										                <span class="rn_Element1">
+                                                            <apex:outputLink value="/EKBDetail?brand={!Brand.Brand_Tag__c}&id={!Result.KnowledgeArticleId}">{!Result.Title}</apex:outputLink>
+										                </span>
+										                <br/>
+										                <span class="rn_Element3">{!Result.Summary}</span>
+										                <br/>
+										                <span class="rn_ElementsHeader">{!$Label.EKBLastModified}  </span>
+										                <span class="rn_ElementsData">
+                                                            <apex:outputText value="{0,date,short}">
+                                                                <apex:param value="{!Result.LastModifiedDate}" /> 
+                                                            </apex:outputText>
+                                                        </span>
+										                <br/>
+										            </li>				                            	
+				                            	</apex:repeat>
+									        </ol>
+				                    	</div>
+									</div>
+            						<div id="rn_ResultInfo2_16" class="rn_ResultInfo2">
+        								<!--<div id="rn_ResultInfo2_16_Suggestion" class="rn_Suggestion rn_Hidden">
+        									Other Suggested Searches            
+        								</div>
+        								<div id="rn_ResultInfo2_16_Spell" class="rn_Spell rn_Hidden">
+        									Did you mean:            
+        								</div>-->
+        								<apex:outputPanel rendered="{!SearchResults.size == 0}">
+                                            <div id="rn_ResultInfo2_16_NoResults" class="rn_NoResults">
+                                                <apex:outputText value="{!$Label.EKBNoResults}" escape="false"/>
+            								</div>
+                                        </apex:outputPanel>
+            							<!--<div id="rn_ResultInfo2_16_Results" class="rn_Results ">
+            								Results <span>1</span> - <span>7</span> of <span>{!total_size}</span>        
+            							</div>-->
+    								</div>
+            						<div class="mn_paginator">
+            							<div id="rn_Paginator_17" class="rn_Paginator ">
+                                            <!--<apex:outputPanel id="pagebuttons">
+                                                <apex:commandButton action="{!Beginning}" title="Beginning" value="<<" disabled="{!disablePrevious}" reRender="Results,pagebuttons"/>
+                                                <apex:commandButton action="{!Previous}" title="Previous" value="<" disabled="{!disablePrevious}" reRender="Results,pagebuttons"/>        
+                                                <apex:commandButton action="{!Next}" title="Next" value=">" disabled="{!disableNext}" reRender="Results,pagebuttons"/>
+                                            </apex:outputPanel>
+    										<a href="/app/answers/list/page/0" id="rn_Paginator_17_Back" class="rn_Hidden" >
+            									&lt; Previous        
+            								</a>
+    										<span id="rn_Paginator_17_Pages"  class="rn_PageLinks">
+                                    			<span class="rn_CurrentPage">1</span>
+                                                <a id="rn_Paginator_17_PageLink_2" href="/app/answers/list/page/2" title="Page 2 of 13" >2</a>
+                                                <a id="rn_Paginator_17_PageLink_3" href="/app/answers/list/page/3" title="Page 3 of 13" >3</a>
+                                                <a id="rn_Paginator_17_PageLink_4" href="/app/answers/list/page/4" title="Page 4 of 13" >4</a>
+                                                <a id="rn_Paginator_17_PageLink_5" href="/app/answers/list/page/5" title="Page 5 of 13" >5</a>
+                                                <a id="rn_Paginator_17_PageLink_6" href="/app/answers/list/page/6" title="Page 6 of 13" >6</a>
+                    						</span>
+											<a href="/app/answers/list/page/2" id="rn_Paginator_17_Forward" class="" >
+        										Next &gt;        
+        									</a>-->
+										</div>
+             						</div>
+            					</div>
+							</div>
+						</div>
+        				<div id="rn_SideBar" role="navigation">
+            				<div class="rn_Padding">
+							</div>
+            		</div>
+       			</div>
+			</div>
+		</div>    
+    </apex:form>
+	</apex:define>
+	</apex:composition>
+</apex:page>

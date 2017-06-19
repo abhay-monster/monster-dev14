@@ -1,0 +1,14 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" title="Monster Help Center" controller="EKBController" action="{!setupHomePage}">
+	<apex:composition template="{!$Site.Template}">
+
+	<apex:define name="body">
+	    <div id="rn_Body">
+            <div id="rn_PageContent" class="rn_Home">
+            	<apex:outputText value="{!$Label.EKBException}" escape="false"/>
+            </div>
+        </div>
+    </apex:define>
+
+    </apex:composition>
+
+</apex:page>

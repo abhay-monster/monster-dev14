@@ -1,0 +1,21 @@
+<!-- 
+/*
+** @author : Cloud Sherpas Inc.
+** @date : 05/22/2014
+** @description :This page overrides the URL upon clicking the Create Re-bill button in Case. 
+*/
+-->
+<apex:page standardController="Order__c" extensions="CreateReBillCC" action="{!executeMethod}">
+<script>
+    window.onload = function(){
+        if({!showAlert} == false){
+            alert("Opportunity and Quote are succesfully clone.");
+            location.assign("{!stringURL}");
+        }else{
+            alert("Opportunity and Quote not cloned. Error: {!ErrorMessage}");
+            location.assign("{!stringURL}");
+            
+        }
+    }
+</script>
+</apex:page>

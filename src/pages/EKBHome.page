@@ -1,0 +1,120 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" title="Monster Help Center" controller="EKBController" action="{!setupHomePage}" language="{!lang}">
+<apex:form >
+    <apex:composition template="{!$Site.Template}">
+ 
+    <apex:define name="body">
+        <div id="rn_Body">
+            <div id="rn_PageContent" class="rn_Home">
+                <br/>
+                <c:EKBSearch />
+                <div class="CustomTable" style="width:100%;">
+                    <div class="CustomTable_Row" style="margin-bottom:10px">
+                        <div class="CustomTable_Cell" style="width:49%">
+                            <apex:outputPanel rendered="{!Section1.size!=0 && Section1 != null}">
+                                <div class="mn_Module">
+                                    <h2>
+                                        <!-- TKOM S-445849 - replaced raw {!object.picklistfield} field tag with <apex:outputfield value="{!object.picklistfield"/> tag, due to this known SF issue: https://success.salesforce.com/issues_view?id=a1p30000000SvOnAAK  -->
+                                        <!-- <apex:outputLink value="/EKBAnswers?brand={!Brand.Brand_Tag__c}&type={!Section1Name}">{!Brand.Home_Section_1__c}</apex:outputLink> -->
+                                        <apex:outputLink value="/EKBAnswers?brand={!Brand.Brand_Tag__c}&type={!Section1Name}"><apex:outputfield value="{!Brand.Home_Section_1__c}"/></apex:outputLink>
+                                    </h2>
+                                    <div id="rn_HomeTopCat_13" class="rn_Multiline2">
+                                        <div id="rn_HomeTopCat_13_Content">
+                                            <ul class="customtest">
+                                            <apex:repeat value="{!Section1}" var="S1" id="Sec1">
+                                                <li class="mn_module_li">
+                                                      <span class="rn_Element1"><apex:outputLink value="/EKBDetail?brand={!Brand.Brand_Tag__c}&id={!S1.KnowledgeArticleId}">{!S1.Title}</apex:outputLink></span>
+                                                    <br/>
+                                                </li>
+                                            </apex:repeat>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <apex:outputLink styleclass="mn_AnswersLink" value="/EKBAnswers?brand={!Brand.Brand_Tag__c}&type={!Section1Name}">{!$Label.EKBViewAll}</apex:outputLink>
+                                </div>
+                            </apex:outputPanel>
+                        </div>
+                        <div class="CustomTable_Cell" style="width:2%"></div>
+                        <div class="CustomTable_Cell" style="width:49%">
+                            <apex:outputPanel rendered="{!Section2.size!=0 && Section2 != null}">
+                                <div class="mn_Module">
+                                    <h2>
+                                        <!-- TKOM S-445849 - replaced raw {!object.picklistfield} field tag with <apex:outputfield value="{!object.picklistfield"/> tag, due to this known SF issue: https://success.salesforce.com/issues_view?id=a1p30000000SvOnAAK  -->
+                                        <!-- <apex:outputLink value="/EKBAnswers?brand={!Brand.Brand_Tag__c}&type={!Section2Name}">{!Brand.Home_Section_2__c}</apex:outputLink> -->
+                                        <apex:outputLink value="/EKBAnswers?brand={!Brand.Brand_Tag__c}&type={!Section2Name}"><apex:outputfield value="{!Brand.Home_Section_2__c}"/></apex:outputLink>
+                                    </h2>
+                                    <div id="rn_HomeTopCat_13" class="rn_Multiline2">
+                                        <div id="rn_HomeTopCat_13_Content">
+                                            <ul class="customtest">
+                                            <apex:repeat value="{!Section2}" var="S2" id="Sec2">
+                                                <li class="mn_module_li">
+                                                      <span class="rn_Element1"><apex:outputLink value="/EKBDetail?brand={!Brand.Brand_Tag__c}&id={!S2.KnowledgeArticleId}">{!S2.Title}</apex:outputLink></span>
+                                                    <br/>
+                                                </li>
+                                            </apex:repeat>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <apex:outputLink styleclass="mn_AnswersLink" value="/EKBAnswers?brand={!Brand.Brand_Tag__c}&type={!Section2Name}">{!$Label.EKBViewAll}</apex:outputLink>
+                                </div>
+                            </apex:outputPanel>
+                        </div>
+                    </div>
+                    <div class="CustomTable_Row" >
+                        <div class="CustomTable_Cell" style="width:49%">
+                            <apex:outputPanel rendered="{!Section3.size!=0 && Section3 != null}">
+                                <div class="mn_Module">
+                                    <h2>
+                                        <!-- TKOM S-445849 - replaced raw {!object.picklistfield} field tag with <apex:outputfield value="{!object.picklistfield"/> tag, due to this known SF issue: https://success.salesforce.com/issues_view?id=a1p30000000SvOnAAK  -->
+                                        <!-- <apex:outputLink value="/EKBAnswers?brand={!Brand.Brand_Tag__c}&type={!Section3Name}">{!Brand.Home_Section_3__c}</apex:outputLink> -->
+                                        <apex:outputLink value="/EKBAnswers?brand={!Brand.Brand_Tag__c}&type={!Section3Name}"><apex:outputfield value="{!Brand.Home_Section_3__c}"/></apex:outputLink>
+                                    </h2>
+                                    <div id="rn_HomeTopCat_13" class="rn_Multiline2">
+                                        <div id="rn_HomeTopCat_13_Content">
+                                            <ul class="customtest">
+                                            <apex:repeat value="{!Section3}" var="S3" id="Sec3">
+                                                <li class="mn_module_li">
+                                                      <span class="rn_Element1"><apex:outputLink value="/EKBDetail?brand={!Brand.Brand_Tag__c}&id={!S3.KnowledgeArticleId}">{!S3.Title}</apex:outputLink></span>
+                                                    <br/>
+                                                </li>
+                                            </apex:repeat>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <apex:outputLink styleclass="mn_AnswersLink" value="/EKBAnswers?brand={!Brand.Brand_Tag__c}&type={!Section3Name}">{!$Label.EKBViewAll}</apex:outputLink>
+                                </div>
+                            </apex:outputPanel>
+                        </div>
+                        <div class="CustomTable_Cell" style="width:2%"></div>
+                        <div class="CustomTable_Cell" style="width:49%">
+                            <apex:outputPanel rendered="{!Section4.size!=0 && Section4 != null}">
+                                <div class="mn_Module">
+                                    <h2>
+                                        <!-- TKOM S-445849 - replaced raw {!object.picklistfield} field tag with <apex:outputfield value="{!object.picklistfield"/> tag, due to this known SF issue: https://success.salesforce.com/issues_view?id=a1p30000000SvOnAAK  -->
+                                        <!-- <apex:outputLink value="/EKBAnswers?brand={!Brand.Brand_Tag__c}&type={!Section4Name}">{!Brand.Home_Section_4__c}</apex:outputLink> -->
+                                        <apex:outputLink value="/EKBAnswers?brand={!Brand.Brand_Tag__c}&type={!Section4Name}"><apex:outputfield value="{!Brand.Home_Section_4__c}"/></apex:outputLink>
+                                    </h2>
+                                    <div id="rn_HomeTopCat_13" class="rn_Multiline2">
+                                        <div id="rn_HomeTopCat_13_Content">
+                                            <ul class="customtest">
+                                            <apex:repeat value="{!Section4}" var="S4" id="Sec4">
+                                                <li class="mn_module_li">
+                                                      <span class="rn_Element1"><apex:outputLink value="/EKBDetail?brand={!Brand.Brand_Tag__c}&id={!S4.KnowledgeArticleId}">{!S4.Title}</apex:outputLink></span>
+                                                    <br/>
+                                                </li>
+                                            </apex:repeat>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <apex:outputLink styleclass="mn_AnswersLink" value="/EKBAnswers?brand={!Brand.Brand_Tag__c}&type={!Section4Name}">{!$Label.EKBViewAll}</apex:outputLink>
+                                </div>
+                            </apex:outputPanel>                 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </apex:define>
+    </apex:composition>
+</apex:form>
+</apex:page>

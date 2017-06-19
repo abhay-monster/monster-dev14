@@ -1,0 +1,328 @@
+<apex:page applyBodyTag="false" showHeader="false" renderAs="PDF" title="Strategic Account Plan:" StandardController="Strategic_Account_Plan__c" extensions="StrategicAccountPlanNewCC">
+    <head>
+    <style>
+            @page{
+                size: 1200px;
+                margin: 1mm;
+            }
+            div{
+                padding: 5px;
+                
+            }
+            table{
+                width: 100%;
+                
+            }
+            tr{
+                page-break-inside: avoid;
+            }
+                .light_blue_table{
+                    margin-bottom: 10px;
+                }
+            .section{
+                
+            }
+                .section_title{
+                    background-color: #8d66b3;
+                    color: #fff;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                    font-size: 16px;
+                }
+                .container_no_border{
+                    font-size: 13px;
+                    vertical-align: top;
+                    text-align: left;
+                }
+            .label{
+                font-size: 14px;
+                color: #000;
+                font-weight: bold;
+            }
+            .detail_label{
+                font-size: 13px;
+                color: #000;
+                font-weight: bold;
+                text-align: left;
+                vertical-align: top;
+            }
+            .detail_value{
+                font-size: 13px;
+                text-align: left;
+                vertical-align: top;
+            }
+            .light_blue_label{
+                font-size: 13px;
+                color: #000;
+                font-weight: bold;
+                text-align: center;
+                padding: 8px;
+                background-color: #bdd1f2;
+            }
+            .light_blue_value{
+                margin: 0px;
+                padding: 0px;
+                font-size: 13px;
+                color: #000;
+                text-align: left;
+                padding: 0px 5px 0px 5px;
+                background-color: #fff;
+                border: 1px solid #bdd1f2;
+                border-left: none;
+                border-top: none;
+            }
+            .light_blue_value_left{
+                margin: 0px;
+                padding: 0px;
+                font-size: 13px;
+                color: #000;
+                text-align: left;
+                padding: 0px 5px 0px 5px;
+                background-color: #fff;
+                border: 1px solid #bdd1f2;
+                border-top: none;
+            }
+            .top_label{
+                margin: 0px;
+                padding: 0px;
+                font-size: 14px;
+                color: #000;
+
+
+                font-weight: bold;
+                margin-bottom: 8px;
+            }
+    </style>
+    </head>
+    <body>
+    <apex:form >
+    <apex:pageBlock >
+    <div class="section">
+        <div class="section_title">Overall Account Strategy</div>
+        <table border="0" cellspacing="8">        
+            <tr>
+                <td class="container_no_border" style="width: 50%;">
+                    <p class="top_label">{!StrategicAccountPlanLabels['plan_type__c']}:</p>
+                    <apex:outputfield value="{!sapList.Plan_Type__c}" />
+                </td>
+                <td class="container_no_border"  style="width: 50%;">
+                    <p class="top_label">{!StrategicAccountPlanLabels['strategy__c']}:</p>
+                    <apex:outputfield value="{!sapList.Strategy__c}" />
+                </td>
+            </tr>
+            <tr>
+                <td class="container_no_border"  style="width: 50%;">
+                    <p class="top_label">{!StrategicAccountPlanLabels['account_activity__c']}:</p>
+                    <apex:outputfield value="{!sapList.Account_Activity__c}" />
+                </td>
+            </tr>
+         </table>
+    </div>
+    <div class="section">
+        <div class="section_title">Information</div>
+            <table border="0" cellspacing="8">        
+                <tr>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['name']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Name}" />
+                    </td>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['account_name__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Name__c}" />
+                    </td>
+                </tr> 
+                <tr>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['global_hq_account__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Global_HQ_Account__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['account_status__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Status__c}" />
+                    </td>
+                </tr> 
+                <tr>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['parent_account_id__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Parent_Account_ID__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['region__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Region__c}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail_label">
+                       {!StrategicAccountPlanLabels['agency_billed__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Agency_Billed__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['primary_agency_contact__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Primary_Agency_Contact__c}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['number_of_locations__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Number_of_Locations__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['number_of_employees_total__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Number_of_Employees_Total__c}" />
+                    </td>
+                </tr> 
+                <tr>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['sales_channel__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Sales_Channel__c}" />
+                    </td>
+                 </tr>
+                <tr>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['account_classification__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Classification__c}" />
+                    </td>
+                 </tr>
+                 
+            </table>
+        </div>
+        <div class="section">
+            <div class="section_title">Additional Information</div>
+            <table border="0" cellspacing="8">        
+                <tr>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['website__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Website__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['career_center_url__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Career_Center_URL__c}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['all_jobs_url__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.All_Jobs_URL__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['ats_vendor__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.ATS_Vendor__c}" />
+                    </td>
+                </tr>
+              
+             </table>
+        </div>
+        
+        
+        <div class="section">
+            <div class="section_title">Financial Information</div>
+            <table border="0" cellspacing="8">        
+                <tr>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['estimated_budget__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Estimated_Budget__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['date_received__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Date_Received__c}" />
+                    </td>
+                </tr>
+               
+              
+             </table>
+        </div>  
+        
+    <div class="section">
+        <div class="section_title">Jobs Info</div>
+            <table border="0" cellspacing="8">        
+                <tr>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['of_crawled_jobs__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.of_Crawled_Jobs__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['jobpostingmethod__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.JobPostingMethod__c}" />
+                    </td>
+                </tr> 
+                <tr>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['applymethod__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.ApplyMethod__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['tracking_enabled__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Tracking_Enabled__c}" />
+                    </td>
+                </tr> 
+                <tr>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['injestion_type__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Injestion_Type__c}" />
+                    </td>
+                   
+                 </tr>               
+                <tr>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['tracking_enabled_detail__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Tracking_Enabled_Detail__c}" />
+                    </td>
+                   
+                 </tr>
+            </table>
+        </div>        
+              
+        
+    
+    </apex:pageBlock>
+    </apex:form>
+    </body>
+</apex:page>

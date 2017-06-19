@@ -1,0 +1,67 @@
+<apex:page cache="true" controller="PaypalLandingCC" showHeader="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" action="{!init}">
+<apex:form >
+  <apex:actionFunction oncomplete="adjustPage();" name="GetRedirectURL" action="{!GetRedirectURL}" rerender="output, test" />
+<html>
+  <head>
+    <style>
+      .desc .htmlDetailElementTable tr td{
+        padding: 0px;
+        margin: 0px;
+        width: auto !important;
+      }
+    </style>
+    <apex:stylesheet value="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/style.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/jquery.js')}" />
+    <script>
+      window.onload = function(){
+        document.cookie = "debug_logs=debug_logs; path=/; domain=.force.com; value=debug_logs" ;
+        // this solution currently only works on chrome
+        //if(navigator.userAgent.toLowerCase().indexOf('chrome') > -1){
+          adjustPage();
+          GetRedirectURL();
+          /*var retStatus = '{!returnStatus}';
+          if(retstatus == 'success'){
+              alert(''Transaction success!');
+          }
+          if(retstatus == 'error'){
+              alert('Transaction Failed!');
+          }*/
+        //}
+        //else{
+        //  jQuery("#contents").html('<center>Due to a technical issue, please use <a href="http://www.google.com/chrome/" target="_blank">Google Chrome</a> browser</center>');
+        //}
+      }
+      
+      function adjustPage(){
+        var wrapHeight = document.getElementById("wrap").clientHeight - 125;
+        document.getElementById("right-img").style.height = wrapHeight+"px";
+        document.getElementById("left-img").style.height = wrapHeight+"px";
+      }
+    </script>
+  </head>
+  <body>
+    <div id="wrap">
+      <div id="header">
+        <div id="header-nav">
+          <div class="header-nav-img"><img src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/rn_contactus_logo.jpg')}" /></div>
+          <div class="header-nav-buttons" style="height: 70px;"></div>
+          <div class="header-nav-img"><img src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/top_right.jpg')}" /></div>
+          <div style="clear: left;"></div>
+        </div>
+        <div>
+          <img src="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/images/content_top.jpg')}" />
+        </div>
+      </div>
+      <div id="contents">
+        <apex:outputText id="output" escape="false" value="{!Message}" />
+        <br /><br /><apex:repeat id="test" value="{!AjaxResult}" var="t">{!t}<br /></apex:repeat>
+      </div>
+      <div id="left-img"></div>
+      <div id="right-img"></div>
+      <div id="footer"></div>
+      <div id="bottom-img"></div>
+    </div>
+  </body>
+</html>
+</apex:form>
+</apex:page>

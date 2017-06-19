@@ -1,0 +1,354 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" title="Monster Help Center" controller="EKBController" action="{!setupContactUs}">
+        <apex:form >
+    <apex:composition template="{!$Site.Template}">
+    <apex:define name="body">
+
+    <script type="text/javascript">
+
+        function callremoting() {
+            var jsField = document.getElementById("{!$Component.block.rn_ProductCategoryInput_29_categories_Button}");
+            var Brand = document.getElementById("{!$Component.block.BrandId}");
+            var Lang = document.getElementById("{!$Component.block.Lang}");
+
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.EKBController.SuggestedArticles}',jsField.value, Brand.value, Lang.value, handleUpdate)
+        }
+
+        function handleUpdate(result,event){
+                    if (event.status) {
+                        if(result.length == 0){
+                            InsertCase();
+                        }
+                        else if(result.length > 0){
+                            var BrandTag = document.getElementById("{!$Component.block.BrandTag}");
+                            var ul = document.getElementById("Suggest");
+                            for (i = 0; i < result.length; i++) {
+                                ul.insertAdjacentHTML('beforeEnd', '<li><span class="rn_Element1"><a href="/ekb/EKBDetail?brand='+BrandTag.value+'&amp;id='+result[i].KnowledgeArticleId+'">'+result[i].Title+'</a></span><br/><br/></li>');
+                                document.getElementById('mn_email_usSuggestions').style.display = 'block';
+                                document.getElementById('mn_email_us').style.display = 'none';
+                            }
+                        }
+                    } else if (event.type === 'exception') {
+                        alert(event.message);
+                    } else {
+                        alert(event.message);
+                    }
+        }
+
+        function editquestion(){
+            document.getElementById('mn_email_usSuggestions').style.display = 'none';
+            document.getElementById('mn_email_us').style.display = 'block';
+            var suggestions = document.getElementById('Suggest');
+            var lis;
+            while((lis = suggestions.getElementsByTagName('li')).length > 0) {
+                suggestions.removeChild(lis[0]);
+            }
+        }
+
+        function ThankYou(){
+            document.getElementById('mn_email_usSuggestions').style.display = 'none';
+            document.getElementById('mn_email_usthanks').style.display = 'block';
+            document.getElementById('mn_email_us').style.display = 'none';
+        }
+
+        function Validate(){
+            var error = document.getElementById('rn_ErrorLocation');
+            var er;
+            document.getElementById('rn_ErrorLocation').style.display = 'none';
+            while((er = error.getElementsByTagName('div')).length > 0) {
+                error.removeChild(er[0]);
+            }
+            var counter = 0
+            if(document.getElementById("{!$Component.block.rn_TextInputRows_13_email}").value.length == 0){
+                var ul = document.getElementById("rn_ErrorLocation");
+                ul.insertAdjacentHTML('beforeEnd', '<div><b> <a href="javascript:void(0);" onclick="document.getElementById(&quot;rn_TextInputRows_13_email&quot;).focus(); return false;">{!$Label.EKBEmailAddress} is required</a></b></div>');
+                counter++;
+            }
+            if(document.getElementById("{!$Component.block.rn_TextInput_16_firstname}").value.length == 0){
+                var ul = document.getElementById("rn_ErrorLocation");
+                ul.insertAdjacentHTML('beforeEnd', '<div><b> <a href="javascript:void(0);" onclick="document.getElementById(&quot;rn_TextInput_16_firstname&quot;).focus(); return false;">{!$Label.EKBFirstName} is required</a></b></div>');
+                counter++;
+            }
+            if(document.getElementById("{!$Component.block.rn_TextInput_18_lastname}").value.length == 0){
+                var ul = document.getElementById("rn_ErrorLocation");
+                ul.insertAdjacentHTML('beforeEnd', '<div><b> <a href="javascript:void(0);" onclick="document.getElementById(&quot;rn_TextInput_18_lastname&quot;).focus(); return false;">{!$Label.EKBLastName} is required</a></b></div>');
+                counter++;
+            }
+            if (document.getElementById('rn_TextInputRows_17')){
+                if(document.getElementById("{!$Component.block.rn_TextInputRows_175_company}").value.length == 0){
+                    var ul = document.getElementById("rn_ErrorLocation");
+                    ul.insertAdjacentHTML('beforeEnd', '<div><b> <a href="javascript:void(0);" onclick="document.getElementById(&quot;rn_TextInputRows_175_company&quot;).focus(); return false;">{!$Label.EKBCompanyName}  is required</a></b></div>');
+                    counter++;
+                }
+            }
+            if(document.getElementById("{!$Component.block.rn_TextInputRows_22_city}").value.length == 0){
+                var ul = document.getElementById("rn_ErrorLocation");
+                ul.insertAdjacentHTML('beforeEnd', '<div><b> <a href="javascript:void(0);" onclick="document.getElementById(&quot;rn_TextInputRows_22_city&quot;).focus(); return false;">{!$Label.EKBCity} is required</a></b></div>');
+                counter++;
+            }
+            if(document.getElementById("{!$Component.block.rn_TextInputRows_25_zipcode}").value.length == 0){
+                var ul = document.getElementById("rn_ErrorLocation");
+                ul.insertAdjacentHTML('beforeEnd', '<div><b> <a href="javascript:void(0);" onclick="document.getElementById(&quot;rn_TextInputRows_25_zipcode&quot;).focus(); return false;">{!$Label.EKBZipCode} is required</a></b></div>');
+                counter++;
+            }
+            if (document.getElementById('rn_TextInputRows_26')){
+                if(document.getElementById("{!$Component.block.rn_TextInputRows_26_previousemployers}").value.length == 0){
+                    var ul = document.getElementById("rn_ErrorLocation");
+                    ul.insertAdjacentHTML('beforeEnd', '<div><b> <a href="javascript:void(0);" onclick="document.getElementById(&quot;rn_TextInputRows_26_previousemployers&quot;).focus(); return false;">{!$Label.EKBPreviousTwoEmployers} is required</a></b></div>');
+                }
+            }
+            if(document.getElementById("{!$Component.block.rn_ProductCategoryInput_29_categories_Button}").value.length == 0){
+                var ul = document.getElementById("rn_ErrorLocation");
+                ul.insertAdjacentHTML('beforeEnd', '<div><b> <a href="javascript:void(0);" onclick="document.getElementById(&quot;rn_ProductCategoryInput_29_categories_Button&quot;).focus(); return false;">{!$Label.EKBCategory} - Select a category</a></b></div>');
+                counter++;
+            }
+            if(document.getElementById("{!$Component.block.rn_TextInput_31_thread}").value.length == 0){
+                var ul = document.getElementById("rn_ErrorLocation");
+                ul.insertAdjacentHTML('beforeEnd', '<div><b> <a href="javascript:void(0);" onclick="document.getElementById(&quot;rn_TextInput_31_thread&quot;).focus(); return false;">{!$Label.EKBIssueDescription} is required</a></b></div>');
+                counter++;
+            }
+
+            if(counter > 0){
+                document.getElementById('rn_ErrorLocation').style.display = 'block';
+            }
+            else if(counter == 0){
+                callremoting();
+            }
+        }
+    </script>
+    <apex:pageblock id="block">
+        <apex:actionFunction name="InsertCase" action="{!SubmitCase}"/>
+        <div id="rn_Body">
+            <div id="rn_MainColumn" role="main">
+                <a id="rn_MainContent"></a>
+                <br/><br/>
+                <div id="mn_topgroup">
+                    <apex:outputPanel rendered="{!ContactForm.Top_Left_Title__c != null}">
+                        <div id="mn_ask_leftGrid">
+                            <div class="mn_Module">
+                                <h2>{!ContactForm.Top_Left_Title__c}</h2>
+                                <div class="mn_Module_wrapper">
+                                    <apex:outputText value="{!ContactForm.Top_Left_Body__c}" escape="false"/>
+                                </div>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!ContactForm.Top_Right_Title__c != null}">
+                        <div id="mn_ask_rightGrid">
+                            <div class="mn_Module">
+                                <h2>{!ContactForm.Top_Right_Title__c}</h2>
+                                <div class="mn_Module_wrapper">
+                                    <apex:outputText value="{!ContactForm.Top_Right_Body__c}" escape="false" />
+                                </div>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                </div>
+                <apex:outputPanel rendered="{!ContactUs.Id != null}">
+                <div class="mn_Module" id="mn_email_usthanks">
+                        <h2>{!$Label.EKBThankYouTitle}</h2>
+
+                    <div id="rn_PageContent2" class="rn_AskQuestion,rn_Module">
+                        <div class="rn_Padding">
+                            <apex:outputText value="{!$Label.EKBThankYouBody}" escape="false"/>
+                        </div>
+                    </div>
+
+                </div>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!ContactUs.Id == null}">
+                <div class="mn_Module" id="mn_email_us" style="display:block;">
+                    <h2>{!ContactForm.Main_Content_Title__c}</h2>
+
+                    <div id="rn_PageContent" class="rn_AskQuestion,rn_Module">
+                        <div class="rn_Padding">
+                            <form id="rn_QuestionSubmit" onsubmit="return false;">
+                                <p class="mn_ask_subtitle">
+                                    <apex:outputText value="{!ContactForm.Main_Content_Body__c}" escape="false"/>
+                                </p>
+                                <div id="rn_ErrorLocation" tabindex="-1" aria-live="rude" class="rn_MessageBox rn_ErrorMessage" style="display:none;">
+                                </div>
+                                <div id="rn_TextInputRows_13" class="rn_TextInput">
+                                    <apex:outputlabel for="rn_TextInputRows_13_email" id="rn_TextInputRows_13_Label" styleclass="rn_Label">
+                                        {!$Label.EKBEmailAddress}           <span class="rn_Required"> * </span>
+                                    </apex:outputlabel>
+                                    <apex:inputField value="{!ContactUs.SuppliedEmail}" id="rn_TextInputRows_13_email" styleclass="rn_Text" required="true"/>
+                                </div>
+
+                                <div class="CustomTable" style="width:60%;">
+                                    <div class="CustomTable_Row" >
+                                        <div class="CustomTable_Cell">
+                                            <div class="optional1" style="width:90%">
+                                                <div id="rn_TextInput_16" class="rn_TextInput">
+                                                    <apex:outputlabel for="rn_TextInput_16_firstname" id="rn_TextInput_16_Label" styleclass="rn_Label">
+                                                        {!$Label.EKBFirstName}           <span class="rn_Required"> * </span>
+                                                    </apex:outputlabel>
+                                                    <apex:inputField id="rn_TextInput_16_firstname" styleclass="rn_Text" value="{!ContactUs.FirstName__c}" required="true"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="CustomTable_Cell">
+                                            <div class="optional1">
+                                                <div id="rn_TextInput_18" class="rn_TextInput">
+                                                    <apex:outputlabel for="rn_TextInput_18_lastname" id="rn_TextInput_18_Label" styleclass="rn_Label">
+                                                        {!$Label.EKBLastName}            <span class="rn_Required"> * </span>
+                                                    </apex:outputlabel>
+                                                    <apex:inputField id="rn_TextInput_18_lastname" styleclass="rn_Text"  value="{!ContactUs.LastName__c}" required="true"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <apex:outputPanel rendered="{!Brand.Company_Name_Visible__c == true}">
+                                    <div id="rn_TextInputRows_17" class="rn_TextInput">
+                                        <apex:outputlabel for="rn_TextInputRows_175_company" id="rn_TextInputRows_175_Label" styleclass="rn_Label">
+                                            {!$Label.EKBCompanyName}            <span class="rn_Required"> * </span>
+                                        </apex:outputlabel>
+                                        <apex:inputField id="rn_TextInputRows_175_company" styleclass="rn_Text" value="{!ContactUs.SuppliedCompany}" required="true"/>
+                                    </div>
+                                </apex:outputPanel>
+                                <div id="rn_TextInputRows_19" class="rn_TextInput">
+                                    <apex:outputlabel for="rn_TextInputRows_19_phone" id="rn_TextInputRows_19_Label" styleclass="rn_Label">
+                                        {!$Label.EKBPhone}
+                                    </apex:outputlabel>
+                                    <apex:inputField id="rn_TextInputRows_19_phone" styleclass="rn_Text" value="{!ContactUs.SuppliedPhone}"/>
+                                </div>
+                                <!--
+                                <div id="rn_TextInput_195" class="rn_TextInput">
+                                    <apex:outputlabel for="rn_TextInput_195_Organization" id="rn_TextInput_195_Label" styleclass="rn_Label">
+                                        {!$Label.EKBRegion}            <span class="rn_Required"> * </span>
+                                    </apex:outputlabel>
+                                    <apex:inputField id="rn_TextInput_195_organization"  value="{!ContactUs.Organization__c}" required="true"/>
+                                </div>
+                                -->
+                                <div id="rn_TextInput_20" class="rn_TextInput">
+                                    <apex:outputlabel for="rn_TextInput_20_Country" id="rn_TextInput_20_Label" styleclass="rn_Label">
+                                        {!$Label.EKBCountry}            <span class="rn_Required"> * </span>
+                                    </apex:outputlabel>
+                                    <!--
+                                    <apex:inputField id="rn_TextInput_20_country" styleclass="rn_Text"  value="{!ContactUs.BillingCountry__c}" required="true"/>
+                                    -->
+                                    <apex:actionRegion >
+                                    <apex:selectlist id="rn_ProductCategoryInput_45_countries_Button" value="{!ContactUs.BillingCountry__c}" styleClass="rn_DisplayButton" required="true" size="1" >
+                                        <apex:selectOptions value="{!Countries}"/>
+                                        <apex:actionSupport event="onchange" reRender="rn_ProductCategoryInput_45_states_Button" ></apex:actionSupport>
+                                    </apex:selectlist>
+                                    </apex:actionRegion>
+                                </div>
+                                <div id="rn_TextInput_21" class="rn_TextInput">
+                                    <apex:outputlabel for="rn_TextInput_21_street" id="rn_TextInput_21_Label" styleclass="rn_Label">
+                                        {!$Label.EKBStreetAddress}
+                                    </apex:outputlabel>
+                                    <apex:inputField id="rn_TextInput_21_street" styleclass="rn_Text"  value="{!ContactUs.BillingStreet__c}"/>
+                                </div>
+
+                                <div id="rn_TextInputRows_22" class="rn_TextInput">
+                                        <apex:outputlabel for="rn_TextInputRows_22_city" id="rn_TextInputRows_22_Label" styleclass="rn_Label">
+                                            {!$Label.EKBCity}            <span class="rn_Required"> * </span>
+                                        </apex:outputlabel>
+                                    <apex:inputField id="rn_TextInputRows_22_city" styleclass="rn_Text"  value="{!ContactUs.BillingCity__c}" required="true"/>
+                                </div>
+                                <div id="rn_SelectionInput_24" class="rn_SelectionInput">
+                                    <label for="rn_SelectionInput_24_state" id="rn_SelectionInput_24_Label" class="rn_Label">
+                                        {!$Label.EKBStateProvince}          <!-- <span class="rn_Required"> * </span><span class="rn_ScreenReaderOnly">Required</span>-->
+                                    </label>
+                                    <!--
+                                    <apex:inputField id="rn_TextInputRows_24_state" styleclass="rn_Text"  value="{!ContactUs.BillingStateProvince__c}"/>
+                                    -->
+                                    <apex:actionRegion >
+                                    <apex:selectlist id="rn_ProductCategoryInput_45_states_Button" value="{!ContactUs.BillingStateProvince__c}" styleClass="rn_DisplayButton" size="1">
+                                        <apex:selectOptions value="{!States}"/>
+                                    </apex:selectlist>
+                                    </apex:actionRegion>
+                                </div>
+                                <div id="rn_TextInputRows_25" class="rn_TextInput" width="30%">
+                                    <apex:outputlabel for="rn_TextInputRows_25_zipcode" id="rn_TextInputRows_25_Label" styleclass="rn_Label">
+                                        {!$Label.EKBZipCode}            <span class="rn_Required"> * </span>
+                                    </apex:outputlabel>
+                                    <apex:inputField id="rn_TextInputRows_25_zipcode" styleclass="rn_Text"  value="{!ContactUs.BillingZipPostalCode__c}" required="true"/>
+                                </div>
+                                <apex:outputPanel rendered="{!Brand.Previous_Employers_Field_Visible__c == true}">
+                                    <div id="rn_TextInputRows_26" class="rn_TextInput">
+                                        <apex:outputlabel for="rn_TextInputRows_26_previousemployers" id="rn_TextInputRows_26_Label" styleclass="rn_Label">
+                                            {!$Label.EKBPreviousTwoEmployers}            <span class="rn_Required"> * </span>
+                                        </apex:outputlabel>
+                                        <apex:inputField id="rn_TextInputRows_26_previousemployers" styleclass="rn_TextArea" value="{!ContactUs.Previous_Two_Employers__c}" required="true"/>
+                                    </div>
+                                </apex:outputPanel>
+                                <div id="rn_ProductCategoryInput_29" class="rn_ProductCategoryInput">
+                                    <span class="rn_Label">
+                                        {!$Label.EKBCategory}
+                                        <span class="rn_Required"> *</span>
+                                    </span>
+                                    <!--<apex:inputField value="{!Brand.Categories__c}"/> -->
+                                    
+                                    <apex:selectlist id="rn_ProductCategoryInput_29_categories_Button" value="{!ContactUs.Subject}" styleClass="rn_DisplayButton" required="true" size="1">
+                                        <apex:selectOptions value="{!Categories}"/>
+                                    </apex:selectlist>
+                                    
+                                    <div class="rn_Hidden" id="rn_ProductCategoryInput_29_Links"></div>
+                                    <div id="rn_ProductCategoryInput_29_Tree" class="rn_Panel rn_Hidden">
+                                    </div>
+                                </div>
+
+                                <div id="rn_TextInput_31" class="rn_TextInput">
+                                    <apex:outputlabel for="rn_TextInput_31_thread" id="rn_TextInput_31_Label" styleclass="rn_Label">
+                                        {!$Label.EKBIssueDescription}
+                                        <span class="rn_Required"> * </span>
+                                    </apex:outputlabel>
+                                    <apex:inputField id="rn_TextInput_31_thread" styleclass="rn_TextArea" value="{!ContactUs.Description}" required="true"/>
+                                </div>
+
+                                <div id="rn_FileAttachmentUpload2_32" class="rn_FileAttachmentUpload2">
+                                    <apex:outputlabel for="rn_FileAttachmentUpload2_32_FileInput" id="rn_FileAttachmentUpload2_32_Label">{!$Label.EKBAttach}       </apex:outputlabel>
+                                    <apex:inputFile id="rn_FileAttachmentUpload2_32_FileInput" value="{!Attachment.Body}" fileName="{!Attachment.Name}"/>
+                                </div>
+                            </form>
+                            <!--br />Display Privacy Message: {!ContactForm.Display_Privacy_Message__c} 
+                            <br />Contact Us Form: {!ContactForm.Name}
+                            <br /-->
+                            <apex:outputText id="PrivMsg" value="{!$Label.EKBPrivacyMessage}" escape="false" rendered="{!ContactForm.Display_Privacy_Message__c}"/>
+                            <div id="rn_FormSubmit_33" class="rn_FormSubmit">
+                               <apex:inputHidden id="BrandId" value="{!Brand.Id}"/>
+                               <apex:inputHidden id="Lang" value="{!lang}"/>
+                               <apex:inputHidden id="BrandTag" value="{!Brand.Brand_Tag__c}"/>
+                               <br/>
+                                <a id="rn_FormSubmit_33_Button" onclick="Validate();return false;">{!$Label.EKBContinue}
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="mn_Module" id="mn_email_usSuggestions" style="display:none;height:auto;">
+                        <h2>{!$Label.EKBSuggestedTitle}</h2>
+                        <div id="rn_PageContent" class="rn_AskQuestion,rn_Module">
+                        <div class="rn_Padding">
+                            <div class="rn_MessageBox rn_InfoMessage">
+                                <apex:image id="Info" url="{!URLFOR($Resource.EKBCSS,'images/info.png')}" />
+                                <span id="rn_SmartAssistantDialogCustom_34_DialogHeading" class="rn_Heading">{!$Label.EKBSuggestedInfo}</span>
+                            </div>
+                            <div class="rn_Prompt">{!$Label.EKBSuggestedSubTitle}</div>
+                            <br/>
+                            <div id="rn_Multiline2_15" class="rn_Multiline2">
+                                <div id="rn_Multiline2_15_Alert" role="alert" class="rn_ScreenReaderOnly"></div>
+                                <div id="rn_Multiline2_15_Loading"></div>
+                                <div id="rn_Multiline2_15_Content">
+                                    <ol start="1" id="Suggest">
+                                    </ol>
+                                    <apex:commandButton value="{!$Label.EKBQuestionAnswered}" action="{!QuestionAnswered}"/>
+                                    <apex:commandButton value="{!$Label.EKBSubmitQuestion}" action="{!SubmitCase}"/>
+                                    <apex:commandButton value="{!$Label.EKBEditQuestion}" onclick="editquestion();return false;"/>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                </div>
+                </apex:outputPanel>
+            </div>
+        </div>
+   </apex:pageblock>
+    </apex:define>
+    </apex:composition>
+    </apex:form>
+</apex:page>

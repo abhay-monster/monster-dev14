@@ -1,0 +1,3 @@
+<apex:page controller="EKBController" action="{!setLanding}" standardStylesheets="false" showHeader="false">
+	
+</apex:page>

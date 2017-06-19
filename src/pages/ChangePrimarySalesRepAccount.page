@@ -1,0 +1,41 @@
+<apex:page standardController="Account" extensions="ChangePrimarySalesRepAccountCC">
+  
+   <h1>Ownership Edit</h1><br/>
+  <font size="5">{!name.Name}</font><br/><br/>
+  This screen allows you to transfer an account from one user to another. When you transfer ownership of an account, the new owner will also gain ownership of the following records related to the transferred account:<br/><br/>
+    <li>all open activities for this account</li>
+    <li>all contacts within the account</li>
+    <li>all open opportunities within the account</li>
+    <li>all open quotes/proposals for this account</li><br/>
+    Note that completed activities will not be transferred.<br/><br/>
+    The new owner might need to edit sharing.<br/>
+
+    
+    <apex:form >
+  <apex:pageMessages />
+       <apex:pageBlock title="Select New Owner">
+            <apex:pageBlockButtons location="bottom"> 
+                <apex:commandButton action="{!saveNewOwner}" value="Save" rendered="true"/>
+                <apex:commandButton action="{!Cancel}" value="Cancel"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="1">
+                <apex:outputfield value="{!name.Name}" label="Transfer this account"/>
+                <!--<apex:inputfield value="{!acc.OwnerId}" label="Owner" required="true" />-->
+                <apex:inputHidden value="{!acc.OwnerId}" id="companyDiscussedId"/> 
+                <apex:pageBlockSectionItem >
+                <apex:outputLabel > Owner</apex:outputLabel>
+                
+                <c:CustomLookup objectName="User" fieldAPI="Name" fieldToPopulateId="{!$Component.companyDiscussedId}" fieldSetName="User_Search_Results"/>                
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+  
+                                
+
+
+ </apex:pageBlock> 
+          
+    </apex:form>
+    
+
+    
+</apex:page>

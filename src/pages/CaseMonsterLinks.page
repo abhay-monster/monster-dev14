@@ -1,0 +1,9 @@
+<!--@Author: CloudSherpas
+    @Description: Will call the MonsterLinksComponent to display the links.
+    @History: 06-03-2014 - Rayson Landeta - Created
+--->
+<apex:page sidebar="false" standardController="Case">
+    <apex:form > 
+    <c:MonsterLinksComponent />
+    </apex:form>
+</apex:page>

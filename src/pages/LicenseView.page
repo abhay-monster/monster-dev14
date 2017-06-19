@@ -1,0 +1,102 @@
+<apex:page controller="LicenseViewCC" tabStyle="Account">
+<style>
+    #license-container, table, tr, td{
+        margin: 0px;
+        padding: 0px;
+    }
+    #license-container, #ajax-status{
+        margin: 10px 0px 0px 0px;
+    }
+    #license-table{
+        width: 100%;
+        border-collapse: collapse;
+    }
+    #license-table td, #license-table th{
+        padding: 5px;
+        border: 1px solid #DDD;
+    }
+    #license-table th{
+        background-color: #f2f3f3;
+    }
+    #license-table td{
+        background-color: #fff;
+    }
+    .attribute-tr td{
+        margin-bottom: 10px;
+    }
+</style>
+<apex:includeScript value="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/jquery.js')}" />
+<script>
+    $(function(){
+        
+    });
+    
+    function addHoverEffect(){
+        $("#license-container").css("display", "block");
+        $(".license-tr").hover(
+            function(){
+                $(this).children("td").css("background-color", "#E3E9FA");
+            },function(){
+                $(this).children("td").css("background-color", "#FFF");
+            }
+        );
+    }
+    function startPreloader(){
+        $("#license-container").css("display", "none");
+    }
+    function SelectRadio(pRadio){
+        if(pRadio.checked){
+            SelectXcode(pRadio.value);
+        }
+    }
+</script>
+    <apex:form >
+    <apex:actionFunction name="SelectXcode" action="{!SelectXcode}" rerender="LicenseContent" status="AjaxStatus">
+        <apex:param name="SelectedXcodeId" value="{!SelectedXcodeId}"/>
+    </apex:actionFunction>
+    <apex:actionFunction name="ChangeView" action="{!ChangeView}" rerender="LicenseContentTable" status="AjaxStatus" />
+    <apex:actionFunction name="ChangePage" action="{!ChangePage}" rerender="LicenseContentTable" status="AjaxStatus" />
+    <apex:pageBlock id="XcodeArea">
+        
+        <apex:PageMessages />
+        <apex:pageBlockTable value="{!XcodeWrapList}" var="xw">
+            <apex:column >
+                <apex:outputText escape="false" value="{!xw.Radio}" />
+            </apex:column>
+            <!-- <apex:column headerValue="Origin" value="{!xw.xcodeAccount.Origin__c}" /> -->
+            <apex:column headerValue="Xcode" value="{!xw.xcodeAccount.Xcode__c}" />
+            <apex:column value="{!xw.xcodeAccount.Account__c}" />
+            <apex:column headerValue="Site Sales Channel" value="{!xw.xcodeAccount.Site_Sales_Channel__c}" />
+            <!--<apex:column headerValue="Site Sales Channel" value="{!xw.xcodeAccount.Monster_Site__c}" />-->
+            <apex:column headerValue="Site Location Type" value="{!xw.xcodeAccount.Site_Location_Type__c}" />
+            <apex:column headerValue="Initial Hiring Need" value="{!xw.xcodeAccount.Initial_Hiring_Need__c}" />
+            <apex:column headerValue="Initial Hiring Need Date" value="{!xw.xcodeAccount.Initial_Hiring_Need_Date__c}" />
+        </apex:pageBlockTable>
+        <div id="ajax-status"><apex:actionStatus id="AjaxStatus" startText="Loading..." stopText="" onstart="startPreloader();" onstop="addHoverEffect();" /></div>
+        
+        <div id="license-container">
+      
+            <apex:outputPanel id="LicenseContent">
+            {!LicenseTableReady}
+             <apex:outputPanel rendered="{!LicenseTableReady}">
+                test 3
+                    <apex:selectList onchange="ChangeView();" value="{!LicenseView}" multiselect="false" size="1">
+                        <apex:selectOptions value="{!Views}" />
+                        test 4
+                    </apex:selectList>
+                    <span style="float: right;">
+                        <apex:selectList onchange="ChangePage();" value="{!NewPage}" multiselect="false" size="1">
+                            <apex:selectOptions value="{!PageOptions}" />
+                           
+                        </apex:selectList>&nbsp;of&nbsp;{!TotalPage}
+                    </span>
+           </apex:outputPanel>
+                <apex:outputText id="LicenseContentTable" escape="false" value="{!LicenseTable  }" />
+                test
+            </apex:outputPanel>
+        </div>
+        <br />
+        <apex:commandButton value="Back" action="{!Back}" />
+    </apex:pageBlock>
+    </apex:form>
+</apex:page>

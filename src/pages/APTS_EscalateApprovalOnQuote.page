@@ -1,0 +1,64 @@
+<!--/*
+** @author : Apptus- Viraj Rana.
+** @date : 11/09/2016
+** @description : To Escalte the Approval on Quote
+*/-->
+
+
+<apex:page standardController="Apttus_Proposal__Proposal__c" extensions="APTS_EscalateApprovalOnQuote">
+  
+  
+<script language="JavaScript1.2" src="/js/functions.js"></script>
+<script src="/soap/ajax/9.0/connection.js" type="text/javascript"></script>
+    <script>    
+    
+    window.onload = function() {
+      init();
+    };
+    
+    var appRequestRecords = [];
+    var Count = 0;
+    function init(){
+            
+        <apex:repeat value="{!lstAR}" var="thing">
+              appRequestRecords.push('{!JSENCODE(thing)}');
+        </apex:repeat> 
+        
+        if(appRequestRecords.length > 0){
+            for (var key in appRequestRecords) { 
+                    debugger;
+                    document.getElementById('ShowMsg').innerHTML = 'Approval Request Escalating... please wait.';
+                    ApprovalRequestEscalate(appRequestRecords[key]);
+            }
+        }
+    }
+    
+    
+    function ApprovalRequestEscalate(RequestId) {
+        debugger;
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.APTS_EscalateApprovalOnQuote.ApprovalRequestEscalate}',
+            RequestId, 
+            function(result, event){
+                if (event.status) {
+                   Count ++;
+                   if(Count == appRequestRecords.length){
+                       window.close();
+                   }
+                } else if (event.type === 'exception') {
+                    document.getElementById("responseErrors").innerHTML = 
+                        event.message + "<br/>\n<pre>" + event.where + "</pre>";
+                } else {
+                    document.getElementById("responseErrors").innerHTML = event.message;
+                }
+            }, 
+            {escape: true}
+        );
+    }
+    </script>
+    <apex:pageBlock title="Approval Request Escalate" id="pageBlockID">
+        <apex:pageMessages ></apex:pageMessages>
+    </apex:pageBlock>
+    
+    <div id="ShowMsg"></div>
+</apex:page>

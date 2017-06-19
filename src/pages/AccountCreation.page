@@ -1,0 +1,14 @@
+<!-- 
+/*
+** @author : Cloud Sherpas Inc.
+** @date : 05/09/2014
+** @description :This page overrides the URL upon clicking the Create New Account button in Case. 
+*/
+-->
+<apex:page StandardController="Account" extensions="AccountCreation" action="{!executeMethod}">
+<script>
+    window.onload = function(){
+        location.assign("{!stringURL}");
+    }
+</script>
+</apex:page>

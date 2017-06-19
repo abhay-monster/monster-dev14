@@ -1,0 +1,9 @@
+<apex:page controller="kn_controller">
+<div id="knmenu"></div>
+<script>
+var js=document.createElement("script");
+js.type="text/javascript";
+js.src="https://www.accesskn.com/js.php?c=100&cp=&cc=1&sfuid=" + encodeURIComponent("{!$User.Id}") + "&sfn=" + encodeURIComponent("{! $User.FirstName} {! $User.LastName}") + "&sfrole=" + encodeURIComponent("{!$UserRole.Name}") + "&sfprofile=" + encodeURIComponent("{!$Profile.Name}") + "&sfpage=" + encodeURIComponent(document.URL)+ "&sfrecordtype=" + encodeURIComponent("{!recordType}") + "{!cfResultString}";
+document.body.appendChild(js);
+</script>
+</apex:page>

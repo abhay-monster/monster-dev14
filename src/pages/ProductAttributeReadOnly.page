@@ -1,0 +1,98 @@
+<apex:page standardController="Apttus_Config2__LineItem__c" 
+           extensions="Apttus_Config2.ProductAttributeDetailController2,Apttus_Config2.RemoteActionController,Apttus_Config2.RemoteCartController,productAttributeStandaloneExtension1"  
+           showHeader="false" 
+           sidebar="false"  
+           tabStyle="Product2"
+           docType="html-5.0" action="{!Attchange}">   
+    <apeX:form >
+               
+    <apex:pageBlock >
+        <apex:outputPanel >
+                <apex:panelGrid columns="3">    
+                    <apex:outputText style="font-weight:bold;color:#5487B9;text-transform:uppercase"
+                                     value="{!$Label.Apttus_Config2__SpecifyDetailsFor}" />
+                    &nbsp;               
+                    <apex:outputText style="font-weight:bold;color:#5487B9;" 
+                                     value="{!Apttus_Config2__LineItem__c.Apttus_Config2__ProductId__r.Name}" />
+                </apex:panelGrid>       
+            </apex:outputPanel>    
+
+            
+            <!--  Custom CS Attribute Display -->
+            
+            <!--  Start Attribute Group-->
+            <apex:outputPanel rendered="{!isAttributeGroup1Enabled}">
+            
+                <apex:pageBlock title="" >
+                <apex:actionRegion >
+                 <apex:pageBlockSection title="Products Attribute List" columns="2" id="lctOptions" >
+                 
+                   <apex:repeat value="{!AttClassTemplateItemList}" var="item" >
+                        
+                        <apex:outputLabel value="{!item.labelValue}"   rendered="{!IF(Not(item.hidden),true,false)}"/>   
+                        <apex:outputPanel rendered="{!IF(Not(item.hidden),true,false)}">
+                            
+                            <apex:selectList value="{!item.templItemInput}" size="1" rendered="{!IF(item.labelValuetype ='PICKLIST',true, false)}" 
+                                                                                     disabled="true">
+                                                <apex:selectOptions value="{!item.attrbOption}" />
+                                 
+                                 <apex:actionSupport event="onchange" action="{!Attchange}"
+                                                 rerender="lctOptions,pricing" status="selectListStatus">
+                                      <apex:param name="firstParam" assignTo="{!inputlabel}" value="{!item.labelValue}" />
+                                  </apex:actionSupport>
+                             </apex:selectList> 
+                             
+                             <apex:panelGrid columns="3" id="abcd" rendered="{!IF(item.labelValuetype ='MultiPicklist',true, false)}">
+                                    
+                                   <apex:selectList id="sel1" value="{!item.leftselected}" multiselect="true" style="width: 100%;" size="5" disabled="true">
+                                        <apex:selectOptions value="{!item.lstOtionLeftSelected }" />
+                                    </apex:selectList>
+                                    <apex:panelGroup >
+                                    <br/>
+                                    
+                                    <a href="javascript:;" onclick="return false;" style="text-decoration:none">
+                                        <img src="/s.gif" alt="Select" class="rightArrowIcon" title="Select"/>
+                                    </a><br/>
+                                    <a href="javascript:;" onclick="return false;" style="text-decoration:none">
+                                        <img src="/s.gif" alt="Unselect" class="leftArrowIcon" title="Unselect"/>
+                                    </a><br/>
+                                </apex:panelGroup>
+                                
+                                <apex:selectList id="sel2" value="{!item.rightselected}" multiselect="true" style="width: 100%;" size="5" disabled="true">
+                                    <apex:selectOptions value="{!item.lstOtionRightSelected }" />
+                                </apex:selectList>
+                                
+                             </apex:panelGrid>   
+                             
+                             <apex:outputText value="{!item.templItemInput}" rendered="{!IF(AND(Contains($User.firstname,'Venkata1'),
+                                                              item.hidden),true,false)}"></apex:outputText>
+                             <apex:input type="date"  value="{!item.inputdate}" rendered="{!IF(item.labelValuetype ='DATE',true, false)}" disabled="true">
+                             <!-- showDatePicker="false" -->
+                             <apex:actionSupport event="onblur" action="{!Attchange}" 
+                                                 rerender="lctOptions,pricing" status="selectListStatus">
+                             </apex:actionSupport> 
+                             </apex:input>
+                             <apex:input type="text"  value="{!item.inputItemDOUBLE}" rendered="{!IF(item.labelValuetype ='DOUBLE',true, false)}" disabled="true">
+                             <apex:actionSupport event="onblur" action="{!Attchange}"
+                                                 rerender="lctOptions,pricing" status="selectListStatus">
+                                                 </apex:actionSupport>
+                             </apex:input>
+                             <apex:input type="text"  value="{!item.templItemInput}" rendered="{!IF(item.labelValuetype ='STRING',true, false)}" disabled="true">
+                             <apex:actionSupport event="onblur" action="{!Attchange}"
+                                                 rerender="lctOptions,pricing" status="selectListStatus">
+                                                 </apex:actionSupport>
+                            </apex:input>
+                         </apex:outputPanel>
+                         
+                   </apex:repeat>
+                 </apex:pageBlockSection>
+                 
+                </apex:actionRegion>
+                </apex:pageBlock>
+
+            </apex:outputPanel>
+           <!--  End Attribute Group-->
+            
+        </apex:pageBlock>
+        </apeX:form>
+</apex:page>

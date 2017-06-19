@@ -1,0 +1,14 @@
+<!-- 
+    Apttus Approvals Management
+    CustomCaseApprovals
+     
+    @2012-2013 Apttus Inc. 
+
+ -->
+<apex:page standardController="Case" >
+			
+	<apex:form >
+		<Apttus_Approval:Approvals ctxObjectId="{!$CurrentPage.parameters.id}" />
+	</apex:form>
+	
+</apex:page>

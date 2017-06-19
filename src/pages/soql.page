@@ -1,0 +1,422 @@
+<apex:page title="SOQL Query Tool">
+<!--
+
+  (c) Appirio
+  
+  7/18/2007  Glenn Weinstein     Gracefully handle HTML tags in cell values
+  7/20/2007  Glenn Weinstein     Add cool iframe resize function to eliminate inner scrollbars
+  8/21/2007  Glenn Weinstein     Tweaked iframe resize; load by default with query text selected
+  8/27/2007  Glenn Weinstein     Resize iframe after desc() call
+  3/25/2008  Glenn Weinstein     Added checkbox option to only show table result, or only raw result
+  3/26/2008  Glenn Weinstein     Added query timing
+  8/20/2010  Glenn Weinstein     Added option to include deleted records in query
+  10/28/2010 Glenn Weinstein     Converted from s-control to Visualforce page
+  3/30/2011  Glenn Weinstein     Added "LIST OBJECTS" command
+  10/21/2011 Glenn Weinstein     For the LIST command, show the customSetting field
+  8/23/2012  Glenn Weinstein     Added URL "query" parameter
+  9/23/2012  Glenn Weinstein     Added permalink feature
+  9/30/2012  Glenn Weinstein     Added "Show result as CSV" feature
+  10/25/2012 Glenn Weinstein     Added KeyPrefix and Label to LIST output
+
+-->  
+<head>
+
+<title>SOQL Query Tool</title>
+
+<style type="text/css">
+  .textareaStyle{font-family: courier new, courier, sans-serif; font-size:11px}
+  .codeStyle{font-family: courier new, courier, sans-serif; font-size:11px;}
+  #resultTable thead th {padding: 0px 15px; border-bottom:1px solid #E0E0E0;}
+  #resultTable tbody tr:hover {background:#FFFFFF;}
+  #resultTable tbody td {padding: 0px 15px; border-bottom:1px solid #E0E0E0;}
+</style>
+
+<script language="javascript" src="/soap/ajax/25.0/connection.js" type="text/javascript" />
+<script type="text/javascript">sforce.connection.sessionId = "{!$Api.Session_ID}";</script>
+<script type="text/javascript">
+
+// these init() and onload() functions are a replacement for what you'd typically use a body onload for.  Since this is Visualforce,
+// using body onload isn't recommended.
+
+function init() {          
+  document.getElementById('runQuery').queryString.focus();
+  if ("{!$CurrentPage.parameters.query}" != "") {
+    document.getElementById('queryString').value = "{!$CurrentPage.parameters.query}";
+    runQuery();
+  }
+}
+    
+var previousOnload = window.onload;    
+    
+window.onload = function() { 
+  if (previousOnload) { 
+    previousOnload();
+  }
+  init();
+}
+</script>
+    
+<script type="text/javascript">
+
+var callType;
+var queryStartTime = 0;
+
+function trim(inString) {
+  return inString.replace(/^\s+/,'').replace(/\s+$/,'');
+} 
+
+function validSOQLResultField(testField) {
+// returns false if the provided "testfield" is one of a list of known "system" fields in a SOQL result set.
+// this helps avoid display of "system fields" that the user doesn't care about.
+  
+  if (callType == "DESC") {    // DescribeSObjects() returns a bunch of stuff; we only want a few columns
+    if (testField == "label") return true;
+    if (testField == "length") return true;
+    if (testField == "name") return true;
+    if (testField == "custom") return true;
+    if (testField == "type") return true;
+    return false;
+  }
+
+  if (callType == "LIST") {    // when listing Sobjects, just show a few fields
+    if (testField == "name") return true;
+    if (testField == "customSetting") return true;
+    if (testField == "keyPrefix") return true;
+    if (testField == "label") return true;
+    return false;
+  }
+  
+  if (testField == "type") return false;
+  if (testField == "toXml") return false;
+  if (testField == "writeValue") return false;
+  if (testField == "get") return false;
+  if (testField == "set") return false;
+  if (testField == "getArray") return false;
+  if (testField == "getBoolean") return false;
+  if (testField == "getDate") return false;
+  if (testField == "getDateTime") return false;
+  if (testField == "getInt") return false;
+  if (testField == "getFloat") return false;
+  if (testField == "getBase64Binary") return false;
+  if (testField == "toString") return false;
+ 
+  return true;
+}
+
+function displayTableHeaderLabel(cellLabel, cellValue, valueSoFar) {
+// figure out the row header names, based on the 1st row of values.
+// the unusual parameter "valueSoFar" is needed since this function is recursive - we may have to 
+// build the eventual value of a header label, piece-by-piece.
+
+  var returnHTML  = "";
+  
+  if (valueSoFar != null)
+    valueSoFar += ".";   // display related objects using dot notation, e.g. Account.Object
+  else
+    valueSoFar = "";
+    
+  if (validSOQLResultField(cellLabel)) {
+    if (cellValue) {
+      if (cellValue.toString().substring(0,6) == "{type:") {  // looks like a related object
+        for (k in cellValue) {
+          returnHTML += displayTableHeaderLabel(k, cellValue[k], valueSoFar + cellLabel);  // recursive call - handles many layers of related objects
+        }
+      } else {
+        returnHTML += "<th>" + valueSoFar + cellLabel + "<\/th>";
+      }
+    } else {
+      returnHTML += "<th>" + valueSoFar + cellLabel + "<\/th>";
+    }
+  }
+  
+  return returnHTML;
+}
+
+function displayCellValue(cellLabel, cellValue) {
+  var returnHTML  = "";
+  var k;
+  
+  if (validSOQLResultField(cellLabel)) {
+    if (cellValue) {
+      if (cellValue.toString().substring(0,6) == "{type:") {  // looks like a related object
+        for (k in cellValue) {
+          returnHTML += displayCellValue(k, cellValue[k]);   // recursive call - handles many layers of related objects
+        }
+      } else {  
+        // it's not a related object... it's just a plain old field
+        if (cellLabel == "Id") {
+          returnHTML += "<td><a href='/" + cellValue + "' target='_blank'>" + cellValue + "<\/td>";
+        } else {   
+          if (cellValue.toString().substring(0,6) == "{done:") {  // looks like a list of objects in the cell (the result of a subquery)
+            returnHTML += "<td>" + generateResultsTable(cellValue.getArray("records")) + "<\/td>";
+          } else {
+            returnHTML += "<td>" + htmlEscape(cellValue) + "<\/td>";
+          }
+        }
+      }
+    } else {   
+      // cell is null
+      returnHTML += "<td><\/td>";
+    }
+  }
+  
+  return returnHTML;
+}
+
+function generateResultsTable(records) {
+  var returnHTML = "";
+  var i = 0;
+  var j;
+
+  // write out table header
+  if (records.length > 0) {
+    returnHTML += "<table id='resultTable'><thead><tr>";
+    returnHTML += "<th>Row<\/th>";
+    for (j in records[0]) {
+      returnHTML += displayTableHeaderLabel(j, records[0][j]);
+    }
+    returnHTML += "<\/tr><\/thead><tbody>";
+  }
+
+  // write out cell values for each row  
+  for (i = 0; i < records.length; i++) {
+    returnHTML += "<tr><td>" + (i + 1) + "<\/td>";
+    for (j in records[i]) {
+      returnHTML += displayCellValue(j, records[i][j]);
+    }
+    returnHTML += "<\/tr>";
+  }
+  returnHTML += "<\/tbody><\/table>";
+  
+  return returnHTML;
+}
+
+function htmlEscape(string) {
+// escape HTML characters, so the string appears in inline HTML with HTML tags, as opposed to rendered HTML.
+  var newString = string.replace(/>/g, "&gt;");
+  newString = newString.replace(/</g, "&lt;");
+  return newString;
+}
+
+function convertSelectStarQuery(queryString) {
+// if a query starts with "SELECT *", replace the * with the actual list of fields
+
+  // figure out object name
+  var startOfObjectName = queryString.toUpperCase().indexOf("FROM") + 5;
+  while (queryString.charAt(startOfObjectName) == " ") {
+    startOfObjectName++;
+  }
+  var firstSpaceAfterObjectName = queryString.indexOf(" ", startOfObjectName);
+  var objectName = "";
+  if (firstSpaceAfterObjectName == -1)
+    objectName = queryString.substr(startOfObjectName);
+  else 
+    objectName = queryString.substring(startOfObjectName, firstSpaceAfterObjectName);
+  objectName = trim(objectName);
+
+  // get a list of fields for that object
+  var describeSObjectResult;
+  try {
+    describeSObjectResult = sforce.connection.describeSObjects([objectName]);
+  } catch (error) {
+    document.getElementById("result").innerHTML = "<br /><span style='color:red'>SFDC query returned an error:  <br /><br />" + error + "<\/span><br /><br />";
+    return "";    
+  }
+  var fieldArray = describeSObjectResult[0].getArray("fields");
+  var fieldString = "";
+  for (i=0; i < fieldArray.length; i++)  {
+    if (i > 0) 
+      fieldString += ", ";
+    fieldString += fieldArray[i].get("name");
+  }
+   
+  queryString = "SELECT " + fieldString + queryString.substr(8);
+  return queryString;
+}
+
+function runQuery() {
+  document.getElementById("result").innerHTML ="<br /><span style='color:blue'>Please wait, running query...<\/span><br /><br /><br />";
+  var queryString = document.getElementById("runQuery").queryString.value;
+  
+  // see if this is a LIST OBJECTS call
+  if (queryString.substr(0, 4).toUpperCase() == "LIST") {
+    callType = "LIST";
+    var describeGlobal;
+    try {
+      describeGlobal = sforce.connection.describeGlobal();
+    } catch (error) {
+      document.getElementById("result").innerHTML = "<br /><span style='color:red'>SFDC query returned an error:  <br /><br />" + error + "<\/span><br /><br />";
+      return;    
+    }
+    var objectList = describeGlobal.getArray("sobjects");
+    resultHTML = ""; 
+    if (document.getElementById("showRawResult").checked) {
+      resultHTML += "Raw SOQL result:<br /><br />";
+      resultHTML += describeGlobal + "<br /><br />";
+    }
+    resultHTML += generateResultsTable(objectList); 
+    document.getElementById("result").innerHTML = "<br />" + resultHTML;
+    return;
+
+  }
+  
+  // see if this is a DESC call
+  if (queryString.substr(0,4).toUpperCase() == 'DESC') {
+    callType = "DESC";
+    var objectName = queryString.substr(5);
+    var describeSObjectResult;    
+    try {
+      describeSObjectResult = sforce.connection.describeSObjects([objectName]);
+    } catch (error) {
+      document.getElementById("result").innerHTML = "<br /><span style='color:red'>SFDC query returned an error:  <br /><br />" + error + "<\/span><br /><br />";
+      return;    
+    }
+    var resultHTML = "";
+    if (document.getElementById("showRawResult").checked) {
+      resultHTML += "Raw SOQL result:<br /><br />";
+      resultHTML += describeSObjectResult + "<br /><br />";
+    }
+    resultHTML += generateResultsTable(describeSObjectResult[0].getArray("fields"));
+    
+    document.getElementById("result").innerHTML = "<br />" + resultHTML;
+    return;
+  }
+  
+  // see if this is a "SELECT *" call
+  if (queryString.substr(0,8).toUpperCase() == 'SELECT *') {
+    queryString = convertSelectStarQuery(queryString);
+    if (queryString == "") return;  // error handling is already taken care of by convertSelectStarQuery()
+    document.getElementById("queryString").value = queryString;
+  }
+  
+  // regular SOQL query, just submit it to SFDC asynchronously
+  callType = "SOQL";
+  queryStartTime = new Date().getTime();
+
+  if (document.getElementById("includeDeletedRecords").checked) {
+    var result = sforce.connection.queryAll(queryString,{onSuccess:processQueryResults,onFailure:showQueryError});
+  } else {
+   var result = sforce.connection.query(queryString,{onSuccess:processQueryResults,onFailure:showQueryError});
+  }
+}
+
+function processQueryResults(queryResult) {
+// callback function when SOQL query returns from SFDC successfully
+  var queryEndTime = new Date().getTime();
+  var queryTimeElapsed = (queryEndTime - queryStartTime);
+  var resultHTML = "";
+  var records = queryResult.getArray("records");
+  resultHTML += "<br />Number of records returned: " + queryResult.size + ", database query time: " + queryTimeElapsed/1000 + " sec<br /><br />";
+
+  if (document.getElementById("showRawResult").checked) {
+    resultHTML += "Raw SOQL result:<br /><br />";
+    resultHTML += queryResult + "<br /><br />";
+  }
+
+  if (document.getElementById("showTableResult").checked)
+    resultHTML += generateResultsTable(records);
+
+  if (document.getElementById("showCSVResult").checked) {
+  
+    // build a textarea, then fill it with the same HTML that we use to make our results table.
+    // we'll literally call the same function - generateResultsTable() - and then strip out the HTML tags,
+    // replacing them with CSV-style formatting (values in double quotes, rows separated by a carriage return).
+    // note - if a cell value actually contains an HTML string, that's okay - it'll be HTML-encoded, so 
+    // it'll survive our stripping.
+  
+    document.getElementById("csvDiv").style.display = "block";
+    document.getElementById("csvDiv").innerHTML = 
+      "CSV:<br />" +
+      "<textarea id='csv' rows='10' cols='120' class='textareaStyle' " + 
+      "onclick='document.getElementById(\"csv\").focus(); document.getElementById(\"csv\").select();'>" +
+      generateResultsTable(records)
+        .replace(/\"/g, "\\\"")                     // first, let's escape any double-quotes in the result string
+        .replace(/<tr>/g, "")                       // remove all tr tags
+        .replace(/<\/tr>/g, "\n")                   // replace all /tr tags with carriage returns
+        .replace(/<thead>/g, "")                    // remove all thead tags
+        .replace(/<\/thead>/g, "")                  // remove all /thead tags
+        .replace(/<td>/g, "\"")                     // replace all td tags with a double-quote
+        .replace(/<\/td>/g, "\",")                  // replace all /td tags with another double-quote
+        .replace(/<th>/g, "\"")                     // treat th tags like td tags
+        .replace(/<\/th>/g, "\",")                  // treat /th tags like /td tags
+        .replace(/<table id='resultTable'>/g, "")   // remove the top-level table tag
+        .replace(/<\/table>/g, "")                  // remove the top-level /table tag
+        .replace(/<tbody>/g, "")                    // remove the tbody tag
+        .replace(/<\/tbody>/g, "")                  // remove the /tbody tag
+        .replace(/<a [^>]*>/g, "") +                // remove all anchor tags (which we normally put around ID columns)
+      "</textarea>";
+  } else {
+    document.getElementById("csvDiv").style.display = "none";
+    document.getElementById("csvDiv").innerHTML = "";
+  }
+      
+  document.getElementById("result").innerHTML = resultHTML;
+}
+
+function showQueryError(error) {
+// callback function when SOQL query returns from SFDC with a failure
+  document.getElementById("result").innerHTML = "<br /><span style='color:red'>SFDC query returned an error:  <br /><br />" + error + "<\/style><br /><br />";
+}
+
+function enlargeTextarea() {
+  var currentHeight = document.getElementById("queryString").rows;
+  document.getElementById("queryString").rows = currentHeight + 2;
+}
+
+function permalink() {
+  document.getElementById("permalinkDiv").style.display = "block";
+  document.getElementById("permalink").value = document.URL + "?query=" + document.getElementById("queryString").value;
+  document.getElementById("permalink").select();
+}
+
+function queryChange() {
+  document.getElementById("permalink").value = document.URL + "?query=" + document.getElementById("queryString").value;
+}
+
+</script>
+</head>
+<body>
+<div align="right"><img src="https://www.appirio.com/img/PoweredByAppirioLogo2010.gif" /></div>
+<br />
+<apex:pageBlock title="Appirio SOQL Query Tool">  
+  <apex:pageBlockSection >
+      <form id="runQuery" action="javascript:runQuery()">
+        Your query:
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+        <a href="javascript:permalink()">Permalink</a><br />
+        <textarea id="queryString" name="queryString" rows="6" cols="120" class="textareaStyle" selected="yes" onchange="queryChange()">SELECT id, lastname, firstname, account.id, account.name FROM contact LIMIT 100</textarea>
+        <br />
+        <input value=" Go " class="btn" title="Go" name="Go" type="submit" />&nbsp;&nbsp; 
+        <input type="checkbox" id="showTableResult" name="showTableResult" checked="yes" />&nbsp;
+        Show result as table 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="checkbox" id="showRawResult" name="showRawResult" />&nbsp;
+        Show raw SOQL result 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="checkbox" id="showCSVResult" name="showCSVResult" />&nbsp;
+        Show result as CSV
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="checkbox" id="includeDeletedRecords" name="includeDeletedRecords" />&nbsp;
+        Include deleted records
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+        <a href="javascript:enlargeTextarea()">Enlarge text area</a>
+        <br />
+      </form>
+      <br />
+      <div id="permalinkDiv" style="display: none;">
+        Permalink:<br />
+        <textarea id="permalink" rows="1" cols="80" class="textareaStyle" selected="yes"></textarea>
+      </div>
+      <div id="csvDiv" style="display: none;">&nbsp;
+      </div>  
+      <div id="result">&nbsp;</div>
+  </apex:pageBlockSection>
+</apex:pageBlock> 
+<i>Tip: Try <span class="codeStyle">DESC objectName</span> for a list of fields for that object.</i><br />
+<i>Tip: Try <span class="codeStyle">SELECT * FROM objectName</span> to select all fields.</i><br />
+<i>Tip: Try <span class="codeStyle">LIST OBJECTS</span> for a list of all Sobjects.</i><br />
+<i>Note: Database query time only includes time for the sforce.connection.query() call. It does not include HTML rendering time.</i><br />
+<br />
+<i>By Glenn Weinstein, (c) Appirio 2007-2012. Uses SFDC API 25.0 (Summer '12).</i>
+</body>
+</apex:page>

@@ -1,0 +1,21 @@
+<!-- 
+/*
+** @author : Cloud Sherpas Inc.
+** @date : 6-03-2014
+** @description :This page overrides the URL upon clicking the standard clone button in Quote/Proposal. 
+*/
+-->
+<apex:page standardController="Apttus_Proposal__Proposal__c" extensions="CloneQuoteProposalCC" action="{!executeMethod}">
+<script>
+    window.onload = function(){
+        if({!showAlert} == false){
+            alert("Quote are succesfully cloned.");
+            location.assign("{!stringURL}");
+        }else{
+            alert("Quote not cloned. Error: {!ErrorMessage}");
+            location.assign("{!stringURL}"); 
+            
+        }
+    }
+</script>
+</apex:page>

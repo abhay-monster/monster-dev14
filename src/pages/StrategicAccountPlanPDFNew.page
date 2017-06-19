@@ -1,0 +1,907 @@
+<apex:page applyBodyTag="false" showHeader="false" renderAs="PDF" title="Strategic Account Plan:" StandardController="Strategic_Account_Plan__c" extensions="StrategicAccountPlanNewCC">
+    <head>
+    <style>
+            @page{
+                size: 1200px;
+                margin: 1mm;
+            }
+            div{
+                padding: 5px;
+                
+            }
+            table{
+                width: 100%;
+                
+            }
+            tr{
+                page-break-inside: avoid;
+            }
+                .light_blue_table{
+                    margin-bottom: 10px;
+                }
+            .section{
+                
+            }
+                .section_title{
+                    background-color: #8d66b3;
+                    color: #fff;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                    font-size: 16px;
+                }
+                .container_no_border{
+                    font-size: 13px;
+                    vertical-align: top;
+                    text-align: left;
+                }
+            .label{
+                font-size: 14px;
+                color: #000;
+                font-weight: bold;
+            }
+            .detail_label{
+                font-size: 13px;
+                color: #000;
+                font-weight: bold;
+                text-align: left;
+                vertical-align: top;
+            }
+            .detail_value{
+                font-size: 13px;
+                text-align: left;
+                vertical-align: top;
+            }
+            .light_blue_label{
+                font-size: 13px;
+                color: #000;
+                font-weight: bold;
+                text-align: center;
+                padding: 8px;
+                background-color: #bdd1f2;
+            }
+            .light_blue_value{
+                margin: 0px;
+                padding: 0px;
+                font-size: 13px;
+                color: #000;
+                text-align: left;
+                padding: 0px 5px 0px 5px;
+                background-color: #fff;
+                border: 1px solid #bdd1f2;
+                border-left: none;
+                border-top: none;
+            }
+            .light_blue_value_left{
+                margin: 0px;
+                padding: 0px;
+                font-size: 13px;
+                color: #000;
+                text-align: left;
+                padding: 0px 5px 0px 5px;
+                background-color: #fff;
+                border: 1px solid #bdd1f2;
+                border-top: none;
+            }
+            .top_label{
+                margin: 0px;
+                padding: 0px;
+                font-size: 14px;
+                color: #000;
+
+
+                font-weight: bold;
+                margin-bottom: 8px;
+            }
+    </style>
+    </head>
+    <body>
+    <apex:form >
+    <apex:pageBlock >
+    <div class="section">
+        <div class="section_title">Overall Account Strategy</div>
+        <table border="0" cellspacing="8">        
+            <tr>
+                <td class="container_no_border" style="width: 50%;">
+                    <p class="top_label">{!AccountLabels['goal__c']}:</p>
+                    <apex:outputfield value="{!sapList.Goal__c}" />
+                </td></tr><tr>
+                <td class="container_no_border"  style="width: 50%;">
+                    <p class="top_label">{!AccountLabels['strategy__c']}:</p>
+                    <apex:outputfield value="{!sapList.Strategy__c}" />
+                </td>
+            </tr>
+         </table>
+    </div>
+    <div class="section">
+        <div class="section_title">Account Detail</div>
+            <table border="0" cellspacing="8">        
+                <tr>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['account_name__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Name}" />
+                    </td>
+                    <td class="detail_label">
+                        {!AccountLabels['ownerid']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Name__r.OwnerId}" />
+                    </td>
+                </tr> 
+                <tr>
+                    <td class="detail_label">
+                        {!AccountLabels['name']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Name__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!AccountLabels['primarysalesmanager__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Name__r.PrimarySalesManager__c}" />
+                    </td>
+                </tr> 
+                <tr>
+                    <td class="detail_label">
+                        {!AccountLabels['accountstatus__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Name__r.AccountStatus__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!AccountLabels['primaryservicerep__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Name__r.PrimaryServiceRep__c}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail_label">
+                       {!StrategicAccountPlanLabels['global_hq_account__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Name__r.GlobalHQAccount__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!AccountLabels['nap__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Name__r.NAP__c}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail_label">
+                        {!AccountLabels['parent_account_number__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Name__r.Parent_Account_Number__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!AccountLabels['masterhq__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Name__r.MasterHQ__c}" />
+                    </td>
+                </tr> 
+                <tr>
+                    <td class="detail_label">
+                        {!AccountLabels['region__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Name__r.Region__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!AccountLabels['centralizedbuying__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Centralized_Buying__c}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['billingagency__c']}  : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.BillingAgency__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!AccountLabels['clientturnoverrate__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Client_Turnover_Rate__c}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail_label">
+                        {!AccountLabels['agencybilled__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Agency_Billed__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!AccountLabels['numberofhires__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Number_of_Hires__c}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail_label">
+                        {!AccountLabels['primaryagencycontact__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Name__r.PrimaryAgencyContact__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['key_initiative__c']}  :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Key_Initiative__c}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail_label">
+                        {!AccountLabels['numberoflocations__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Name__r.NumberofLocations__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['penetration_level__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Penetration_Level__c}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail_label">
+                        {!AccountLabels['numberofemployees']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Name__r.NumberofEmployeesTotal__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!AccountLabels['leveljustification__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Level_Justification__c}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail_label">
+                        {!AccountLabels['trialcandidate__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Trial_Candidate__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!AccountLabels['atriskaccount__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.At_Risk_Account__c}" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="section">
+            <div class="section_title">Financial Information</div>
+            <table border="0" cellspacing="8">        
+                <tr>
+                    <td class="detail_label">
+                        {!AccountLabels['totalaccountopportunity__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Total_Account_Opportunity__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!AccountLabels['totalspend1yearprior__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Name__r.TotalSpend1YearPrior__c}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail_label">
+                        {!AccountLabels['internationalonlinebudget__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.International_Online_Budget__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!AccountLabels['totalspend2yearprior__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Name__r.TotalSpend2yearPrior__c}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail_label">
+                        {!AccountLabels['domesticonlinebudget__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Domestic_Online_Budget__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!AccountLabels['last12monthsspend__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Name__r.Last12MonthsSpend__c}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['additional_budget_available__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Additional_Budget_Available__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!AccountLabels['hierarchy12monthspend__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Account_Name__r.Hierarchy12MonthSpend__c}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="detail_label">
+                       {!StrategicAccountPlanLabels['additional_budget_source__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Additional_Budget_Source__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!AccountLabels['newspapervalue__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.Newspaper_Value__c}" />
+                    </td>
+                </tr>
+             </table>
+        </div>
+        <div class="section">
+            <div class="section_title">Monster Analysis</div>
+            <table class="light_blue_table" cellspacing="0">
+            <tr style="text-align : left">
+               <td style="text-align : left" class="light_blue_label">{!AccountLabels['monsterbusinessobjective__c']}</td>
+            </tr>
+            <tr>
+                <td class="light_blue_value_left">
+                        <apex:outputfield value="{!sapList.Monster_Business_Objective__c}" />
+                    </td>
+            </tr>
+            <tr style="text-align : left">
+                <td class="light_blue_label" style="text-align : left">{!AccountLabels['strengths__c']}</td>
+            </tr>
+             <tr>
+                <td class="light_blue_value">
+                        <apex:outputfield value="{!sapList.Monster_Strengths__c}" />
+                    </td>
+                    
+            </tr>
+            <tr style="text-align : left">
+                <td style="text-align : left" class="light_blue_label">{!AccountLabels['weaknesses__c']}</td>
+            </tr>
+            <tr >
+                <td class="light_blue_value">
+                        <apex:outputfield value="{!sapList.Monster_Weaknesses__c}" />
+                    </td>
+            </tr>
+            </table>
+            
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label">{!TaskLabels['description']}</td>
+                    
+                    <td class="light_blue_label">{!TaskLabels['subject']}</td>
+                    
+                    <td class="light_blue_label">{!TaskLabels['owner']}</td>
+                    
+                    <td class="light_blue_label">{!TaskLabels['activitydate']}</td>
+                    
+                    <td class="light_blue_label">{!TaskLabels['status']}</td>
+                </tr>
+                <apex:repeat value="{!MonsterAnalysisTaskList}" var="item">
+                    <tr>                    
+                        <td class="light_blue_value_left">
+                            <apex:outputfield value="{!item.Description}" />
+                        </td>                   
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Subject}" />
+                        </td>
+                        
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Owner.Name}" />
+                        </td>
+                        
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.ActivityDate}" />
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Status}" />
+                        </td>
+                    </tr>
+                </apex:repeat>
+            </table>
+        </div>
+        
+        <div class="section">
+            <div class="section_title">Client Analysis</div>
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label">{!AccountLabels['clientbusinessobjective__c']}</td>
+                    
+                    <td class="light_blue_label">{!AccountLabels['value__c']}</td>
+                    
+                    <td class="light_blue_label">{!AccountLabels['opportunityarea__c']}</td>
+                </tr>
+                <tr>
+                    <td class="light_blue_value_left">
+                        <apex:outputfield value="{!sapList.Client_Business_Objective__c}" />
+                    </td>
+                    
+                    <td class="light_blue_value">
+                        <apex:outputfield value="{!sapList.Value__c}" />
+                    </td>
+                    
+                    <td class="light_blue_value">
+                        <apex:outputfield value="{!sapList.Opportunity_Area__c}" />
+                    </td>
+                </tr>
+            </table>
+            
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label">{!TaskLabels['description']}</td>
+                    
+                    <td class="light_blue_label">{!TaskLabels['subject']}</td>
+                    
+                    <td class="light_blue_label">{!TaskLabels['owner']}</td>
+                    
+                    <td class="light_blue_label">{!TaskLabels['activitydate']}</td>
+                    
+                    <td class="light_blue_label">{!TaskLabels['status']}</td>
+                </tr>
+                
+                <apex:repeat value="{!ClientAnalysisTaskList}" var="item">
+                    <tr>                    
+                        <td class="light_blue_value_left">
+                            <apex:outputfield value="{!item.Description}" />
+                        </td>                   
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Subject}" />
+                        </td>
+                        
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Owner.Name}" />
+                        </td>
+                        
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.ActivityDate}" />
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Status}" />
+                        </td>
+                    </tr>
+                </apex:repeat>
+            </table>
+        </div>
+        <!-- <div class="section">
+        <div class="section_title">Current Solution</div>
+        <apex:outputPanel rendered="{!asRowData.size>0}">
+           <table class="light_blue_table" cellSpacing="0">
+                <tr >-->
+                    <!--<td align="Center"><b>AccountName</b></td>-->
+                    <!--<td class="light_blue_label">{!$ObjectType.Order_Line_Item__c.Fields.Product__c.Label}</td>
+                    <td class="light_blue_label">{!$ObjectType.Order_Line_Item__c.Fields.EndDate__c.Label}</td>
+                    <td class="light_blue_label">{!$ObjectType.Order_Line_Item__c.Fields.Quantity__c.Label}</td>
+                    <td class="light_blue_label">{!$ObjectType.Order_Line_Item__c.Fields.NetUnitPrice__c.Label}</td>
+                </tr>
+                
+                <apex:repeat value="{!asRowData[0]}" var="acc" >-->
+                    <!--<tr>
+                        <td colspan="5">{!acc.accountName}</td>       
+                    </tr>-->
+                    
+                     <!--<apex:repeat value="{!acc.asRow}" var="pro" > 
+                         <tr>
+                             <td class="light_blue_value_left">{!pro.productName}</td>
+                                     <td class="light_blue_value">
+                                         <apex:outputText value="{0,date,MM/dd/YYYY}">
+                                             <apex:param value="{!pro.endDate}" />
+                                         </apex:outputText>                             
+                                     </td>
+                                     <td class="light_blue_value">{!pro.quantity}</td>
+                                     <td class="light_blue_value">{!pro.netPrice}</td>                     
+                         </tr>
+                     </apex:repeat>
+                </apex:repeat>
+                <tr >
+                    <td class="light_blue_value_left" colspan="2">Total</td>
+                    <td class="light_blue_value">{!asRowData[1].quantity}</td>
+                    <td class="light_blue_value">{!asRowData[1].netPrice}</td>
+                </tr>
+            </table>
+        </apex:outputPanel>            
+        </div> -->
+        <div class="section">
+            <div class="section_title">Proposed Solution</div>
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label">{!ProposedSolutionLabels['productdivision__c']}</td>
+                    
+                    <td class="light_blue_label">{!ProposedSolutionLabels['productgroup__c']}</td>
+                    
+                    <td class="light_blue_label">{!ProposedSolutionLabels['proposedvalue__c']}</td>
+                    
+                    <td class="light_blue_label">{!ProposedSolutionLabels['problemaddressed__c']}</td>
+                </tr>
+                <apex:repeat value="{!ProposedSolutionList}" var="item" >
+                    <tr>                    
+                        <td class="light_blue_value_left">
+                            <apex:outputfield value="{!item.ProductDivision__c}"/> 
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.ProductGroup__c}"/> 
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.ProposedValue__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.ProblemAddressed__c}"/> 
+                        </td>
+                    </tr>
+                </apex:repeat>
+                <tr>                    
+                    <td class="light_blue_value_left" colspan="2">
+                        <strong>Proposed Product Total</strong>
+                    </td>
+                    
+                    <td class="light_blue_value">
+                        <apex:outputfield value="{!ProposedProductTotal.ProposedValue__c}"/>
+                    </td>
+                    
+                    <td class="light_blue_value">
+                        &nbsp;
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <div class="section_title">Competitive Landscape</div>
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label">{!CompetitiveLandscapeLabels['competitor__c']}</td>
+                    
+                    <td class="light_blue_label">{!CompetitiveLandscapeLabels['totaljobs__c']}</td>
+                    
+                    <td class="light_blue_label">{!CompetitiveLandscapeLabels['contractvalue__c']}</td>
+                    
+                    <td class="light_blue_label">{!CompetitiveLandscapeLabels['expdate__c']}</td>
+                    
+                    <td class="light_blue_label">{!CompetitiveLandscapeLabels['hire__c']}</td>
+                    
+                    <td class="light_blue_label">{!CompetitiveLandscapeLabels['relationshipstanding__c']}</td>
+                </tr>
+                <apex:repeat value="{!CompetitiveLandscapeList}" var="item" >
+                    <tr>                    
+                        <td class="light_blue_value_left">
+                            <apex:outputfield value="{!item.Competitor__c}"/> 
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.TotalJobs__c}"/> 
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.ContractValue__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.ExpDate__c}"/> 
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Hire__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.RelationshipStanding__c}"/>
+                        </td>
+                    </tr>
+                </apex:repeat>
+            </table>
+        </div>
+        
+        <div class="section">
+            <div class="section_title">Key Contacts</div>
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label">{!ContactLabels['name']}</td>
+                    
+                    <td class="light_blue_label">{!ContactLabels['jobposition__c']}</td>
+                    
+                    <td class="light_blue_label">{!ContactLabels['primaryphonenumber__c']}</td>
+                    
+                    <td class="light_blue_label">{!ContactLabels['email']}</td>
+                    
+                    <td class="light_blue_label">{!ContactLabels['contacttype__c']}</td>
+                    
+                    <td class="light_blue_label">{!ContactLabels['role__c']}</td>
+                    
+                    <td class="light_blue_label">{!ContactLabels['coverage__c']}</td>
+                    
+                    <td class="light_blue_label">{!ContactLabels['status__c']}</td>
+                    
+                    <td class="light_blue_label">{!ContactLabels['potentialobjection__c']}</td>
+                    
+                    <td class="light_blue_label">{!ContactLabels['businessobjective__c']}</td>
+                    
+                    <td class="light_blue_label">{!ContactLabels['motivation__c']}</td>
+                </tr>
+                <apex:repeat value="{!ContactList}" var="item" >
+                    <tr>                    
+                        <td class="light_blue_value_left">
+                            <apex:outputfield value="{!item.Name}"/> 
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Job_Position__c}"/> 
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Phone_Number__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Email__c}"/> 
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Contact_Type__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Key_Contact_Role__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Coverage__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Status_as_Key_Contact__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Potential_Objection__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Business_Objective__c}"/>
+                        </td>
+                        
+                        <td class="light_blue_value">
+                            <apex:outputfield value="{!item.Motivation__c}"/>
+                        </td>
+                    </tr>
+                </apex:repeat>
+            </table>
+            <div class="section">
+            <div class="section_title">Account Intelligence</div>
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label" style="text-align: left;">{!AccountLabels['additionalaccountcommentary__c']}</td>
+                </tr>
+                
+                <tr>
+                    <td class="light_blue_value_left">
+                        <apex:outputField value="{!sapList.Additional_Account_Commentary__c}" />
+                    </td>
+                </tr>
+            </table>
+            
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label">{!AccountLabels['shorttermstrategy__c']}</td>
+                    <td class="light_blue_label">{!AccountLabels['longtermstrategy__c']}</td>
+                </tr>
+                
+                <tr>
+                    <td class="light_blue_value_left">
+                        <apex:outputField value="{!sapList.Short_Term_Strategy__c}" />
+                    </td>
+                    <td class="light_blue_value">
+                        <apex:outputField value="{!sapList.Long_Term_Strategy__c}" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="section">
+            <div class="section_title">What We Know</div>
+            <table class="light_blue_table" cellspacing="0">
+                <tr>
+                    <td class="light_blue_label">{!AccountLabels['opportunitywwk__c']}</td>
+                    <td class="light_blue_label">{!AccountLabels['technologywwk__c']}</td>
+                    <td class="light_blue_label">{!AccountLabels['recruitercontacthabbitwwk__c']}</td>
+                    <td class="light_blue_label">{!AccountLabels['objectiveswwk__c']}</td>
+                    <td class="light_blue_label">{!AccountLabels['costofnotpurchasingwwk__c']}</td>
+                </tr>
+                
+                <tr>
+                    <td class="light_blue_value_left"><apex:outputField value="{!sapList.Opportunity_WWK__c}"/></td>
+                    <td class="light_blue_value"><apex:outputField value="{!sapList.Technology_WWK__c}"/></td>
+                    <td class="light_blue_value"><apex:outputField value="{!sapList.Recruiter_Habits_WWK__c}"/></td>
+                    <td class="light_blue_value"><apex:outputField value="{!sapList.Objectives_WWK__c}"/></td>
+                    <td class="light_blue_value"><apex:outputField value="{!sapList.Cost_of_Not_Purchasing_WWK__c}" /></td>
+                </tr>
+            </table>
+        </div>
+        <!---I-160867 Added by pratibha -->
+        <div class="section">
+        <div class="section_title">Recruitment Process Overview</div>
+        <table border="0" cellspacing="8">        
+            <tr>
+                <td class="detail_label">
+                    {!StrategicAccountPlanLabels['vendorevaluationkeymetrics__c']} :
+                </td>
+                <td class="detail_value" style="text-align:left;">
+                    <apex:outputField value="{!sapList.VendorEvaluationKeyMetrics__c}" />
+                </td>
+                <td class="detail_label">
+                    {!StrategicAccountPlanLabels['measurementofsuccess__c']} :
+                </td>
+                <td class="detail_value" style="text-align:left;">
+                    <apex:outputField value="{!sapList.MeasurementofSuccess__c}" />
+                </td>
+            </tr>
+         </table>
+    </div>
+        <div class="section">
+        <div class="section_title">Job Ad Process Overview</div>
+        <table border="0" cellspacing="8">        
+            <tr>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['jobpostingmethod__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.JobPostingMethod__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['interestcapture__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.InterestCapture__c}" />
+                    </td>
+             </tr>        
+            <tr>       
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['applymethod__c']} : 
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.ApplyMethod__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['sourceattribution__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.SourceAttribution__c}" />
+                    </td>
+                    
+             </tr>        
+            <tr>        
+                    <td class="detail_label">
+                       {!StrategicAccountPlanLabels['applymethodlocation__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.ApplyMethodLocation__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['sourceattributiontag__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.SourceAttributionTag__c}" />
+                    </td>
+                    
+             </tr>        
+            <tr>       
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['ats_vendor__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.ATS_Vendor__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['applytimehours__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.ApplyTimeHours__c}" />
+                    </td>
+                    
+             </tr>        
+            <tr>       
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['customapplyredirect__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.CustomApplyRedirect__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['applytimeminutes__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.ApplyTimeMinutes__c}" />
+                    </td>
+              </tr>        
+            <tr>       
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['applyscreens__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.ApplyScreens__c}" />
+                    </td>
+                    <td class="detail_label">
+                        {!StrategicAccountPlanLabels['jobpostingtemplate__c']} :
+                    </td>
+                    <td class="detail_value">
+                        <apex:outputField value="{!sapList.JobPostingTemplate__c}" />
+                    </td>
+                </tr>
+         </table>
+    </div>
+    
+    <!--- Finish here I-160867 -->
+        <div class="section">
+            <div class="section_title">To Be Discovered</div>
+            <table class="light_blue_table" cellspacing="0">
+            <tr>
+                <td style="text-align : left" class="light_blue_label">{!AccountLabels['opportunitytbd__c']}</td>
+            </tr>
+            <tr>
+                <td class="light_blue_value_left"><apex:outputField value="{!sapList.Opportunity_TBD__c}"/></td>
+            </tr>
+            <tr>
+                <td style="text-align : left" class="light_blue_label">{!AccountLabels['technologytbd__c']}</td>
+            </tr>
+            <tr>
+                <td class="light_blue_value"><apex:outputField value="{!sapList.Technology_TBD__c}" /></td>
+            </tr>
+            <tr>
+                <td style="text-align : left" class="light_blue_label">{!AccountLabels['recruitercontacthabitstbd__c']}</td>
+            </tr>
+            <tr>
+                <td class="light_blue_value"><apex:outputField value="{!sapList.Recruiter_Habits_TBD__c}" /></td>
+            </tr>
+            <tr>
+                <td style="text-align : left" class="light_blue_label">{!AccountLabels['objectivestbd__c']}</td>
+            </tr>
+            <tr>
+                <td class="light_blue_value"><apex:outputField value="{!sapList.Objectives_TBD__c}" /></td>
+            </tr>
+            <tr>
+                <td style="text-align : left" class="light_blue_label">{!AccountLabels['costofnotpurchasingtbd__c']}</td>
+            </tr>
+            <tr>
+                <td class="light_blue_value"><apex:outputField value="{!sapList.Cost_of_Not_Purchasing_TBD__c}" /></td>
+            </tr>
+               
+            </table>
+        </div>
+    </div>
+    </apex:pageBlock>
+    </apex:form>
+    </body>
+</apex:page>

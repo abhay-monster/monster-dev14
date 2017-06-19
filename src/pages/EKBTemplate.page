@@ -1,0 +1,115 @@
+<apex:page standardStylesheets="false" controller="EKBController" language="{!lang}">
+
+    <html>
+    <head>
+        <title>{!$Label.EKBTitle}</title>
+        <!-- add link -->
+        <apex:stylesheet value="{!URLFOR($Resource.EKBCSS, 'site.css')}"/>      
+        <apex:stylesheet value="{!URLFOR($Resource.EKBCSS, 'EKBStandard.css')}"/>
+        <!-- favicon replaced per I-218236 <link REL="SHORTCUT ICON" HREF="{!URLFOR($Resource.EKBCSS, 'images/MonsterM.png')}"/> -->
+        <link REL="SHORTCUT ICON" HREF="{!URLFOR($Resource.MonsterEKBFavicon)}"/>      
+    </head>
+    <body class="yui-skin-sam">
+    <div id="rn_Container" >
+        <apex:insert name="header">
+        <div id="mn_header">
+            
+            <div id="rn_Header" role="banner">
+                <apex:outputLink value="{!Brand.Title_URL__c}" title="{!$Label.EKBTitle} »">
+                    <!--<div class="monLogo"></div>-->
+                    <apex:variable var="path" value="{!LogoPath}"/> 
+                    <apex:image id="Logo" url="{!URLFOR($Resource.EKBCSS,path)}" />
+                </apex:outputLink>
+                 
+                <div id="rn_LoginStatus" style="float:right">
+                    <span style="font-size:9px; padding:10px 5px 5px 0px; display:inline-block float:right">
+                    <apex:outputLink value="{!Brand.Title_URL__c}">{!Brand.Monster_Site__c} »</apex:outputLink>
+                    </span>
+                </div>      
+            </div>    
+            <div id="rn_NavigationBar" role="navigation">
+                <ul>
+                    <li>
+                        <span id="rn_NavigationTabCustom_2" class="rn_NavigationTab2 ">
+                        <apex:outputLink styleClass="" value="/EKBHome?brand={!Brand.Brand_Tag__c}" target="_self">
+                            <span>{!$Label.EKBHome}</span>
+                        </apex:outputLink>
+                        </span>
+                    </li>
+                    <li>
+                        <span id="rn_NavigationTabCustom_3" class="rn_NavigationTab2 ">
+                        <apex:outputLink styleclass="" value="/EKBAnswers?brand={!Brand.Brand_Tag__c}"  target="_self">
+                            <span>{!$Label.EKBAnswers}</span>
+                        </apex:outputLink>
+                        </span>
+                    </li>
+                    <!--<li>
+                        <span id="rn_NavigationTabCustom_4" class="rn_NavigationTab2 ">
+                        <apex:outputLink styleclass="" value="/EKBTraining?brand={!Brand.Brand_Tag__c}"  target="_self">
+                            <span>{!$Label.EKBTraining}</span>
+                        </apex:outputLink>
+                        </span>
+                    </li>-->
+                    <li>
+                        <span id="rn_NavigationTabCustom_5" class="rn_NavigationTab2 ">
+                        <apex:outputLink styleclass="" value="/EKBContactUs?brand={!Brand.Brand_Tag__c}"  target="_self">
+                            <span>{!$Label.EKBContactUs}</span>
+                        </apex:outputLink>
+                        </span>
+                    </li>
+
+                </ul>
+            </div>
+        </div> <!--end header*/ -->
+        </apex:insert>      
+        <apex:insert name="body"> 
+        <div id="rn_Body">
+            <div id="rn_PageContent" class="rn_Home">
+                <br/>
+                
+            </div>   
+        </div>
+        </apex:insert>
+        <apex:insert name="footer">
+        <div id="rn_Footer" role="contentinfo">
+            <div class="mn_footer">
+                <apex:outputPanel rendered="{!Brand.Footer_1__c != null}">
+                    <apex:outputLink value="{!Brand.Footer_1_URL__c}">{!Brand.Footer_1__c}</apex:outputLink>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!Brand.Footer_2__c != null}">
+                 | <apex:outputLink value="{!Brand.Footer_2_URL__c}">{!Brand.Footer_2__c}</apex:outputLink>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!Brand.Footer_3__c != null}">
+                 | <apex:outputLink value="{!Brand.Footer_3_URL__c}">{!Brand.Footer_3__c}</apex:outputLink>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!Brand.Footer_4__c != null}">
+                 | <apex:outputLink value="{!Brand.Footer_4_URL__c}">{!Brand.Footer_4__c}</apex:outputLink>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!Brand.Footer_5__c != null}">
+                 | <apex:outputLink value="{!Brand.Footer_5_URL__c}">{!Brand.Footer_5__c}</apex:outputLink>
+                </apex:outputPanel>                
+                <br/> {!$Label.EKBFooterCopyright}      
+            </div>   
+        </div>
+        </apex:insert>
+       </div>
+       <apex:outputPanel rendered="{!Brand.Dynamic_S_Account__c!= null}">
+           <!-- Begin SiteCatalyst tag -->
+            <script src="https://media.newjobs.com/js/global/at_1.5.js" type="text/javascript"></script>
+            <script type="text/javascript">
+            var DYNAMIC_S_ACCOUNT='{!Brand.Dynamic_S_Account__c}';
+            //<![CDATA[
+            var amc=amc||{};if(!amc.on){amc.on=amc.call=function(){}};
+            document.write("<scr"+"ipt type='text/javascript' src='//www.adobetag.com/d1/v2/ZDEtbW9uc3RlcmpvYnMtMTI4ODgtMjMzNy0=/amc.js'></sc"+"ript>");
+            //]]>
+            window.load = _m.ATM.initFromOnReady();
+            _m.ATM.appID='';
+            _m.ATM.runOnLoad=true;
+            </script>
+            <!-- End SiteCatalyst tag -->
+        </apex:outputPanel>
+    </body>
+
+    </html>
+
+</apex:page>

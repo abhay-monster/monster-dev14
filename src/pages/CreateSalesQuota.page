@@ -1,0 +1,14 @@
+<!-- 
+/*
+** @author : Cloud Sherpas Inc.
+** @date : 04/29/2014
+** @description :This page overrides the URL upon clicking the new button. 
+*/
+-->
+<apex:page StandardController="Sales_Quotas__c" extensions="CreateSalesQuotaCC">
+<script>
+    window.onload = function(){
+        location.assign("{!stringURL}");
+    }
+</script>
+</apex:page>

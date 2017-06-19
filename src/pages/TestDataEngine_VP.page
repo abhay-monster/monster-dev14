@@ -1,0 +1,41 @@
+<apex:page title="Test Data Engine" controller="TestDataEngine_AC" sideBar="false">
+<apex:sectionHeader title="Test Data Engine" />
+<apex:form >
+	<apex:pageBlock >
+		
+		<apex:pageBlockButtons >
+        <apex:commandButton action="{!createTestData}" value="Create Test Data"/>
+    </apex:pageBlockButtons>
+    
+		<apex:pageBlockSection >
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel for="objectName" value="Object" />
+				<apex:selectlist id="objectName" value="{!selectedObject}" size="1" >
+		        <apex:selectoptions value="{!sfdcObjects}" />
+		    </apex:selectlist>
+	    </apex:pageBlockSectionItem>
+		</apex:pageBlockSection>
+		
+		<apex:pageBlockSection >
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel for="parentRequiredCheckBox" value="Create Parent" />
+				<apex:inputCheckbox id="parentRequiredCheckBox" value="{!isCreateParent}" />
+	    </apex:pageBlockSectionItem>
+		</apex:pageBlockSection>
+		
+		<apex:pageBlockSection columns="1">
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel for="testData" value="TestData" />
+				<apex:inputTextarea id="testData" value="{!testData}" richText="true" rows="15"/>
+			</apex:pageBlockSectionItem>
+		</apex:pageBlockSection>
+		
+		<apex:pageBlockSection columns="1">
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel for="requiredFields" value="Required Fields" />
+				<apex:inputTextarea id="requiredFields" value="{!requiredFields}" richText="true" rows="15"/>
+			</apex:pageBlockSectionItem>
+		</apex:pageBlockSection>
+	</apex:pageBlock>
+</apex:form>
+</apex:page>

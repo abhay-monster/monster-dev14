@@ -1,0 +1,226 @@
+<apex:page title="Strategic Account Plan: {!SAModel.StrategicAccount.Name}" StandardController="Account" extensions="StrategicAccountPlanCC">
+<script>
+        function renderAsPDF(newTab){
+            if(newTab){
+                var w = window.open('{!NewTabAsPDF}', '_blank');
+                w.focus();
+                return false;
+            }else{
+                window.location = '{!NewTabAsPDF}';
+                return false;
+            }
+        }
+    </script>
+<apex:sectionHeader title="Strategic Account Plan" subtitle="{!SAModel.StrategicAccount.Name}"/>
+<apex:form >
+<apex:pageBlock >
+    <apex:pageBlockButtons >
+        <apex:commandButton value="Render as PDF" onClick="return renderAsPDF(false);" /> 
+        <apex:commandButton value="New Tab as PDF" onClick="return renderAsPDF(true);" />
+        <apex:commandButton value="Cancel" action="{!cancel}" />
+    </apex:pageBlockButtons>
+    <apex:pageBlockSection title="Strategic Account Plan">
+        <apex:outputField style="width: 97%;" value="{!SAModel.StrategicAccount.Goal__c}" />
+        <apex:outputField style="width: 97%;" value="{!SAModel.StrategicAccount.Strategy__c}" />
+    </apex:pageBlockSection>
+    
+    <apex:pageBlockSection title="Account Detail" columns="3">
+    
+        <apex:outputField value="{!SAModel.StrategicAccount.Name}" />
+        <apex:outputField value="{!SAModel.StrategicAccount.NAP__c}" />
+        <apex:outputField value="{!SAModel.StrategicAccount.MasterHQ__c}" />
+        
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel for="account_id" value="{!SAModel.AccountLabels['sfid']}" />
+            <apex:outputField id="account_id" value="{!SAModel.StrategicAccount.Id}" />
+        </apex:pageBlockSectionItem>
+        <apex:outputField value="{!SAModel.StrategicAccount.AgencyBilled__c}" />
+        <apex:outputField value="{!SAModel.StrategicAccount.TrialCandidate__c}" />
+        
+        <apex:outputField value="{!SAModel.StrategicAccount.ParentId}" />
+        <apex:outputField value="{!SAModel.StrategicAccount.NumberofLocations__c}" />
+        <apex:outputField value="{!SAModel.StrategicAccount.CentralizedBuying__c}" />
+        
+        <apex:outputField value="{!SAModel.StrategicAccount.OwnerId}" />
+        <apex:outputField value="{!SAModel.StrategicAccount.NumberOfEmployees}" />
+        <apex:outputField value="{!SAModel.StrategicAccount.AtRiskAccount__c}" />
+        
+        <apex:outputField value="{!SAModel.StrategicAccount.PrimaryServiceRep__c}" />
+        <apex:outputField value="{!SAModel.StrategicAccount.AccountStatus__c}" />
+        <apex:pageBlockSectionItem />
+        
+        <apex:outputField value="{!SAModel.StrategicAccount.PrimarySalesManager__c}" />
+        <apex:outputField value="{!SAModel.StrategicAccount.ClientTurnoverRate__c}" />
+        <apex:pageBlockSectionItem />
+        
+        <apex:outputField value="{!SAModel.StrategicAccount.PrimaryRelatedAgency__c}" />  
+        <apex:outputField value="{!SAModel.StrategicAccount.ATSVendor__c}" />         
+        <apex:pageBlockSectionItem />
+        
+        <apex:outputField value="{!SAModel.StrategicAccount.PrimaryAgencyContact__c}" />  
+        <apex:outputField value="{!SAModel.StrategicAccount.LevelJustification__c}" />      
+        <apex:pageBlockSectionItem />
+        
+        <apex:outputField value="{!SAModel.StrategicAccount.Region__c}" />
+        <apex:outputField value="{!SAModel.StrategicAccount.AdditionalBudgetSource__c}" />
+        <apex:pageBlockSectionItem />
+        
+        <apex:outputField value="{!SAModel.StrategicAccount.NumberofHires__c}" />
+        <apex:outputField value="{!SAModel.StrategicAccount.TotalSpend1YearPrior__c}" />
+        <apex:pageBlockSectionItem />
+        
+        <apex:outputField value="{!SAModel.StrategicAccount.TotalAccountOpportunity__c}" />
+        <apex:outputField value="{!SAModel.StrategicAccount.TotalSpend2yearPrior__c}" />
+        <apex:pageBlockSectionItem />
+        
+        <apex:outputField value="{!SAModel.StrategicAccount.InternationalOnlineBudget__c}" />
+        <apex:outputField value="{!SAModel.StrategicAccount.Last12MonthsSpend__c}" />
+        <apex:pageBlockSectionItem />
+        
+        <apex:outputField value="{!SAModel.StrategicAccount.DomesticOnlineBudget__c}" />
+        <apex:outputField value="{!SAModel.StrategicAccount.Hierarchy12MonthSpend__c}" />  
+        <apex:pageBlockSectionItem />
+        
+        <apex:outputField value="{!SAModel.StrategicAccount.AdditonalBudgetAvailable__c}" />
+        <apex:outputField value="{!SAModel.StrategicAccount.NewspaperValue__c}" />
+        <apex:pageBlockSectionItem />
+        
+        <apex:outputField value="{!SAModel.StrategicAccount.PenetrationLevel__c}" />
+        <apex:outputField value="{!SAModel.StrategicAccount.KeyInitiative__c}" />
+        <apex:pageBlockSectionItem />
+    </apex:pageBlockSection>
+    
+    <apex:pageBlockSection title="Monster Analysis" columns="1">        
+        <apex:pageBlockTable value="{!SAModel.StrategicAccount}" var="item">
+            <apex:column value="{!item.MonsterBusinessObjective__c}" />
+            <apex:column value="{!item.Strengths__c}" />
+            <apex:column value="{!item.Weaknesses__c}" />
+        </apex:pageBlockTable>
+    </apex:pageBlockSection>
+        
+    <apex:pageBlockSection showHeader="false" columns="1">
+        <apex:pageBlockTable value="{!SAModel.MonsterAnalysisTaskList}" var="item">
+            <apex:column value="{!item.Description}"/> 
+            <apex:column value="{!item.Subject}"/> 
+            <apex:column value="{!item.Owner.Name}"/> 
+            <apex:column value="{!item.ActivityDate}"/> 
+            <apex:column value="{!item.Status}"/>
+        </apex:pageBlockTable>
+    </apex:pageBlockSection>
+    
+    <apex:pageBlockSection title="Client Analysis" columns="1">
+        <apex:pageBlockTable value="{!SAModel.StrategicAccount}" var="item" >
+            <apex:column value="{!item.ClientBusinessObjective__c}" />
+            <apex:column value="{!item.Value__c}" />
+            <apex:column value="{!item.OpportunityArea__c}" />
+        </apex:pageBlockTable>
+    </apex:pageBlockSection>
+    <apex:pageBlockSection showHeader="false" columns="1">
+        <apex:pageBlockTable value="{!SAModel.ClientAnalysisTaskList}" var="item">
+            <apex:column value="{!item.Description}"/> 
+            <apex:column value="{!item.Subject}"/> 
+            <apex:column value="{!item.Owner.Name}"/> 
+            <apex:column value="{!item.ActivityDate}"/> 
+            <apex:column value="{!item.Status}"/>
+        </apex:pageBlockTable>
+    </apex:pageBlockSection>
+    
+    <apex:pageBlockSection title="Current Solution" columns="1">
+        <apex:outputPanel rendered="{!asRowData.size>0}">
+           <table width="100%" border="1" cellpadding="0" cellSpacing="0">
+                <tr bgcolor="#E8E8E8">
+                    <!--<td align="Center"><b>AccountName</b></td>-->
+                    <td align="Center"><b>{!$ObjectType.Order_Line_Item__c.Fields.Product__c.Label}</b></td>
+                    <td align="Center"><b>{!$ObjectType.Order_Line_Item__c.Fields.EndDate__c.Label}</b></td>
+                    <td align="Center"><b>{!$ObjectType.Order_Line_Item__c.Fields.Quantity__c.Label}</b></td>
+                    <td align="Center"><b>{!$ObjectType.Order_Line_Item__c.Fields.NetUnitPrice__c.Label}</b></td>
+                </tr>
+                
+                <apex:repeat value="{!asRowData[0]}" var="acc" >
+                    <!--<tr>
+                        <td colspan="5">{!acc.accountName}</td>       
+                    </tr>-->
+                     <apex:repeat value="{!acc.asRow}" var="pro" > 
+                         <tr>
+                             <td>{!pro.productName}</td>
+                             <td>
+                                 <apex:outputText value="{0,date,MM/dd/YYYY}">
+                                     <apex:param value="{!pro.endDate}" />
+                                 </apex:outputText>                             
+                             </td>
+                             <td>{!pro.quantity}</td>
+                             <td>{!pro.netPrice}</td>                     
+                         </tr>
+                     </apex:repeat>
+                </apex:repeat>
+                <tr bgcolor="#E8E8E8">
+                    <td colspan="2"><b>Total</b></td>
+                    <td><b>{!asRowData[1].quantity}</b></td>
+                    <td><b>{!asRowData[1].netPrice}</b></td>
+                </tr>
+            </table>
+        </apex:outputPanel>
+    </apex:pageBlockSection>
+    
+    <apex:pageBlockSection title="Proposed Solution"  columns="1">
+        <apex:pageBlockTable value="{!SAModel.ProposedSolutionList}" var="item">
+            <apex:column value="{!item.ProductDivision__c}"/> 
+            <apex:column value="{!item.ProductGroup__c}"/> 
+            <apex:column value="{!item.ProposedValue__c}"/> 
+            <apex:column value="{!item.ProblemAddressed__c}"/>
+        </apex:pageBlockTable>
+    </apex:pageBlockSection>
+    
+    <apex:pageBlockSection title="Competitive Landscape" columns="1">
+        <apex:pageBlockTable value="{!SAModel.CompetitiveLandscapeList}" var="item">
+            <apex:column value="{!item.Competitor__c}"/> 
+            <apex:column value="{!item.TotalJobs__c}"/> 
+            <apex:column value="{!item.ContractValue__c}"/> 
+            <apex:column value="{!item.ExpDate__c}"/> 
+            <apex:column value="{!item.Hire__c}"/>
+            <apex:column value="{!item.RelationshipStanding__c}"/>
+        </apex:pageBlockTable>
+    </apex:pageBlockSection>
+    <apex:pageBlockSection title="Key Contacts" columns="1">
+        <apex:pageBlockTable value="{!SAModel.ContactList}" var="item">
+            <apex:column value="{!item.Name}"/> 
+            <apex:column value="{!item.JobPosition__c}"/> 
+            <apex:column value="{!item.PrimaryPhoneNumber__c}"/> 
+            <apex:column value="{!item.Email}"/> 
+            <apex:column value="{!item.ContactType__c}"/>
+            <apex:column value="{!item.Role__c}"/>
+            <apex:column value="{!item.Coverage__c}"/>
+            <apex:column value="{!item.Status__c}"/>
+            <apex:column value="{!item.PotentialObjection__c}"/>
+            <apex:column value="{!item.BusinessObjective__c}"/>
+            <apex:column value="{!item.Motivation__c}"/>
+        </apex:pageBlockTable>
+    </apex:pageBlockSection>
+    <apex:pageBlockSection title="Account Intelligence" columns="1">
+        <apex:outputField style="width: 97%;" value="{!SAModel.StrategicAccount.AdditionalAccountCommentary__c}" />
+    </apex:pageBlockSection>
+    <apex:pageBlockSection showHeader="false" columns="2">
+        <apex:outputField style="width: 97%;" value="{!SAModel.StrategicAccount.ShortTermStrategy__c}" />
+        <apex:outputField style="width: 97%;" value="{!SAModel.StrategicAccount.LongTermStrategy__c}" />            
+    </apex:pageBlockSection>
+    <apex:pageBlockSection title="What We Know" columns="1">
+        <apex:pageBlockTable value="{!SAModel.StrategicAccount}" var="item">
+            <apex:column headerValue="{!SAModel.AccountLabels['opportunitywwk__c']}"><apex:outputField value="{!item.OpportunityWWK__c}" /></apex:column>
+            <apex:column headerValue="{!SAModel.AccountLabels['technologywwk__c']}"><apex:outputField value="{!item.TechnologyWWK__c}" /></apex:column>
+            <apex:column headerValue="{!SAModel.AccountLabels['recruitercontacthabbitwwk__c']}"><apex:outputField value="{!item.RecruiterContactHabbitWWK__c}" /></apex:column>
+            <apex:column headerValue="{!SAModel.AccountLabels['objectiveswwk__c']}"><apex:outputField value="{!item.ObjectivesWWK__c}" /></apex:column>
+            <apex:column headerValue="{!SAModel.AccountLabels['costofnotpurchasingwwk__c']}"><apex:outputField value="{!item.CostofNotPurchasingWWK__c}" /></apex:column>
+        </apex:pageBlockTable>
+    </apex:pageBlockSection>
+    <apex:pageBlockSection title="To Be Discovered"  columns="1">
+        <apex:pageBlockTable value="{!SAModel.StrategicAccount}" var="item">
+            <apex:column headerValue="{!SAModel.AccountLabels['opportunitytbd__c']}"><apex:outputField value="{!item.OpportunityTBD__c}" /></apex:column>
+            <apex:column headerValue="{!SAModel.AccountLabels['technologytbd__c']}"><apex:outputField value="{!item.TechnologyTBD__c}" /></apex:column>
+            <apex:column headerValue="{!SAModel.AccountLabels['recruitercontacthabitstbd__c']}"><apex:outputField value="{!item.RecruiterContactHabitsTBD__c}" /></apex:column>
+            <apex:column headerValue="{!SAModel.AccountLabels['objectivestbd__c']}"><apex:outputField value="{!item.ObjectivesTBD__c}" /></apex:column>
+            <apex:column headerValue="{!SAModel.AccountLabels['costofnotpurchasingtbd__c']}"><apex:outputField value="{!item.CostofNotPurchasingTBD__c}" /></apex:column>
+        </apex:pageBlockTable>
+    </apex:pageBlockSection>        
+</apex:pageBlock>
+</apex:form>
+</apex:page>

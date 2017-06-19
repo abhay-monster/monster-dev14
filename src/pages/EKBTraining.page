@@ -1,0 +1,12 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" title="Monster Help Center" controller="EKBController">
+	<apex:composition template="{!$Site.Template}">
+
+	<apex:define name="body">
+ 		<div id="rn_Body">
+	        <div id="rn_MainColumn" role="main">
+	        	<apex:outputText value="{!Brand.Training__c}" escape="false" styleClass="rn_Textarea"/>
+	        </div>
+	    </div>
+	</apex:define>
+	</apex:composition>
+</apex:page>

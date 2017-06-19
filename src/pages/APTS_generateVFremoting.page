@@ -1,0 +1,163 @@
+<apex:page controller="APTS_generateAdditionalVFRemoting"  doctype="html-5.0" showHeader="false" 
+           sidebar="false"
+           cache="false"
+           standardStylesheets="true"
+           tabstyle="Product2">
+     <apex:includeScript value="{!URLFOR($Resource.Apttus_Config2__JQueryUILibrary19, 'js/jquery-1.8.3.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.Apttus_Config2__JQueryUILibrary19, 'js/jquery-ui-1.9.2.custom.min.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__JQueryUILibrary19, 'css/smoothness/jquery-ui-1.9.2.custom.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__CPQPageResources,'CPQCommon.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__CPQPageResources,'CPQCart.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.Apttus_Config2__CPQPageResources, 'CPQEnhanced.css')}"/>   
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+    
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"/>
+            
+         <!-- Optional theme -->
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css"/>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        //  InitPAge();
+    }, false);
+    var Sids='';
+    var ArrayIds;
+    var is_finished = false;
+            var totalYears;
+    var timeout = (new Date()).getTime() + 3000;
+    function InitPAge(){
+        showStatusBox();
+        console.log('start');
+        totalYears = document.getElementById("Totalyears").value;
+                console.log('totalYears '+totalYears +'  '); 
+        if(!totalYears )
+        {
+          alert('Please enter a valid year.');
+          return false;
+        }
+          console.log('totalYears '+totalYears +'  '+totalYears <=0 ); 
+        if(totalYears <=0 )
+        { 
+          alert('Please enter a valid year.');
+          return false;
+        
+        }
+
+        console.log('totalYears '+totalYears ); 
+        //  fetchDataJS('{!$CurrentPage.parameters.id}');
+        Sids = '{!LineIds}';
+        console.log('Sids'+Sids);
+        if(Sids.length > 0 )
+        {
+            ArrayIds = Sids.split(",");  
+            console.log('ArrayIds'+ArrayIds);
+            loopCall();
+        }
+        else
+        {
+            alert('No product is selected to generate. Please select product on the cart.');
+            returntoCart();
+        }
+        
+        //window.location.href  = '/apex/Apttus_Config2__Pricing?'+'{!URLQueryParameters}';
+        //ReturnFunction();
+        console.log('Post ReturnFunction');
+        return false;
+    }
+    
+    function loopCall()
+    {
+        console.log('ArrayIdsLoop'+ArrayIds);
+        if(ArrayIds.length > 0 )
+        {
+            ApexCall(ArrayIds[0],'{!$CurrentPage.parameters.id}') ;
+        }
+        else
+        {
+            returntoCart();
+        }
+        
+    }
+    
+    function returntoCart()
+    {
+        hideStatusBox(); 
+        console.log('ArrayIdsLoop Complete'+'/apex/Apttus_Config2__Pricing?'+'{!URLQueryParameters}'); 
+        console.log('ArrayIdsLoop Complete'+window.location.href ); 
+        window.location.href  = '/apex/Apttus_Config2__Pricing?'+'{!URLQueryParameters}';
+    }
+    
+    function showStatusBox()
+    {
+       
+
+       
+        $('#loadingcontainer').show();
+    }
+    
+    function hideStatusBox()
+    {
+       
+        $('#loadingcontainer').hide();
+    }
+
+    var Vf_RemotingMethod = '{!$RemoteAction.APTS_generateAdditionalVFRemoting.GenerateAdditionalYearsForSelectedLineItem}' ; // Provide Apex controller static remote method which will compute the pricing
+    function ApexCall(lineId,cartId){
+        console.log('In VF remoting'+lineId);            
+        Visualforce.remoting.Manager.invokeAction(
+            Vf_RemotingMethod, 
+            lineId, totalYears,cartId,
+            function(result, event){ 
+                console.log('event.status Status: '+event);
+                if (event.status) { // if Method is executed successfully then execute these line of code
+                    // result variable hold the returned output from the method which we called
+                    console.log('Line Num Status: '+result);
+                    var key = ArrayIds.indexOf(lineId);
+                    ArrayIds.splice(key, 1); 
+                    loopCall();
+                    
+                }                        
+                else if (event.type === 'exception') { // write the handler code if any exception occurred during the method execution
+                    alert( event.message);
+                    returntoCart();
+                    
+                    
+                } else { // if anything goes unexpectedly then execute this block 
+                    alert( event.message);
+                    returntoCart();
+                    
+                    
+                }
+            }, 
+            {escape: true}
+        );
+        
+    }
+    
+    
+    </script>
+    <apex:form > 
+     
+        <apex:outputText value="{!LineIds}" id="LineIds" rendered="false"> </apex:outputText>
+        <apex:pageBlock >
+        <apex:pageBlockSection columns="1">
+            <apex:pageBlockSectionItem >
+        Total # Of Years:&nbsp; 
+                <input id="Totalyears" type="number"/>
+                 </apex:pageBlockSectionItem>        
+                
+            <apex:pageBlockSectionItem >
+        <a href="javascript:void(0);" onClick="InitPAge();" class="aptListButton" >Generate</a>                 
+        
+            
+         <a href="javascript:void(0);" onClick="returntoCart();" class="aptListButton" >Cancel</a>
+            </apex:pageBlockSectionItem>
+        <!-- <apex:commandButton onclick="InitPAge(); "  /> -->
+        </apex:pageBlockSection>
+        </apex:pageBlock>
+        <div id="loadingcontainer" class="loading-container" style="display:none;">
+    <img id="loadingimage" src="/img/loading32.gif" height="50" width="50"  style="z-index:5;"/> 
+</div>
+    </apex:form>
+</apex:page>

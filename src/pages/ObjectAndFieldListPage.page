@@ -1,0 +1,92 @@
+<apex:page id="page" tabStyle="Lead" controller="George_ObjectAndFieldListClass">
+  <apex:form id="form">
+    <apex:outputPanel >
+    <apex:pageBlock id="pb0" title="Info">
+      <!-- <apex:pageBlockButtons>
+        <apex:commandButton action="{!refresh}" value="Submit Filter"/>
+      </apex:pageBlockButtons> -->
+      <apex:pageBlockSection >
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel for="fieldCount" value="Total Fields"/>
+          <apex:outputText id="fieldCount" value="{!fieldCount}"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel for="objectWithFieldCount" value="Managed Packages With Custom Fields"/>
+          <apex:outputText id="objectWithFieldCount" value="{!objectWithFieldCount}"/>
+        </apex:pageBlockSectionItem>
+      </apex:pageBlockSection>
+      <!-- <apex:pageBlockSection collapsible="false" id="pbs0" title="Standard Objects">
+        <apex:pageBlockSectionItem>
+          <apex:outputLabel for="stdObj0" value="Standard Objects"/>
+          <apex:inputCheckbox id="stdObj0" value="{!standardObjects.objectYes}"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem>
+          <apex:outputLabel for="stdFields0" value="Standard Fields"/>
+          <apex:inputCheckbox id="stdFields0" value="{!standardObjects.standardFields}"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem>
+          <apex:outputLabel for="customFields0" value="Custom Fields"/>
+          <apex:inputCheckbox id="customFields0" value="{!standardObjects.customFields}"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem>
+          <apex:outputLabel for="managedFields0" value="Managed Fields"/>
+          <apex:inputCheckbox id="managedFields0" value="{!standardObjects.managedFields}"/>
+        </apex:pageBlockSectionItem>
+      </apex:pageBlockSection>
+      <apex:pageBlockSection collapsible="false" id="pbs1" title="Custom Objects">
+        <apex:pageBlockSectionItem>
+          <apex:outputLabel for="stdObj1" value="Custom Objects"/>
+          <apex:inputCheckbox id="stdObj1" value="{!customObjects.objectYes}"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem>
+          <apex:outputLabel for="stdFields1" value="Standard Fields"/>
+          <apex:inputCheckbox id="stdFields1" value="{!customObjects.standardFields}"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem>
+          <apex:outputLabel for="customFields1" value="Custom Fields"/>
+          <apex:inputCheckbox id="customFields1" value="{!customObjects.customFields}"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem>
+          <apex:outputLabel for="managedFields1" value="Managed Fields"/>
+          <apex:inputCheckbox id="managedFields1" value="{!customObjects.managedFields}"/>
+        </apex:pageBlockSectionItem>
+      </apex:pageBlockSection>
+      <apex:pageBlockSection collapsible="false" id="pbs2" title="Managed Objects">
+        <apex:pageBlockSectionItem>
+          <apex:outputLabel for="stdObj2" value="Managed Objects"/>
+          <apex:inputCheckbox id="stdObj2" value="{!managedObjects.objectYes}"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem>
+          <apex:outputLabel for="stdFields2" value="Standard Fields"/>
+          <apex:inputCheckbox id="stdFields2" value="{!managedObjects.standardFields}"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem>
+          <apex:outputLabel for="customFields2" value="Custom Fields"/>
+          <apex:inputCheckbox id="customFields2" value="{!managedObjects.customFields}"/>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem>
+          <apex:outputLabel for="managedFields2" value="Managed Fields"/>
+          <apex:inputCheckbox id="managedFields2" value="{!managedObjects.managedFields}"/>
+        </apex:pageBlockSectionItem>
+      </apex:pageBlockSection> -->
+    </apex:pageBlock>
+    </apex:outputPanel>
+  </apex:form>
+  <apex:outputPanel id="rerenderThis">
+    <apex:pageBlock title="Objects and Fields">
+      <apex:repeat value="{!objects}" var="o">
+        <apex:outputPanel rendered="{!IF(o.fields.size > 0, true, false)}">
+          <hr/>
+          <h2>{!o.label} ({!o.name})</h2><br/><br/>
+          <apex:pageBlockTable value="{!o.Fields}" var="f">
+            <apex:column value="{!f.label}" headerValue="Label"/>
+            <apex:column value="{!f.name}" headerValue="Api Name"/>
+            <apex:column value="{!f.fieldType}" headerValue="Type"/>
+            <apex:column value="{!f.formula}" headerValue="Formula"/>
+          </apex:pageBlockTable>
+          <br/><br/><br/><br/>
+        </apex:outputPanel>
+      </apex:repeat>
+    </apex:pageBlock>
+  </apex:outputPanel>
+</apex:page>

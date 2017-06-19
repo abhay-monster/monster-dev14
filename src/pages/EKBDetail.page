@@ -1,0 +1,127 @@
+<apex:page standardStylesheets="false" controller="EKBController" action="{!getArticleDetails}" showHeader="false">
+    <apex:composition template="{!$Site.Template}">
+
+    <apex:define name="body">
+    <apex:form >
+        <div id="rn_Body">
+            <div id="rn_MainColumn" role="main">
+                <a id="rn_MainContent"></a>
+                    <div id="rn_PageTitle" class="rn_AnswerDetail">
+                        <h1 id="rn_Summary">{!Aw.Title}</h1>
+                        <div class="mn_backresults">
+                            <a href="javascript:window.history.back()" style="font-size:10px">{!$Label.EKBBacktoResults}</a>
+                        </div>        
+                        <div class="mn_answersubheader">
+                           <span style="FONT-FAMILY: Verdana; FONT-SIZE: 10pt">{!AW.Summary}</span>              
+                           <div class="answers_L3">{!$Label.EKBLastModified}  
+                                <apex:outputText value="{0,date,short}">
+                                    <apex:param value="{!AW.LastModifiedDate}" /> 
+                                </apex:outputText>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="rn_PageContent" class="rn_AnswerDetail">
+                        <div id="rn_AnswerText"> 
+                            <apex:outputText value="{!AW.Body}" escape="false"/>
+                        </div>
+                    </div>
+                    <div id="rn_AnswerFeedback2_16" class="rn_AnswerFeedback2">
+                        <div id="rn_AnswerFeedback2_16_AnswerFeedback2Control" class="rn_AnswerFeedback2Control">
+                            <div class="rn_Title">{!$Label.EKBAnswerHelpful}</div>
+                            <div id="rn_AnswerFeedback2_16_RatingButtons">
+                                <apex:outputPanel rendered="{!RatingSubmitted == false}">
+                                    <apex:commandbutton id="rn_AnswerFeedback2_16_RatingYesButton" action="{!RatedYes}" value="{!$Label.EKBYes}"/>
+                                    <apex:commandbutton id="rn_AnswerFeedback2_16_RatingNoButton" action="{!RatedNo}" value="{!$Label.EKBNo}"/>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!RatingSubmitted == true}">
+                                    <span id="rn_AnswerFeedback2_16_ThanksLabel" class="rn_ThanksLabel">&nbsp;</span>
+                                    {!$Label.EKBRatingMessage}
+                                </apex:outputPanel>
+                            </div>
+                        </div>
+                        <div id="rn_AnswerFeedback2_16_AnswerFeedback2Form" class="rn_AnswerFeedback2Form rn_Hidden">
+                            <div id="rn_AnswerFeedback2_16_DialogDescription" class="rn_DialogSubtitle">
+                                Your rating has been submitted, please tell us how we can make this answer more useful.
+                            </div>
+                        <div id="rn_AnswerFeedback2_16_ErrorMessage"></div>
+                        <!--<form>
+                            <label for="rn_AnswerFeedback2_16_EmailInput">
+                                Email<span class="rn_Required" > *</span><span class="rn_ScreenReaderOnly">Required</span>
+                            </label>
+                            <input id="rn_AnswerFeedback2_16_EmailInput"  class="rn_EmailField" type="text"  value=""/>
+                            <label for="rn_AnswerFeedback2_16_FeedbackTextarea">
+                                Your Feedback<span class="rn_Required" > *</span><span class="rn_ScreenReaderOnly">Required</span>
+                            </label>
+                            <textarea id="rn_AnswerFeedback2_16_FeedbackTextarea" class="rn_Textarea" rows="4" cols="60" ></textarea>
+                        </form>-->
+                    </div>
+                </div>
+                <div id="rn_DetailTools">
+                    <div id="rn_SocialBookmarkLink_17" class="rn_SocialBookmarkLink">
+                        <div class="fb-share-button" data-href="{!SiteURL}/ekb/EKBDetail?brand={!Brand.Brand_Tag__c}&amp;id={!AW.ArticleId}" data-layout="button"></div>
+                        <!--<a class="twitter-share-button" href="https://twitter.com/intent/tweet?url={!SiteURL}/ekb/EKBDetail?brand={!Brand.Brand_Tag__c}&amp;id={!AW.ArticleId}" data-counturl="https://dev.twitter.com/web/tweet-button" data-count="none">
+                        Tweet</a>-->
+                        <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+                         <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+                        
+                        <!--<a href="mailto:?subject=I wanted you to see this site&amp;body={!SiteURL}/EKBDetail?brand={!Brand.Brand_Tag__c}&amp;id={!AW.ArticleId}" title="Share by Email">
+                            <img src="https://www.google.com/a/cpanel/appirio.com/images/favicon.ico"/>
+                        </a>-->
+                    </div>
+                    <div id="rn_EmailAnswerLink_19" class="rn_EmailAnswerLink">
+                        
+                        <!--<a id="rn_EmailAnswerLink_19_Link" href="javascript:void(0);" title="Email a link to this answer" >
+                            <img src="images/Email.png" alt=""/>
+                            <span>Email this page</span>
+                        </a>
+                        <div id="rn_EmailAnswerLink_19_EmailAnswerLinkForm" class="rn_EmailAnswerLinkForm rn_Hidden">
+                            <form onsubmit="return false;">
+                                <div id="rn_EmailAnswerLink_19_ErrorMessage"></div>
+                                <label id="rn_EmailAnswerLink_19_LabelRecipientEmail" for="rn_EmailAnswerLink_19_InputRecipientEmail">
+                                    Recipient Email            <span class="rn_Required"> *</span><span class="rn_ScreenReaderOnly">Required</span>
+                                </label>
+                                <input id="rn_EmailAnswerLink_19_InputRecipientEmail" type="text"  value="" />
+                                <label id="rn_EmailAnswerLink_19_LabelSenderEmail" for="rn_EmailAnswerLink_19_InputSenderEmail">
+                                    Your Email            <span class="rn_Required"> *</span><span class="rn_ScreenReaderOnly">Required</span>
+                                </label>
+                                <input id="rn_EmailAnswerLink_19_InputSenderEmail" type="text"  value="" />
+                                <label id="rn_EmailAnswerLink_19_LabelSenderName" for="rn_EmailAnswerLink_19_InputSenderName">
+                                    Your Name             <span class="rn_Required"> *</span><span class="rn_ScreenReaderOnly">Required</span>
+                                </label>
+                                <input id="rn_EmailAnswerLink_19_InputSenderName" type="text" maxlength="70"  value='' />
+                            </form>
+                        </div>-->
+                    </div>
+                </div>
+            </div>
+            <div id="rn_SideBar" role="navigation">
+                <div class="rn_Padding">
+                    <!--<div id="rn_RelatedAnswersNav_20" class="rn_Module">
+                        <h2>Related Answers</h2>
+                        <ul>
+                            <li  style="padding:0px 4px 8px 8px"><a href="/app/answers/detail/a_id/1/related/1" target="_self" > Forgot Password</a></li>
+                            <li  style="padding:0px 4px 8px 8px"><a href="/app/answers/detail/a_id/697/related/1" target="_self" > Can't Login</a></li>
+                            <li  style="padding:0px 4px 8px 8px"><a href="/app/answers/detail/a_id/12/related/1" target="_self" > Have Not Received Reset Password Email</a></li>
+                            <li  style="padding:0px 4px 8px 8px"><a href="/app/answers/detail/a_id/64/related/1" target="_self" > Update Settings</a></li>
+                            <li  style="padding:0px 4px 8px 8px"><a href="/app/answers/detail/a_id/4/related/1" target="_self" > Change Email Address</a></li>
+                        </ul>
+                    </div>-->
+                </div>
+
+            </div>
+        </div>
+    </apex:form>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+      <div id="fb-root"></div>
+        <script>(function(d, s, id) {
+          var js, fjs = d.getElementsByTagName(s)[0];
+          if (d.getElementById(id)) return;
+          js = d.createElement(s); js.id = id;
+          js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.4&appId=242561729144421";
+          fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));</script>
+        
+    </apex:define>
+    </apex:composition>
+</apex:page>

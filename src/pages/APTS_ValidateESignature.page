@@ -1,0 +1,17 @@
+<apex:page controller="APTS_ValidateESignatureController" action="{!ValidateForEsignature}">
+  
+    <script language="javascript">
+     window.onload = function() {
+     if('{!IsBadCreditStatus}' == 'true')
+      {
+          alert('The Credit status of related account does not allow to proceed further.');
+          window.location = '/' + '{!ProposalId }';
+      }
+      else
+      {      
+           window.location = '/apex/Apttus_QPESign__SelectAttachment?id={!ProposalId }';
+      }
+      
+   }       
+   </script> 
+</apex:page>

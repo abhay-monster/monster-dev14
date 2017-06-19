@@ -1,0 +1,3 @@
+<apex:page controller="RemoveAccountToProgramCC" action="{!removeAccountToProgram}">
+    <apex:pagemessages />
+</apex:page>

@@ -1,0 +1,85 @@
+<apex:page applyBodyTag="false" showHeader="false" StandardController="Account" Extensions="ExternalLinksController">
+<head>
+        <style>
+            @page{
+                size: 1200px;
+                margin: 1mm;
+            }
+            div{
+                padding: 5px;
+                
+            }
+            table{
+                width: 100%;
+                border: 1px solid black;
+            }
+                .light_blue_table{
+                    margin-bottom: 10px;
+                }
+            .section{
+            border: 1px solid black;
+            margin-bottom: 20px;
+            margin-bottom: 10px;
+                
+            }
+                .section_title{
+                    background-color: #8d66b3;
+                    color: #fff;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                    font-size: 16px;
+                }
+                .container_no_border{
+                    font-size: 13px;
+                    vertical-align: top;
+                    text-align: left;
+                }
+            
+        </style>
+    </head>
+    <body>
+    <apex:form >
+    <apex:pageBlock >
+    
+        <div class="section" >
+            <div class="section_title">Links to Salesforce Reports</div>
+<table id="actDetailsTable" class="list" border="1" cellspacing="0" cellpadding="0">
+                  <tbody>
+                       <apex:variable var="cnt" value="{!0}" />
+                       <apex:repeat value="{!InternalLIst}" var="item"> 
+                           <apex:outputText rendered="{!IF(AND(cnt!=0,MOD(cnt,4)==0),true,false)}" escape="false" value="</tr>"></apex:outputText>
+                           <apex:outputText rendered="{!IF(OR(cnt==0,MOD(cnt,4)==0),true,false)}" escape="false" value="<tr>"></apex:outputText> 
+                           <td class="dataCell" colspan="1" >
+                                   <apex:outputLink style="padding-right:5px" value="{!item.URL__c}" target="_blank">{!item.Name}</apex:outputLink>
+                                       </td>
+                           <apex:variable var="cnt" value="{!cnt+1}"/>
+                       </apex:repeat>
+                   </tbody>        
+               </table>
+
+</div>
+
+<div class="section">
+            <div class="section_title">Links to External Reports</div>
+            <apex:outputText value="Please use Internet Explorer to open these links" style="padding-bottom:15px"/>
+
+<table id="actDetailsTable" class="list" border="0" cellspacing="0" cellpadding="0">
+                  <tbody>
+                       <apex:variable var="cnt" value="{!0}" />
+                       <apex:repeat value="{!ExternalLIst}" var="item"> 
+                           <apex:outputText rendered="{!IF(AND(cnt!=0,MOD(cnt,4)==0),true,false)}" escape="false" value="</tr>"></apex:outputText>
+                           <apex:outputText rendered="{!IF(OR(cnt==0,MOD(cnt,4)==0),true,false)}" escape="false" value="<tr>"></apex:outputText> 
+                           <td class="dataCell" colspan="1">
+                                   <apex:outputLink value="{!item.URL__c}" target="_blank">{!item.Name}</apex:outputLink>
+                                       </td>
+                           <apex:variable var="cnt" value="{!cnt+1}"/>
+                       </apex:repeat>
+                   </tbody>        
+               </table>
+
+</div>
+  
+        </apex:pageBlock>
+    </apex:form>
+    </body>
+</apex:page>

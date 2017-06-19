@@ -1,0 +1,42 @@
+<apex:page standardController="RegistrationNumber__c" extensions="UpdateChildAccountsCC" action="{!updateAccounts}" >
+    <apex:form >
+        <apex:inputField value="{!RegistrationNumber__c.AgencyCommissionCheck__c}" rendered="false"/>
+        <apex:inputField value="{!RegistrationNumber__c.AgencyCommission__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.AgencyFlagCheck__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.AgencyFlag__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.CreditCheckReferenceNumberCheck__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.CreditCheckReferenceNumber__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.CreditlimitCheck__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.CreditLimit__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.CreditStatusCheck__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.CreditStatus__c}" />
+        <apex:inputField value="{!RegistrationNumber__c.CrRefCommentCheck__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.CrRefComment__c}" />
+        <apex:inputField value="{!RegistrationNumber__c.DirectDebitCheck__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.DirectDebitDiscountCheck__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.DirectDebitDiscount__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.DirectDebit__c}"  rendered="false"/>
+        <apex:inputField value="{!RegistrationNumber__c.PaymentmethodCheck__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.PaymentMethod__c}"  rendered="false"/>
+        <apex:inputField value="{!RegistrationNumber__c.PaymenttermsCheck__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.PaymentTerms__c}"  rendered="false"/>
+        <apex:inputField value="{!RegistrationNumber__c.POcommentsCheck__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.POComments__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.PORequiredCheck__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.PORequired__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.PostingCityCheck__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.PostingCity__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.PostingCountryCheck__c}"  rendered="false"/>
+        <apex:inputField value="{!RegistrationNumber__c.PostingCountry__c}" rendered="false" /> 
+        <apex:inputField value="{!RegistrationNumber__c.PostingStateProvinceCheck__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.PostingStateProvince__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.PostingStreetCheck__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.PostingStreet__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.PostingZipPostalCodeCheck__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.PostingZipPostalCode__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.SelfBillingCheck__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.SelfBilling__c}" rendered="false" /> 
+        <apex:inputField value="{!RegistrationNumber__c.SpecialBillingInstructionsCheck__c}" rendered="false" />
+        <apex:inputField value="{!RegistrationNumber__c.SpecialBillingInstructions__c}"  rendered="false"/>                        
+    </apex:form>
+</apex:page>

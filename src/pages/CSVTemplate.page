@@ -1,0 +1,10 @@
+<apex:page controller="CSVTemplateController"
+    contentType="application/csv#csvTemplate.csv" cache="true" showheader="false">
+    <apex:repeat value="{!debugger}" var="d">
+        {!d}<br />
+    </apex:repeat>
+    <apex:outputText value="Product Name, First Name,Last Name,Email,Phone,Line Item"/>
+    <apex:repeat value="{!wc}" var="c">
+        {!c.prodName},{!c.conlist2.FirstName},{!c.conlist2.LastName},{!c.conlist2.Email},{!c.conlist2.Phone},{!c.conlist2.ProposalLineItem__c}
+    </apex:repeat>
+</apex:page>

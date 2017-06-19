@@ -1,0 +1,88 @@
+<apex:page showHeader="false" sidebar="false" controller="SendPaypalAuthEmailCC">
+<style>
+    #message{
+        display: none;
+    }
+    #loader{
+        position: absolute;
+        width: 100%;
+        padding: 120px 0px 100px 0px;
+        text-align: center;
+        font-family: verdana;
+        font-size: 10px;
+        color: #999;
+        display: none;
+    }
+        #loader span{
+            border: 1px solid #eee;
+            padding: 10px 20px 10px 20px;
+        }
+</style>
+<script>
+        function toggleLoader(isShow){
+            document.getElementById("loader").style.display = isShow ? "block" : "none";
+        }
+        function getMessage(){
+            return document.getElementById("message").innerHTML;
+        }
+        function onPrepComplete(){
+            if(getMessage() == 'sendEmail'){
+                toggleLoader(false);
+                doSend();
+            }
+        }
+        function doSend(){
+            if(confirm("This will send a Paypal Authorization link."+
+                            "\nAre you sure you want to proceed?")){
+                toggleLoader(true);
+                sendEmail();
+            }else{
+                back();
+            }
+        }
+        function onSendComplete(){
+            toggleLoader(false);
+            alert(getMessage());
+            toggleLoader(true);
+            back();
+        }
+        function back(){
+            toggleLoader(true);
+            if({!IsInvoice}){
+                window.location = '/{!usedInvoice.Id}';
+            }
+            else if({!IsOrder}){
+                window.location = '/{!usedOrder.Id}';
+            }
+            else if({!IsProposal}){
+                window.location = '/{!usedProposal.Id}';
+            }
+        }
+        window.onload = function(){
+            if(getMessage() != '' && getMessage() != 'Email sent.'){
+                alert(getMessage());
+                window.location = '/';
+            }else{
+                var isAuthorizationEmailSent = {!usedOrder.IsPaypalAuthorizationEmailSent__c};
+                if(isAuthorizationEmailSent){
+                    if(confirm( 'An authorization email has been already sent.\nAre you sure you want to send again?')){
+                        toggleLoader(true);
+                        prepSendEmail();
+                    }else{
+                        back();
+                    }
+                }else{
+                    doSend();
+                }
+            }
+        }
+</script>
+<apex:form >
+    <apex:actionFunction action="{!prepSendEmail}" oncomplete="onPrepComplete()" name="prepSendEmail" rerender="message" />
+    <apex:actionFunction action="{!sendEmail}" oncomplete="onSendComplete()" name="sendEmail" rerender="message" />
+    <apex:outputPanel id="message">
+        <div id="message">{!Message}</div>
+    </apex:outputPanel>
+    <div id="loader"><span>Please wait...</span></div>
+</apex:form>
+</apex:page>

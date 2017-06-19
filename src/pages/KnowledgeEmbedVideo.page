@@ -1,0 +1,8 @@
+<!-- TKOM: added for S-453870 -->
+
+<apex:page showHeader="false" showChat="false" sidebar="false">
+<iframe width="560" height="315" 
+src="{!$CurrentPage.parameters.VideoURL}"
+frameborder="0" allowfullscreen="true">
+</iframe>
+</apex:page>

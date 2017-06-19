@@ -1,0 +1,75 @@
+<!-- 
+* @description entry page for the merge account custom UI 
+* @author Cloudsherpas
+* @date 01-06-2015
+-->
+<apex:page controller="AccountMergeController">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"/>
+
+    <apex:form id="SearchResults">
+        <apex:sectionHeader title="{!$Label.CS_AccountMerge_Info_Title}"/>
+        
+        <apex:actionFunction action="{!constructPage}" name="constructPage"/>
+        
+        <apex:outputPanel rendered="{!loading}">
+            <apex:pageBlock title="Please Wait...">
+                <center>
+                <div style="padding:3em">
+                    <apex:image value="/img/loading.gif">Please wait...&nbsp;</apex:image>
+                </div>
+                </center>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        
+        <apex:outputPanel rendered="{!NOT(loading)}">
+            <apex:pagemessages />
+            <apex:commandLink value="{!$Label.CS_AccountMerge_Btn_Cancel}" action="{!Cancel}" rendered="{!OR(NOT(isValidAccount),NOT(userCanMerge))}"/>
+            <apex:pageBlock title="{!$Label.CS_AccountMerge_Info_Step1}" rendered="{!AND(isValidAccount, userCanMerge)}">
+                <apex:pageBlockButtons style="float:right">
+                    <apex:commandButton value="{!$Label.CS_AccountMerge_Btn_Next}" action="{!navigateToMergePage}" />
+                    <apex:commandLink value="{!$Label.CS_AccountMerge_Btn_Cancel}" action="{!Cancel}"/>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection rendered="{!withSourceAccount}">
+                    <apex:outputField value="{!accnt.Name}"/>  
+                    <apex:outputField value="{!accnt.OwnerId}"/>
+                </apex:pageBlockSection> 
+                <br/>  
+                <apex:pageBlockSection columns="1" title="{!$Label.CS_AccountMerge_Info_Search_Title}" collapsible="false">
+                 </apex:pageBlockSection>
+                 <br/>
+                 Account ID &nbsp;<apex:inputText value="{!SearchId}"/> &nbsp;
+                 <apex:commandButton action="{!Search}" value="{!$Label.CS_AccountMerge_Btn_Find}" status="performingSearch" reRender="SearchResults, pbtRes"/>
+                 &nbsp;
+                <apex:actionStatus id="performingSearch">
+                    <apex:facet name="start">
+                        <apex:image value="/img/loading.gif">Searching...&nbsp;</apex:image>
+                    </apex:facet>
+                    <apex:facet name="stop">
+                    </apex:facet>
+                </apex:actionStatus>
+                 <br/><br/> 
+                 <apex:pageBlockTable value="{!Results}" var="r" rendered="{!ShowResults}" id="pbtRes">
+                     <apex:column >
+                         <apex:inputCheckbox value="{!r.isSelected}"/>
+                     </apex:column>
+                     <apex:column value="{!r.record.Name}"/> 
+                     <apex:column value="{!r.record.AccountID__c}"/>
+                     <apex:column value="{!r.record.ShippingCountry}"/>
+                     <apex:column value="{!r.record.OwnerId}"/>
+                </apex:pageBlockTable>   
+                    
+                <apex:outputLabel id="noResults" rendered="{!NOT(ShowResults)}" value="{!$Label.CS_AccountMerge_Err_No_Match_1} {!searchText} {!$Label.CS_AccountMerge_Err_No_Match_2} {!searchId}"/>
+            </apex:pageBlock>
+        </apex:outputPanel>
+        <script>
+            j$ = jQuery.noConflict();
+            j$(document).ready(function(){
+                var loading = {!loading};
+                if(loading){
+                    constructPage();
+                    return false;
+                }
+            });
+        </script>
+    </apex:form>
+</apex:page>

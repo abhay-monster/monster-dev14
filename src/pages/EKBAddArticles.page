@@ -1,0 +1,24 @@
+<apex:page showHeader="true" sidebar="true" standardStylesheets="true" controller="EKBAddArticlesController" tabStyle="Brand__c">
+
+    <apex:form >
+        <apex:sectionHeader title="Add Articles" />
+        <apex:pageBlock > 
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!add}" value="Add" >
+                    <apex:param name="Wrappper" value="{!listWrapper}" assignTo="{!listWrapperConversion}"/>
+                </apex:commandButton>
+                <apex:commandButton action="{!retURL}" Value="Back"/>   
+            </apex:pageBlockButtons>
+            <apex:pageBlockTable value="{!listWrapper}" var="kav" title="Add Articles">
+                <apex:column headerValue="Add Article?">
+                    <apex:inputCheckbox value="{!kav.isSelected}"/>
+                </apex:column>
+                <apex:column value="{!kav.article.ArticleNumber}"/>
+                <apex:column value="{!kav.article.Title}"/>
+                <apex:column value="{!kav.article.Summary}"/>
+            </apex:pageBlockTable>
+
+        </apex:pageBlock>
+    </apex:form>
+
+</apex:page>

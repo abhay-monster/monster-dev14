@@ -1,0 +1,650 @@
+<apex:page standardController="Account" extensions="AccountHierarchyDisplayCX" showHeader="false" sidebar="false">
+<style>
+    button{
+        padding: 4px 3px !important;
+        cursor: pointer !important;
+    }
+    div#account-name{
+        background-color: #8a9ebe;
+        color: #fff;
+        padding: 5px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    td.ah, td.ah-output, td.ah-input, td.ah-report{
+        padding: 5px;
+        background-color: #fff;
+        border-bottom: 1px solid #e3deb8;
+        text-align: left;
+    }
+    td.ah-input{
+        display: none;
+    }
+    table.ah-table{
+        border: 1px solid #eee;
+    }
+    #pagination-container{
+        padding: 5px 3px 7px 3px;
+        border: 1px solid #eee;
+    }
+    .pagination{
+        padding: 5px;
+        color: #8a9ebe;
+    }
+    span.inactive-pagination{
+        margin: 0px;
+        padding: 5px 5px 5px 0px;
+        color: #aaa;
+        text-decoration: underline;
+        cursor: cross;
+    }
+    span.page-info{
+        padding: 10px;
+    }
+    #loadingContainer{
+        position: absolute;
+        top: 0px;
+        left: 0px;
+    }
+        #loadingContainer #bg{
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            /* IE 8 */
+            -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+            
+            /* IE 5-7 */
+            filter: alpha(opacity=50);
+            
+            /* Netscape */
+            -moz-opacity: 0.5;
+            
+            /* Safari 1.x */
+            -khtml-opacity: 0.5;
+            
+            /* Good browsers */
+            opacity: 0.5;
+        }
+        #loadingContainer #loader-title{
+            position: relative;
+            margin: 0px auto;
+            margin-top: 150px;
+            width: 250px;
+            padding: 30px;
+            text-align: center;
+            color: background-color: #8a9ebe;
+            background-color: #fff;
+            z-index: 99;
+            border: 1px solid #eee;
+        }
+    .hierarchy-bracket{
+        position: relative;
+        width: 8px; 
+        height: 8px; 
+        border-left: 1px dotted #000; 
+        border-bottom: 1px dotted #000;
+        float: left;
+    }
+    .hierarchy-header, .hierarchy-header-report, .hierarchy-header-editable, .hierarchy-header-actions, .FilterContainerTitle{
+        background: #f2f3f3;
+        border-width: 0 0 1px 1px;
+        border-color: #e0e3e5;
+        border-bottom: 2px solid #ccc;
+        white-space: nowrap;
+        padding: 5px;
+        text-align: left;
+    }
+    #loader-ok-button{
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+    .show-in-tree{
+        color: #333 !important;
+        margin: 1px;
+        padding: 2px 3px;
+        border: 1px solid #b5b5b5;
+        border-bottom-color: #7f7f7f;
+        background: #e8e8e9 url('/img/alohaSkin/btn_sprite.png') repeat-x right top;
+        font-weight: bold;
+        font-size: .9em;
+        -moz-border-radius: 3px;
+        -webkit-border-radius: 3px;
+        border-radius: 3px;
+        text-decoration: none;
+        padding: 4px 3px !important;
+    }
+    .show-in-tree:hover{
+        color: #333;
+        text-decoration: none;
+        background-position: right -30px;
+    }
+    #FilterContainer{
+        border: 1px solid #b5b5b5;
+        margin-bottom: 10px;
+    }
+        #FilterContainer td{
+            padding: 3px 10px 3px 10px;
+        }
+        #FilterContainer .filterField{
+            text-align: left;
+        }
+        .FilterContainerTitle{
+            font-weight: bold;
+            color: #666;
+        }
+        .FilterContainerTitle td{
+            padding: 10px;
+            border-bottom: 1px solid #b5b5b5;
+        }
+</style>
+<script src="/soap/ajax/29.0/connection.js" type="text/javascript"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.min.js" type="text/javascript"></script>
+<script>
+    sforce.connection.sessionId = "{!$Api.Session_ID}";
+    $(function(){
+        
+    });
+    
+    var InlineEditSupport = {};
+    InlineEditSupport.INIT = "null-init";
+    InlineEditSupport.storage = [];
+    InlineEditSupport.init = function(){
+        var hierarchyRows = $(".hierarchy-row").get();
+        for(var i = 0; i < hierarchyRows.length; i++){
+            var id = hierarchyRows[i].id.replace("row-", "");
+            InlineEditSupport.storage.push(new ObjStorage(id));
+        }
+    }
+    InlineEditSupport.enableEdit = function(rowID){
+        InlineEditSupport.toggleDisplay(rowID, true);
+    }
+    InlineEditSupport.cancelEdit = function(rowID){
+        InlineEditSupport.toggleDisplay(rowID, false);
+    }
+    InlineEditSupport.toggleDisplay = function(trObjID, isEdit){
+        var inputs = $('#row-'+trObjID+' .ah-input');       
+        var outputs = $('#row-'+trObjID+' .ah-output');
+        if(isEdit){
+            inputs.show();
+            outputs.hide();
+        }else{
+            inputs.hide();
+            outputs.show();
+        }
+    }
+    
+    InlineEditSupport.getData = function(ID){
+        for(var i = 0; i < InlineEditSupport.storage.length; i++){
+            if(InlineEditSupport.storage[i].ID == ID){
+                return InlineEditSupport.storage[i];
+            }
+        }
+        return false;
+    }
+    InlineEditSupport.updateData = function(accountID, field, value, fieldID){
+        var obj = InlineEditSupport.getData(accountID);
+        if(obj){
+            value = value == "" ? null : value;
+            
+            if((field == 'DomesticHQ' || field == 'Program') && value != null){
+                value = document.getElementById(fieldID+"_lkid").value;
+            }
+            for(var f in obj){
+                if(value != InlineEditSupport.INIT && f == field){
+                    obj[f] = value;
+                }
+            }
+        }
+    }
+    InlineEditSupport.updateAccount = function(accountID, accountName){
+        var valueObj = InlineEditSupport.getData(accountID);
+        if(!valueObj) return;
+        sforce.connection.sessionId = "{!$Api.Session_ID}";
+        
+        var accObj = new sforce.SObject("Account"); 
+        accObj.set("Id", accountID);
+        if(valueObj.DomesticHQ != InlineEditSupport.INIT){
+            accObj.DomesticHQAccount__c = valueObj.DomesticHQ;
+        }
+        if(valueObj.Level != InlineEditSupport.INIT){
+            accObj.level__c = valueObj.Level;
+        }
+        if(valueObj.Program != InlineEditSupport.INIT){
+            accObj.AccountProgram__c = valueObj.Program;
+        }
+        
+        PreLoader.show("Updating record please wait...");
+        
+        sforce.connection.update([accObj], {
+            onSuccess : function(result){
+                if(result[0].getBoolean("success")){
+                    PreLoader.setText(accountName + " account updated.", true, function(){window.location.reload()});
+                }else{
+                    var errorsStr = "";
+                    for(var i = 0; i < result.length; i++){
+                        if(result[i].errors){
+                            errorsStr += "<br />-" + result[i].errors.message;
+                        }
+                    }
+                    errorsStr = errorsStr == "" ? "" : "<br /><p style='text-align: left !important;'>Error(s):" + errorsStr + "</p>";
+                    
+                    PreLoader.setText(accountName + " account update Failed." + errorsStr, true, function(){window.location.reload()});
+                }
+            },
+            onFailure : function(error){
+                PreLoader.setText("Failed to update account " + accountName + "\n\nError: \n" + error, true, function(){window.location.reload()});
+            }
+        });
+    }
+    var ObjStorage = function(ID){
+        this.ID = ID;
+        this.Program = InlineEditSupport.INIT;
+        this.DomesticHQ = InlineEditSupport.INIT;
+        this.Level = InlineEditSupport.INIT;
+    }
+    
+    function changeHierarchy(Id){
+        var pos = 'width='+innerWidth+',height='+innerHeight+',left='+window.screenLeft+',top='+window.screenTop;
+        window.open('/apex/AccountHierarchyDisplay?id='+Id, '_blank',pos);
+        window.close();
+    }
+    var PreLoader = {};
+    PreLoader.show = function(displayText){
+        displayText = displayText == null ? "Loading..." : displayText;
+        var loader = document.createElement("DIV");
+        loader.id = "loadingContainer";
+        loader.style.width = document.body.clientWidth + "px";
+        loader.style.height = document.body.clientHeight + "px";
+        
+        var bg = document.createElement("DIV");
+        bg.id = "bg";
+        loader.appendChild(bg);
+        
+        var title = document.createElement("DIV");
+        title.id = "loader-title";
+        title.innerHTML = displayText;
+        loader.appendChild(title);
+        
+        document.body.appendChild(loader);
+    }
+    
+    PreLoader.remove = function(){
+        var preloader = document.getElementById("loadingContainer");
+        if(preloader){
+            document.body.removeChild(preloader);
+        }
+    }
+    
+    PreLoader.setText = function(displayText, showOk, okBtnClick){
+        try{
+            var preloader = document.getElementById("loadingContainer");
+            if(preloader){
+                var title = document.getElementById("loader-title");
+                if(title){
+                    if(showOk){
+                        displayText += "<br /><br /><button type='button' id='loader-ok-button'>Ok<nutton>";
+                    }
+                    title.innerHTML = displayText;
+                    
+                    var okbtn = document.getElementById("loader-ok-button");
+                    if(okbtn){
+                        okbtn.onclick = okBtnClick ? okBtnClick : function(){console.log("ok btn clicked")};
+                    }
+                }
+            }
+        }catch(e){
+            alert("Error inside settext: " + e);
+        }
+    }
+    
+    PreLoader.resize = function(){
+        var preloader = document.getElementById("loadingContainer");
+        if(preloader){
+            preloader.style.width = document.body.clientWidth + "px";
+            preloader.style.height = document.body.clientHeight + "px";
+        }
+    }
+    
+    window.onload = function(){
+        InlineEditSupport.init();
+        window.onresize= function(){ PreLoader.resize(); };
+    }
+</script>
+
+<script type="text/javascript"> 
+  function openLookup(baseURL, width, modified, searchParam){
+    var originalbaseURL = baseURL;
+    var originalwidth = width;
+    var originalmodified = modified;
+    var originalsearchParam = searchParam;
+    
+    var lookupType = baseURL.substr(baseURL.length-3, 3);
+    if (modified == '1') baseURL = baseURL + searchParam;
+    
+    var isCustomLookup = false;
+    
+    // Following "001" is the lookup type for Account object so change this as per your standard or custom object
+    if(lookupType == "001"){
+  
+      var urlArr = baseURL.split("&");
+      var txtId = '';
+      if(urlArr.length > 2) {
+        urlArr = urlArr[1].split('=');
+        txtId = urlArr[1];
+      }
+     
+      // Following is the url of Custom Lookup page. You need to change that accordingly
+      baseURL = "/apex/CustomAccountLookup?txt=" + txtId;
+      if(txtId.indexOf('Account0') > -1 ){
+        baseURL = baseURL + "&lksrch={!CurrentAccount.Id}";
+      }
+      
+      if(txtId.indexOf('Account1') > -1 ){
+        baseURL = baseURL + "&lksrch={!CurrentAccount.Id}";
+      }
+      
+      /*if(txtId.indexOf('Account2') > -1 ){
+        baseURL = baseURL;
+      }*/
+      
+      // Following is the id of apex:form control "myForm". You need to change that accordingly
+      baseURL = baseURL + "&frm=" + escapeUTF("{!$Component.myForm}");
+      if (modified == '1') {
+        baseURL = baseURL + "&lksearch=" + searchParam;
+      }
+      
+      // Following is the ID of inputField that is the lookup to be customized as custom lookup
+      if(txtId.indexOf('Account') > -1 ){
+        isCustomLookup = true;
+      }
+    }
+    
+    
+    if(isCustomLookup == true){
+        if(txtId.indexOf('Account0') > -1 ){
+            
+            openPopup(baseURL + "&txtText=Account Id" , "lookup", 350, 480, "width="+width+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+        }
+        if(txtId.indexOf('Account1') > -1 ){
+            openPopup(baseURL + "&txtText=Domestic HQ Id", "lookup", 350, 480, "width="+width+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+        }
+        if(txtId.indexOf('Account2') > -1 ){
+            openPopup(baseURL + "&txtText=Parent Id", "lookup", 350, 480, "width="+width+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+        }
+    }
+    else {
+      if (modified == '1') originalbaseURL = originalbaseURL + originalsearchParam;
+      openPopup(originalbaseURL, "lookup", 350, 480, "width="+originalwidth+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+    } 
+  }
+  
+    
+      
+</script>
+
+<apex:form id="myForm">
+    <apex:pageBlock title="Account Hierarchy" id="HierarchyBlock">
+        <div id="account-name">
+            {!CurrentAccount.Name}
+            <apex:actionStatus id="hierarchyLoadStatus" startText=" Loading..." stopText=" "/>
+        </div>
+        <table class="ah-table" cellspacing="0" cellpadding="0">
+        <tr>
+            <td class="hierarchy-header-actions">Actions</td>
+            <td class="hierarchy-header">{!$ObjectType.Account.Fields.Name.Label}</td>
+            
+            <td class="hierarchy-header-report">Activities</td>
+            <td class="hierarchy-header-report">{!$Objecttype.Contact.labelplural}</td>
+            <td class="hierarchy-header-report">{!$Objecttype.Opportunity.labelplural}</td>
+            <td class="hierarchy-header-report">{!$ObjectType.Apttus_Proposal__Proposal__c.labelplural}</td>
+            <td class="hierarchy-header-report">{!$Objecttype.Order__c.labelplural}</td>
+            <td class="hierarchy-header-report">{!$Objecttype.Case.labelplural}</td>
+            
+            <td class="hierarchy-header">{!$ObjectType.Account.Fields.Last12MonthsSpend__c.Label}</td>
+            <td class="hierarchy-header">{!$ObjectType.Account.Fields.Hierarchy12MonthSpend__c.Label}</td>
+            <td class="hierarchy-header">{!$ObjectType.Account.Fields.AccountID__c.Label}</td>
+            <td class="hierarchy-header">{!$ObjectType.Account.Fields.AccountStatus__c.Label}</td>
+            <td class="hierarchy-header">{!$ObjectType.Account.Fields.CustomerNumber__c.Label}</td>
+            <td class="hierarchy-header">{!$ObjectType.Account.Fields.Primary_Xcode__c.Label}</td>
+            
+            <td class="hierarchy-header-editable">{!$ObjectType.Account.Fields.AccountProgram__c.Label}</td>
+            <td class="hierarchy-header-editable">{!$ObjectType.Account.Fields.Level__c.Label}</td>
+            <td class="hierarchy-header-editable">{!$ObjectType.Account.Fields.DomesticHQAccount__c.Label}</td>
+            
+            <td class="hierarchy-header">{!$ObjectType.Account.Fields.GlobalHQAccount__c.Label}</td>
+            <td class="hierarchy-header">{!$ObjectType.Account.Fields.Account_Type__c.Label}</td>                   
+            <td class="hierarchy-header">{!$ObjectType.Account.Fields.ShippingCity.Label}</td>
+            <td class="hierarchy-header">{!$ObjectType.Account.Fields.ShippingState.Label}</td>
+            <td class="hierarchy-header">{!$ObjectType.Account.Fields.ShippingCountry.Label}</td> 
+            <td class="hierarchy-header">{!$ObjectType.Account.Fields.OwnerId.Label}</td>
+        </tr>
+        <apex:repeat value="{!HierarchyAccountList}" var="wrap">
+            <tr class="hierarchy-row" id="row-{!wrap.Acc.Id}">
+                <td class="ah-output" style="white-space: nowrap;">
+                    <apex:outputPanel rendered="{!RenderEditButton}">
+                        <button type="button" onClick="InlineEditSupport.enableEdit('{!wrap.Acc.Id}');">Edit</button>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!wrap.EnableShowInTree}">
+                        <a class="show-in-tree" href="/apex/AccountHierarchyDisplay?id={!wrap.Acc.Id}">View This Level</a>
+                    </apex:outputPanel>
+                </td>
+                <td class="ah-input"  style="white-space: nowrap;">
+                    <button type="button" onClick="InlineEditSupport.updateAccount('{!wrap.Acc.Id}', '{!wrap.Acc.Name}');">Save</button>
+                    <button type="button" onClick="InlineEditSupport.cancelEdit('{!wrap.Acc.Id}');">Cancel</button>
+                </td>
+                
+                <td class="ah" style="{!wrap.Position} white-space: nowrap;">
+                    <div class="hierarchy-bracket" style="{!wrap.HideBracket}"></div>&nbsp;
+                    <apex:outputLink target="_blank" value="/{!wrap.Acc.Id}">{!wrap.Acc.Name}</apex:outputLink>
+                </td>
+                
+                <td class="ah-report"><apex:outputLink value="/{!activityReport}?pv0={!wrap.Acc.X15DigitAccountId__c}&pv1={!wrap.Acc.X15DigitAccountId__c}" target="_blank">Activities</apex:outputLink></td>
+                <td class="ah-report"><apex:outputLink value="/{!contactReport}?pv0={!wrap.Acc.X15DigitAccountId__c}&pv1={!wrap.Acc.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Contact.labelplural}</apex:outputLink></td>
+                <td class="ah-report"><apex:outputLink value="/{!opportunityReport}?pv0={!wrap.Acc.X15DigitAccountId__c}&pv1={!wrap.Acc.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Opportunity.labelplural}</apex:outputLink></td>
+                <td class="ah-report"><apex:outputLink value="/{!quoteProposalReport}?pv0={!wrap.Acc.X15DigitAccountId__c}&pv1={!wrap.Acc.X15DigitAccountId__c}" target="_blank">{!$ObjectType.Apttus_Proposal__Proposal__c.labelplural}</apex:outputLink></td>
+                <td class="ah-report"><apex:outputLink value="/{!orderReport}?pv0={!wrap.Acc.X15DigitAccountId__c}&pv1={!wrap.Acc.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Order__c.labelplural}</apex:outputLink></td>
+                <td class="ah-report"><apex:outputLink value="/{!caseReport}?pv0={!wrap.Acc.X15DigitAccountId__c}&pv1={!wrap.Acc.X15DigitAccountId__c}" target="_blank">{!$Objecttype.Case.labelplural}</apex:outputLink></td>
+                
+                <td class="ah"><apex:outputField value="{!wrap.Acc.Last12MonthsSpend__c}"/></td>
+                <td class="ah"><apex:outputField value="{!wrap.Acc.Hierarchy12MonthSpend__c}"/></td>
+                <td class="ah"><apex:outputField value="{!wrap.Acc.AccountID__c}"/></td>
+                <td class="ah"><apex:outputField value="{!wrap.Acc.AccountStatus__c}"/></td>
+                <td class="ah"><apex:outputField value="{!wrap.Acc.CustomerNumber__c}"/></td>
+                <td class="ah"><apex:outputField value="{!wrap.Acc.Primary_Xcode__c}"/></td>
+                
+                <td class="ah-output">
+                    <apex:outputField value="{!wrap.Acc.AccountProgram__c}" />
+                </td>
+                <td class="ah-input">
+                    <apex:inputField onchange="InlineEditSupport.updateData('{!wrap.Acc.Id}', 'Program', this.value, this.id);" value="{!wrap.Acc.AccountProgram__c}" />
+                </td>
+                
+                <td class="ah-output">
+                    <apex:outputField value="{!wrap.Acc.Level__c}" />
+                </td>
+                <td class="ah-input">
+                    <apex:inputField onchange="InlineEditSupport.updateData('{!wrap.Acc.Id}', 'Level', this.value, this.id);" value="{!wrap.Acc.Level__c}" />
+                </td>
+                
+                <td class="ah-output">
+                    <apex:outputField value="{!wrap.Acc.DomesticHQAccount__c}" />
+                </td>
+                <td class="ah-input">
+                    <apex:inputField onchange="InlineEditSupport.updateData('{!wrap.Acc.Id}', 'DomesticHQ', this.value, this.id);" value="{!wrap.Acc.DomesticHQAccount__c}" />
+                </td>
+                
+                <td class="ah"><apex:OutputField value="{!wrap.Acc.GlobalHQAccount__c}"/></td>
+                <td class="ah"><apex:OutputField value="{!wrap.Acc.Account_Type__c}"/></td>          
+                <td class="ah"><apex:outputField value="{!wrap.Acc.ShippingCity}"/></td>
+                <td class="ah"><apex:outputField value="{!wrap.Acc.ShippingState}"/></td>
+                <td class="ah"><apex:outputField value="{!wrap.Acc.ShippingCountry}"/></td>  
+                <td class="ah"><apex:outputField value="{!wrap.Acc.OwnerId}"/></td>
+            </tr>
+        </apex:repeat>
+        </table>
+    </apex:pageBlock>
+    
+    <apex:pageBlock title="{!CurrentAccount.Name} Children" id="ChildPageBlock" rendered="{!HasChildren}">
+    
+        
+    
+        <table id="FilterContainer" cellspacing="0" cellpadding="0">
+        <tr class="FilterContainerTitle">
+            <td>Filter Accounts By</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Level: </td>
+            <td class="filterField">
+            <apex:selectList size="1" value="{!Level}">
+                <apex:selectOptions value="{!levelOptions}"/>           
+            </apex:selectList></td>
+        </tr>
+        <tr>
+            <td>Account Program: </td>
+            <td class="filterField"><apex:inputField value="{!FilterRecord.AccountProgram__c}" /></td>
+        </tr>
+        <tr>
+            <td>Account Id: </td>
+             
+            <td class="filterField"><apex:inputField id="Account0" value="{!FilterRecord.GlobalHQAccount__c}"  /></td>
+        </tr>
+        <tr>
+            <td>Domestic HQ Id: </td>
+            <td class="filterField"><apex:inputField id="Account1" value="{!FilterRecord.Domestic_HQ_Id__c}" /></td>
+        </tr> 
+        
+        <tr>
+            <td>Parent Id: </td>
+            <td class="filterField"><apex:inputField id="Account2" value="{!FilterRecord.Parent_Id__c}" /></td>
+        </tr>
+
+        <tr>
+            <td>Global Ultimate DUNS: </td>
+            <td class="filterField"><apex:inputText value="{!GlobalUltimateDUNS}" /></td>
+        </tr>
+
+        <tr>
+            <td>Country: </td>
+            <td class="filterField">
+                <apex:selectList value="{!CountryFilter}" multiselect="false" size="1">
+                    <apex:selectOptions value="{!CountryFilterOptions}" />
+                </apex:selectList>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <apex:commandbutton value="Filter" action="{!createChildRecords}">
+                    <apex:actionSupport event="onclick" rerender="ChildPageBlock" status="childLoadStatus"/>
+                </apex:commandbutton> 
+                <apex:actionStatus id="childLoadStatus" startText=" Loading..." stopText=" "/>
+            </td>
+            <td></td>
+        </tr>
+        </table>
+    
+        <apex:pageBlockTable value="{!ChildAccounts}" var="ca">
+            <apex:column headerValue="Action" style="white-space: nowrap;">
+                <a class="show-in-tree" href="/apex/AccountHierarchyDisplay?id={!ca.Id}">Show In Tree</a>
+            </apex:column>
+            <apex:column >
+                <apex:facet name="header">Account Name</apex:facet>
+                    <a href="/{!ca.Id}" id="{!ca.Id}" target="_blank" 
+                            position="relative"
+                            onblur="LookupHoverDetail.getHover('{!ca.Id}').hide();"
+                            onfocus="LookupHoverDetail.getHover('{!ca.Id}', '/{!ca.Id}/m?retURL=%2F{!ca.Id}&isAjaxRequest=1').show();"
+                            onmouseout="LookupHoverDetail.getHover('{!ca.Id}').hide();"
+                            onmouseover="LookupHoverDetail.getHover('{!ca.Id}', '/{!ca.Id}/m?retURL=%2F{!ca.Id}&isAjaxRequest=1').show();">
+            
+                    {!ca.Name}
+                    </a>
+            </apex:column>
+            
+            <apex:column value="{!ca.ParentId}"/>
+            <apex:column value="{!ca.Last12MonthsSpend__c}"/>
+            <apex:column value="{!ca.AccountID__c}"/>
+            <apex:column value="{!ca.AccountStatus__c}"/>
+            <apex:column value="{!ca.CustomerNumber__c}"/>
+            <apex:column value="{!ca.Primary_Xcode__c}"/>
+            <apex:column value="{!ca.MasterHQ__c}"/>
+            <apex:column value="{!ca.AccountProgram__c}"/>
+            <apex:column value="{!ca.Level__c}"/>
+            <apex:column value="{!ca.DomesticHQDisplay__c}"/>
+            <apex:column value="{!ca.GlobalHQDisplay__c}" />
+            <apex:column value="{!ca.Account_Type__c}"/>
+            <apex:column value="{!ca.ShippingCity}"/>
+            <apex:column value="{!ca.ShippingState}"/>
+            <apex:column value="{!ca.ShippingCountry}"/>
+            <apex:column value="{!ca.OwnerId}"/>
+        </apex:pageBlockTable>
+        <div id="pagination-container">
+            <span class="pagination"><apex:commandLink action="{!prevChildren}" value="Previous" rendered="{!HasPrev}" /></span>
+            <span class="inactive-pagination"><apex:outputLabel value="Previous" rendered="{!NoPrev}" /></span>
+            <span class="page-info">{!PageInfo}</span>
+            <span class="pagination"><apex:commandLink action="{!nextChildren}" value="Next" rendered="{!HasNext}" /></span>
+            <span class="inactive-pagination"><apex:outputLabel value="Next" rendered="{!NoNext}" /></span>
+        </div>
+    </apex:pageBlock>
+    <apex:pageBlock title="{!CurrentAccount.Name} Children" rendered="{!HasNoChildren}">
+        <table id="FilterContainer" cellspacing="0" cellpadding="0">
+        <tr class="FilterContainerTitle">
+            <td>Filter Accounts By</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Level: </td>
+            <td class="filterField">
+            <apex:selectList size="1" value="{!Level}">
+                <apex:selectOptions value="{!levelOptions}"/>           
+            </apex:selectList></td>
+        </tr>
+        <tr>
+            <td>Account Program: </td>
+            <td class="filterField"><apex:inputField value="{!FilterRecord.AccountProgram__c}" /></td>
+        </tr>
+        <tr>
+            <td>Account Id: </td>
+            
+            <td class="filterField"><apex:inputField id="Account0" value="{!FilterRecord.GlobalHQAccount__c}"  /></td>
+        </tr>
+        <tr>
+            <td>Domestic HQ Id: </td>
+            <td class="filterField"><apex:inputField id="Account1" value="{!FilterRecord.Domestic_HQ_Id__c}" /></td>
+        </tr> 
+        
+        <tr>
+            <td>Parent Id: </td>
+            <td class="filterField"><apex:inputField id="Account2" value="{!FilterRecord.Parent_Id__c}" /></td>
+        </tr>
+        
+        <tr>
+            <td>Global Ultimate DUNS: </td>
+            <td class="filterField"><apex:inputText value="{!GlobalUltimateDUNS}" /></td>
+        </tr>
+        
+        <tr>
+            <td>Country: </td>
+            <td class="filterField">
+                <apex:selectList value="{!CountryFilter}" multiselect="false" size="1">
+                    <apex:selectOptions value="{!CountryFilterOptions}" />
+                </apex:selectList>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <apex:commandbutton value="Filter" action="{!createChildRecords}">
+                    <apex:actionSupport event="onclick" rerender="ChildPageBlock" status="childLoadStatus"/>
+                </apex:commandbutton> 
+                <apex:actionStatus id="childLoadStatus" startText=" Loading..." stopText=" "/>
+            </td>
+            <td></td>
+        </tr>
+        </table>
+        
+        No available record.
+    </apex:pageBlock>
+</apex:form>
+</apex:page>

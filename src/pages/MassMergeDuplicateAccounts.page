@@ -1,0 +1,84 @@
+<apex:page controller="MassMergeDuplicateAccountsCtrl">
+    <apex:form >
+        <script>
+            function checkAll(cb)
+            {
+                var inputElem = document.getElementsByTagName("input");
+                for(var i=0; i<inputElem.length; i++)
+                {
+                    if(inputElem[i].id.indexOf("checkedone")!=-1)
+                    inputElem[i].checked = cb.checked;
+                }
+            }
+            /* Uncheck CheckAll checkbox if any one of checkboxes are unchecked*/
+            function uncheckAll(){
+              var inputElem = document.getElementsByTagName("input");
+              var flag = true; 
+              var checkAll; 
+                for(var i=0; i<inputElem.length; i++)
+                {
+                if(inputElem[i].id.indexOf("checkAllDone") != -1){
+                  checkAll = inputElem[i];
+                 }
+                    if(inputElem[i].id.indexOf("checkedone") != -1 && !inputElem[i].checked){
+                      flag = false;
+                      break; 
+                    }                
+                }
+                checkAll.checked = flag;
+            }
+        </script>
+        <apex:actionFunction action="{!fetchAccounts}" name="reRenderTable" rerender="op1"/>
+<!--        {!isDataSteward} -->
+        <apex:pageBlock id="pb">
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton action="{!runAccountMergeBatch}" value="Merge Accounts" rerender="pb, op2, pollerId" disabled="{!batchInProcess}" onComplete="alert('BATCH PROCESSING');"/>
+                <apex:CommandButton value="Remove Account" action="{!removeAccount}" rerender="op1" />
+                <apex:outputpanel id="pollerId">
+                    <apex:actionPoller action="{!getProcessingMessage}" rerender="msg" interval="5" rendered="{!batchProcessed}"/>
+                    <apex:outputLabel value="{!message}" id="msg" style="text-wight:bold;"/>
+                </apex:outputpanel>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="1">
+                <apex:outputlabel value="Organization" for="orgId" > &nbsp;&nbsp;
+                    <apex:selectList size="1" multiselect="false" value="{!selectedOrg}" onChange="reRenderTable();" id="orgId">
+                      <apex:selectOptions value="{!Organisations}"></apex:selectOptions>
+                    </apex:selectList>
+                </apex:outputlabel>
+                
+            </apex:pageBlockSection>
+            <apex:outputPanel id="op1">
+                <apex:pageBlockTable value="{!wrappers}" var="w" rendered="{!wrappers.size > 0}">
+                    <apex:column >
+                    <apex:facet name="header"> 
+                      <apex:inputCheckbox id="checkAllDone" onClick="checkAll(this);" />
+                    </apex:facet>
+                    <apex:inputCheckbox value="{!w.isSelected}" selected="{!w.isSelected}" id="checkedone" onclick="uncheckAll();" />
+                    </apex:column>
+                    <!--
+                    <apex:column headerValue="Select">
+                        <apex:inputCheckbox value="{!w.isSelected}" selected="{!w.isSelected}" />
+                    </apex:column>
+                    -->
+                    <apex:column value="{!w.acc.AccountID__c}" headerValue="Duplicate Account"/>
+                    <apex:column value="{!w.acc.Merge_Winner__r.AccountID__c}" headerValue="Merge Winner"/>
+                </apex:pageBlockTable>
+            </apex:outputPanel>
+            <br/><br/>
+            <apex:outputPanel id="op2" >
+                <apex:pageBlockTable value="{!listSelectedRec}" var="acc" rendered="{!listSelectedRec.size > 0}">
+                    <apex:column value="{!acc.AccountID__c}" headerValue="Duplicate Account"/>
+                    <apex:column value="{!acc.Merge_Winner__r.AccountID__c}" headerValue="Merge Winner"/>
+                </apex:pageBlockTable>
+            </apex:outputPanel>
+
+<!--            <apex:outputPanel id="op3" rendered="{!wrappers.size == 0}"> -->
+<!--                <apex:outputText value="No Records Found"/> -->
+<!--            </apex:outputPanel> -->
+<!--            <apex:outputPanel id="op4" rendered="{!listSelectedRec.size == 0}"> -->
+<!--                <apex:outputText value="No Records Selected"/> -->
+<!--            </apex:outputPanel> -->
+
+        </apex:PageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,318 @@
+<apex:page controller="TransferAndAdjustmentProcessCC">
+<style>
+#process-type-select{
+    margin: 10px 0px 15px 0px;
+    padding: 3px;
+    border: 1px solid #e0e3e5;
+    background-color: #eee;
+    font-weight: bold;
+    padding: 4px 3px 4px 11px;
+    width: 270px;
+}
+    #process-type-select select{
+        margin-left: 10px
+    }
+#ajax-output, #sync-details{
+    display: none;
+}
+    ul li{
+        margin: 0px;
+        padding: 0px;
+    }
+    #sync-detail-title{
+        position: absolute;
+        left: 20px;
+        top: 10px;
+        font-size: 15px;
+        font-weight: bold;
+    }
+#preloader, #preloader-bg{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 99;
+}
+    #preloader-bg{
+        position: absolute;
+        background-color: #fff;
+        z-index: 1;
+    }
+    #preloader-content{
+        position: relative;
+        margin: 0px auto;
+        width: 300px;
+        padding: 60px 30px 50px 30px;
+        margin-top: 200px;
+        background-color: #fff;
+        border: 1px solid #ededed;
+        text-align: center;
+        font-size: 13px;
+        z-index: 2;
+    }
+    #OkBtn, #CancelBtn{
+        padding: 2px 10px 2px 10px;
+        font-size: 12px;
+        margin-top: 15px;
+        cursor: pointer;
+    }
+    body .bPageBlock .pbBody .grey .pbSubheader{
+        background-color:#c0c0c0;
+    }
+    body .bPageBlock .pbBody .grey .pbSubheader h3{
+        color:#000;
+    }
+</style>
+<apex:includeScript value="{!URLFOR($Resource.CS_KnowledgeSiteAssets, '/assets/jquery.js')}" />
+<script>
+var IsSave = false;
+var PreloaderMsg = "Loading...";
+var newWin=null;
+ function openLookupPopup(name, id, idFld, nameFld)
+ {
+  var url="/apex/TransferCustomLookup?namefield=" + name + "&idfield=" + id + "&idFld=" + idFld + "&nameFld=" + nameFld;
+  newWin=window.open(url, 'Popup','height=500,width=600,left=100,top=100,resizable=no,scrollbars=yes,toolbar=no,status=no');
+  if (window.focus)
+  {
+   newWin.focus();
+  }
+
+     return false;
+    }
+
+ function closeLookupPopup()
+ {
+    if (null!=newWin)
+    {
+       newWin.close();
+    }
+ }
+function adJustBG(){
+    if($("#preloader").height() < $("body").height()){
+        $("#preloader").height($("body").height());
+    }
+}
+function ShowPreloader(){
+    $("body").append("<div id='preloader'><div id='preloader-bg'></div><div id='preloader-content'>"+PreloaderMsg+"</div></div>");
+    $("#preloader-bg").css("opacity",".5");
+    adJustBG();
+}
+function addOkButton(content){
+    $("#preloader-content").html(content + "<br /><button id='OkBtn'>Ok</button>");
+    $("#OkBtn").click(function(){
+        $("#sync-details").html("");
+        $("#ajax-output").html("");
+        $("#preloader").remove();
+        adJustBG();
+        if(IsSave){
+            PreloaderMsg = "Refreshing table...";
+            Refresh();
+        }
+    });
+}
+function HidePreloader(){
+    if($("#ajax-output").html() == "" || $("#ajax-output").html() == null){
+        $("#preloader").remove();
+    }else{
+        var content = IsSave ? processSaveOutput($("#ajax-output").html()) : $("#ajax-output").html();
+        addOkButton(content);
+    }
+    adJustBG();
+}
+function processSaveOutput(AjaxOutput){
+    return "<div style='text-align: left !important;'>" + AjaxOutput.replace('::', '<br />') + "</div>";
+}
+function AddRemoveLine(IsAdd, Id){
+    IsSave = false;
+    if(IsAdd){
+        PreloaderMsg = "Adding line(s), please wait...";
+        AddLines(Id);
+    }else{
+        PreloaderMsg = "Removing line(s), please wait...";
+        DeleteLines(Id);
+    }
+    return false;
+}
+function SetProcessType(){
+    IsSave = false;
+    PreloaderMsg = "Changing Process type, please wait...";
+    ChangeProcess();
+}
+function onAddLicenseIDChange(){
+    PreloaderMsg = "Loading...";
+    IsSave = false;
+    AddLicense();
+    return false;
+}
+function Save(){
+    IsSave = true;
+    PreloaderMsg = "Saving line(s), please wait...";
+    SaveLines();
+    return false;
+}
+
+$(function(){
+    //site sync check
+    var HasSyncError = "{!HasSyncError}";
+    var ShowListBlock = "{!ShowListBlock}";
+
+    if(HasSyncError == "true" || ShowListBlock == "false"){
+        var syncMsg = $("#sync-details").html() ? $("#sync-details").html() : '';
+        PreloaderMsg = "<p id=\"sync-detail-title\">Initialization Details</p>"+$("#ajax-output").html() + syncMsg;
+        ShowPreloader();
+        addOkButton(PreloaderMsg);
+        $("#preloader-content").css("text-align", "left");
+        var SincRequired = "{!LicenseNotSync.size > 0}";
+        if(SincRequired == "true"){
+            $("#OkBtn").html("Synchronize");
+            $("#OkBtn").click(function(){
+                PreloaderMsg = "Synchronizing license(s)...";
+                SyncLicenses();
+            });
+            $("#preloader-content").append("&nbsp;&nbsp;<button id='CancelBtn'>Back</button>");
+            $("#CancelBtn").click(function(){
+                window.location = "{!BackURL}";
+            });
+        }
+    }
+});
+</script>
+<apex:form >
+    <apex:pageBlock title="{!ProcessTypeText} Amounts" id="input-block">
+        <apex:pageMessages />
+        <div id="ajax-output">
+            <apex:repeat value="{!AjaxOutput}" var="str">{!str}<br /></apex:repeat>
+        </div>
+        <div id="process-type-select">
+            Process Type:
+            <apex:selectList onchange="SetProcessType();" value="{!ProcessType}" size="1">
+                <apex:selectOptions value="{!ProcessTypeOptionList}" />
+            </apex:selectList>
+        </div>
+
+        <apex:pageBlockTable value="{!OrderLineItemList}" var="oli" rendered="{!ShowAdjustmentParts}">
+            <apex:column headerValue="Adjustment Type">
+                <apex:selectList value="{!oli.AdjustmentType__c}" size="1">
+                    <apex:selectOptions value="{!AdjustmentTypeOptions}" />
+                </apex:selectList>
+            </apex:column>
+            <apex:column headerValue="Adjustment Reason">
+                <apex:inputField value="{!oli.AdjustmentReason__c}" />
+            </apex:column>
+            <apex:column headerValue="Notes">
+                <apex:inputField value="{!oli.Notes__c}" />
+            </apex:column>
+        </apex:pageBlockTable>
+        <br />
+        <!-- pageBlockTable added per I-208945 -->
+        <apex:pageBlockTable value="{!OrderLineItemList}" var="oli" rendered="{!ShowTransferParts}">
+            <apex:column headerValue="Notes">
+                <apex:inputField value="{!oli.Notes__c}" />
+            </apex:column>
+        </apex:pageBlockTable>
+        <apex:repeat value="{!LineWraps}" var="listWrap">
+            <!-- Changed title style and content as extra fix under S-447283 Jfreese -->
+            <apex:outputPanel styleClass="grey" layout="block">
+                <apex:pageBlockSection title="Site License ID {!listWrap.ParentLicenseId.SiteLicenseID__c} - Available Inventory: {!listWrap.ParentLicenseId.AvailableInventory__c}" columns="1" collapsible="false">
+                    <apex:pageBlockTable value="{!listWrap.LineWraps}" var="line" width="500px">
+                        <apex:column headerValue="Licence ID"><apex:outputField value="{!listWrap.ParentLicenseId.Name}" /></apex:column>
+                        <apex:column headerValue="Xcode"><apex:outputField value="{!listWrap.ParentLicenseId.Xcode__c}" /></apex:column>
+                        <apex:column headerValue="{!ProcessTypeText} Quantity">
+                            <apex:inputText value="{!line.Amount}" />
+                        </apex:column>
+                        <apex:column rendered="{!ShowAdjustmentParts}" headerValue="Additional Actions"><apex:inputField value="{!listWrap.ParentLicenseId.AdditionalActions__c}" /></apex:column>
+                        <apex:column rendered="{!ShowTransferParts}" headerValue="Transfer to Xcode"><apex:inputHidden id="idFld" value="{!line.AccXId}"/>
+                        <apex:inputText id="codeFld" value="{!line.AccXcode}" disabled="true"/>
+                        <a href="#" onclick="openLookupPopup('{!line.AccXcode}', '{!AccId}', '{!$Component.idFld}', '{!$Component.codeFld}'); return false">Lookup</a>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                    <apex:outputPanel rendered="{!ShowTransferParts}">
+                        <apex:commandButton value="Delete Lines" onclick="return AddRemoveLine(false, '{!listWrap.ParentLicenseId.Id}');" />
+                        <apex:commandButton value="Add Lines" onclick="return AddRemoveLine(true,'{!listWrap.ParentLicenseId.Id}');"  />
+                        <apex:selectList value="{!listWrap.LineToAdd}" size="1">
+                            <apex:selectOptions value="{!LineNumOptionList}" />
+                        </apex:selectList>
+                    </apex:outputPanel>
+                </apex:pageBlockSection>
+            </apex:outputPanel>
+        </apex:repeat>
+        <span style="margin-left: 20px;">{!InitMessage}</span>
+        <apex:pageBlockButtons location="bottom">
+            <apex:commandButton value="Save" disabled="{!DisableSave}" onclick="return Save();" />
+            <apex:commandButton value="Back" action="{!Back}" />
+        </apex:pageBlockButtons>
+    </apex:pageBlock>
+
+    <apex:pageBlock title="License IDs" id="list-block">
+        <div id="sync-details">
+            <apex:outputPanel rendered="{!licenseNotAvailable.size != NULL && licenseNotAvailable.size > 0}">
+                License(s) with Site License ID not in Site:<br />
+                <ul>
+                    <apex:repeat value="{!licenseNotAvailable}" var="license"><li><apex:outputLink value="/{!license.Id}">{!license.Name}</apex:outputLink></li></apex:repeat>
+                </ul>
+                <br /><br />
+            </apex:outputPanel>
+
+            <apex:outputPanel rendered="{!NullSiteLicense.size != NULL && NullSiteLicense.size > 0}">
+                License(s) with Null Site License ID:<br />
+                <ul>
+                <apex:repeat value="{!NullSiteLicense}" var="license"><li><apex:outputLink value="/{!license.Id}">{!license.Name}</apex:outputLink></li></apex:repeat>
+                </ul>
+                <br /><br />
+            </apex:outputPanel>
+
+            <apex:outputPanel rendered="{!LicenseNotSync.size != NULL && LicenseNotSync.size > 0}">
+                License(s) not synchronized with Site:<br />
+                <ul>
+                <apex:repeat value="{!LicenseNotSync}" var="license"><li><apex:outputLink value="/{!license.Id}">{!license.Name}</apex:outputLink></li></apex:repeat>
+                </ul>
+            </apex:outputPanel>
+        </div>
+
+        <apex:pageBlockTable value="{!LicenseIDList}" var="wrap" rendered="{!ShowListBlock}">
+            <apex:column headerValue="Action"><apex:inputCheckbox onchange="onAddLicenseIDChange('{!wrap.LicenseID.Id}');" value="{!wrap.IsAdded}"/></apex:column>
+            <!--  Fixed hyperlink as extra fix under S-447283 Jfreese -->
+            <!-- Mitali Nahar Appirio S-402215 4/4/2017 Showing Order Line Item Column in the table -->
+             <apex:column Value="{!Wrap.LicenseID.OrderLineItem__c}"/>
+            <apex:column headerValue="{!$ObjectType.LicenseID__c.fields.SiteLicenseID__c.Label}"><apex:outputLink value="/{!wrap.LicenseID.Id}">{!wrap.LicenseID.SiteLicenseID__c}</apex:outputLink></apex:column>
+             <apex:column Value="{!Wrap.LicenseID.Product_Name__c}" /><!--S-448898 AP 03/21/2017--> 
+            <apex:column value="{!wrap.LicenseID.AvailableInventory__c}" />
+            <apex:column value="{!wrap.LicenseID.Xcode__c}" />
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+
+    <apex:actionFunction name="SyncLicenses" action="{!SyncLicenses}" rerender="input-block, list-block" status="ajax-status" />
+    <apex:actionFunction name="Refresh" action="{!Init}" rerender="input-block, list-block" status="ajax-status" />
+    <apex:actionFunction name="SaveLines" action="{!Save}" rerender="input-block" status="ajax-status" />
+    <apex:actionFunction name="DeleteLines" action="{!DeleteLines}" rerender="input-block" status="ajax-status" >
+        <apex:param value="" assignTo="{!LicenseIDClicked}" name="LicenseIDClicked" />
+    </apex:actionFunction>
+    <apex:actionFunction name="AddLines" action="{!CreateLines}" rerender="input-block" status="ajax-status" >
+        <apex:param value="" assignTo="{!LicenseIDClicked}" name="LicenseIDClicked" />
+    </apex:actionFunction>
+    <apex:actionFunction name="ChangeProcess" action="{!ChangeProcess}" rerender="input-block, list-block" status="ajax-status" />
+    <apex:actionFunction name="AddLicense" action="{!AddLicense}" rerender="input-block,list-block" status="ajax-status" />
+
+    <apex:actionStatus id="ajax-status" onstart="ShowPreloader();" onstop="HidePreloader();" />
+</apex:form>
+
+<apex:form enctype="multipart/form-data">
+
+    <apex:pageBlock title="Upload a Attachment" id="upload-block">
+        <apex:pageBlockSection >
+            <apex:outputLabel >Select your file</apex:outputLabel>
+            <apex:inputFile id="myFile" value="{!myDoc.Body}" fileName="{!myDoc.name}"></apex:inputFile>
+        </apex:pageBlockSection>
+        <apex:pageblockbuttons location="bottom">
+        <apex:actionRegion >
+                <apex:commandButton id="uploadfile" value="Upload" action="{!upload}"/>
+
+        </apex:actionRegion>
+        </apex:pageblockbuttons>
+    </apex:pageBlock>
+</apex:form>
+
+
+
+</apex:page>

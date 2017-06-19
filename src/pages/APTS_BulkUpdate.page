@@ -1,0 +1,51 @@
+<apex:page controller="APTS_BulkUpdateController"> 
+    
+    <Style>
+    
+        .apexp .bPageBlock.apexDefaultPageBlock .pbBody {
+            margin: 0;
+        }
+        
+        body .secondaryPalette.bPageBlock,
+        .secondaryPalette.bPageBlock , .bPageBlock .secondaryPalette {
+            background-color: transparent;
+            background-image: url("");
+            background-position: left bottom;
+            background-repeat: no-repeat;
+            border: none;
+            margin: 0;
+            padding: 0;
+            border-radius: 0;
+        }
+    
+    </Style>
+    
+    
+    
+    <apex:form >
+    <apex:pageBlock title="Bulk Data Records">
+       <apex:pageBlockSection title="Bulk Data Fields to update" columns="5">
+        	<apex:inputField id="idStartDate" value="{!oItem.Apttus_Config2__StartDate__c}" />
+         	<apex:inputField id="idQuantity" value="{!oItem.Apttus_Config2__Quantity__c}" />   
+            <apex:inputField id="idAdjustmentType" value="{!oItem.Apttus_Config2__AdjustmentType__c}" /> 
+            <apex:inputField id="idAdjustmentAmount" value="{!oItem.Apttus_Config2__AdjustmentAmount__c}" /> 
+            <apex:inputField id="idComments" value="{!oItem.Apttus_Config2__Comments__c}" />  
+        </apex:pageBlockSection>
+       
+        <apex:pageBlockButtons >
+            <apex:commandButton action="{!save}" value="Apply"/>
+            <apex:commandButton action="{!cancel}" value="Cancel"/>
+        </apex:pageBlockButtons>
+        <!--<apex:pageBlockSection title="Bulk Data Fields to update" columns="6">
+            
+            <apex:inputText  title="Quantity" id="idQuantity" value="{!dQuantity}" />    
+            <apex:inputText title="Adjustment Amount" id="idAdjustmentAmount" value="{!dAdjustmentAmount}" />            
+            <apex:selectList label="Adjustment Type" value="{!sSelectedAdjustmentType}" Id="idAdjustmentType" multiselect="false" size="1">
+                <apex:selectOptions value="{!pickListAdjustmentTypes}"/>                                           
+            </apex:selectList>
+          
+        </apex:pageBlockSection>-->
+    </apex:pageBlock>
+    </apex:form>
+    
+</apex:page>

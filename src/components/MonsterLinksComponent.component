@@ -1,0 +1,221 @@
+<!--@Author: CloudSherpas
+    @Description: Component that will display the Name and Links depending with the sObject
+    @Date: 06/03/2014
+    -->
+<apex:component controller="MonsterLinksComponentCC">
+    <apex:outputPanel rendered="{!NOT(idObj == '500')}">
+        <table align="center" width="100%">
+            <tr>
+                <td>
+                    <apex:dataTable value="{!columnLinks1}" var="list" >
+                        <apex:column >
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+                </td>
+                <td>
+                    <apex:dataTable value="{!columnLinks2}" var="list" >
+                        <apex:column >      
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+                </td>
+                <td>
+                    <apex:dataTable value="{!columnLinks3}" var="list" >
+                        <apex:column >
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+                </td>
+            </tr>
+        </table>  
+    </apex:outputPanel> 
+    <apex:outputPanel rendered="{!IF(idObj == '500',true,false)}">
+        <table width="100%">
+            <tr>
+               <td>
+                    <apex:dataTable value="{!generalLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_General}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+               
+                    <apex:dataTable value="{!germanyLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_Germany}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+            
+                    <apex:dataTable value="{!polandLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_Poland}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+             
+                    <apex:dataTable value="{!austriaLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_Austria}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+                    <apex:dataTable value="{!franceLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_France}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+                    <apex:dataTable value="{!norwayLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_Norway}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+               </td>
+               <!---------------------------------- END OF FIRST COLUMN -------------------------------------->
+               <td>
+                    <apex:dataTable value="{!UKLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_UK}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+               
+                    <apex:dataTable value="{!brazilLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_Brazil}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+                
+                    <apex:dataTable value="{!switzerlandLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_Switzerland}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+                    
+                    <apex:dataTable value="{!turkeyLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_Turkey}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+                    
+                    <apex:dataTable value="{!russiaLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_Russia}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+                    
+                    <apex:dataTable value="{!slovakiaLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_Slovakia}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+                    
+                    <apex:dataTable value="{!denmarkLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_Denmark}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+                    
+                    <apex:dataTable value="{!latinAmericaLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_LatinAmerica}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+               </td>
+               <!----------------------------------  END OF SECOND COLUMN ------------------------------------>
+               <td>
+                    <apex:dataTable value="{!irelandLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_Ireland}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+                    <apex:dataTable value="{!netherlandLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_Netherlands}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+                    
+                    <apex:dataTable value="{!czechLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_Czech}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+                    
+                    <apex:dataTable value="{!mexicoLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_Mexico}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+                    
+                    <apex:dataTable value="{!swedenLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_Sweden}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+                    
+                    <apex:dataTable value="{!italyLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_Italy}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+                     <apex:dataTable value="{!luxembourgLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_Luxembourg}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+                     <apex:dataTable value="{!belguimLinks}" var="list" >
+                        <apex:column headerValue="{!$Label.Case_Belgium}">
+                            <apex:outputLink target="_blank" value="{!list.Link__c}">
+                                <apex:outputText value="{!list.Name}"/>
+                            </apex:outputLink><br/>
+                        </apex:column>
+                    </apex:dataTable>
+               </td>
+            </tr>
+        </table>
+    </apex:outputPanel>
+</apex:component>

@@ -1,0 +1,29 @@
+<apex:component controller="EKBController">
+    <div class="searchwrap">
+        <div class="searchwrap_icon">
+            <img src="{!URLFOR($Resource.EKBCSS,'images/Search_Mag.png')}" class="searchwrap_icon_img"/>
+        </div>
+        <div class="searchwrap_main">
+            <h1 class="search_heading">{!$Label.EKBHowCanWeHelp}</h1>
+            <form onsubmit="return false;" class="mn_TopSearchForm">
+                <div class="rn_SearchInput" > 
+                    <div class="mn_TopSearch">
+                        <div id="rn_CustomSearch_6" class="rn_KeywordText2">
+                            <apex:outputLabel for="rn_CustomSearch_6_Text"></apex:outputLabel>
+                            <apex:inputText id="rn_CustomSearch_6_Text" styleclass="mn_TopSearch" maxlength="255" value="{!SearchString}"  />
+                        </div>
+                         
+                        <span class="mn_Purple">
+                            <div id="rn_SearchButtonCustom_7" class="rn_SearchButton2">
+                                <apex:commandButton styleclass="rn_SubmitButton" id="rn_SearchButtonCustom_7_SubmitButton"  value="{!$Label.EKBSearch}" action="{!searchArticles}">
+                                    <apex:param name="nickName" value="{!SearchString}" assignTo="{!SearchString}"/>
+                                </apex:commandButton>
+                            </div>
+                            </span>
+                        <span style="width:5px"></span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</apex:component>

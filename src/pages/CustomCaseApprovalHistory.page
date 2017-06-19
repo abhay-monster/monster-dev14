@@ -1,0 +1,12 @@
+<!-- 
+    Apttus Approvals Management
+    CustomCaseApprovalHistory
+     
+    @2012-2013 Apttus Inc. 
+
+ -->
+<apex:page standardController="Case" >
+
+	<Apttus_Approval:ApprovalHistory ctxObjectId="{!$CurrentPage.parameters.id}" />
+
+</apex:page>

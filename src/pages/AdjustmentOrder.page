@@ -1,0 +1,6 @@
+<apex:page controller="AdjustmentOrderCC" action="{!cloneOrder}">
+    <apex:messages />
+    <apex:form >
+        <apex:CommandButton value="Back" action="{!backToParentOrder}" rendered="{!showBackButton}"/>
+    </apex:form>
+</apex:page>

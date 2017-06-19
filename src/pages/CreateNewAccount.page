@@ -1,0 +1,18 @@
+<!-- 
+/*
+** @author : Cloud Sherpas Inc.
+** @date : 05/09/2014
+** @description :This page overrides the URL upon clicking the Create New Account button in Case. 
+*/
+-->
+<apex:page StandardController="Case" extensions="CreateNewAccountCC" action="{!executeMethod}">
+<apex:form >
+    <apex:pageBlock title="{!$Label.CreateNewAccount}">
+        <apex:pageBlockButtons >
+            <apex:commandButton value="{!$Label.BackBtn}" action="{!cancel}"/>
+        </apex:pageBlockButtons>
+        <apex:pageMessages />
+    </apex:pageBlock>
+</apex:form>
+
+</apex:page>

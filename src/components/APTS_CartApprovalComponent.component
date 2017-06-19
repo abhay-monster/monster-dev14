@@ -1,0 +1,386 @@
+<apex:component access="global" controller="APTS_CartApprovalController">   
+    
+    <apex:attribute name="ProdConfig" description="This field is used to display list of Proposal products" 
+                    type="string" assignTo="{!cartId}" /> 
+    
+    <apex:attribute name="AppRequestId" description="This field is used to display list of Proposal products" 
+                    type="string" assignTo="{!RequestId}" /> 
+    
+    
+    <div  >
+        <apex:outputPanel rendered="{!Notifyflag}">
+            To approve or reject this request, reply to this email with the word APPROVE, APPROVED, YES, REJECT, REJECTED, or NO in the first line of the email message, or click on the link below:
+            <br/>
+            <!--  <apex:outputText value="{!ApprovalRequestObj.Apttus_Approval__Action__c}" escape="false"/> --> 
+             <apex:outputLink value="{!instanceurl}/apex/Apttus_Approval__ApprovalSummaryLaunch?id={!ApprovalRequestObj.Id}&pageMode=reassign">Reassign</apex:outputLink><br/>
+             <apex:outputLink value="{!instanceurl}/apex/Apttus_Approval__ApprovalSummaryLaunch?id={!ApprovalRequestObj.Id}&pageMode=approvereject">Approve/Reject</apex:outputLink><br/>
+             <apex:outputLink value="{!instanceurl}/apex/Apttus_Approval__ApprovalSummaryLaunch?id={!ApprovalRequestObj.Id}&pageMode=addcomment">Add Comment</apex:outputLink><br/>
+            <apex:outputLink value="{!instanceurl}/apex/Apttus_Approval__ApprovalRequestEscalate?id={!ApprovalRequestObj.Id}" rendered="{!ApprovalRequestObj.Apttus_Approval__CanEscalate__c}">Escalate</apex:outputLink><br/>
+            <br/>
+            If replying via email you can also add comments on the second line. The comments will be stored with the approval request. 
+            <br/>   
+        </apex:outputPanel>
+        <table cellspacing="0"   cellpadding = "0">
+            <tr>
+                <td>
+                    Account Name:&nbsp;
+                    
+                    <apex:outputField value="{!AccountObj.name}"  label="Account Name:" /> 
+                </td>
+                
+            </tr>
+            <tr>
+                <td>
+                    Name:
+                    &nbsp;
+                    <apex:outputField value="{!prodConfig1.name}" />                                 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Description:
+                    &nbsp;
+                    <apex:outputField value="{!proposalSO.Apttus_Proposal__Description__c}" />                                 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Owner Full Name:
+                    &nbsp;
+                    <apex:outputField value="{!AccountObj.owner.name}" label="Owner Full Name:"/>                                 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Comments:
+                    &nbsp;
+                    <apex:outputField value="{!ApprovalRequestObj.Apttus_Approval__SubmissionComment1__c}" label="Owner Full Name:"/>                                 
+                </td>
+            </tr>
+
+            
+            
+        </table>
+        <br/><br/>
+        
+        Click on the link below to access the Product Configuration: 
+        <apex:outputLink value="{!instanceurl}/{!cartId}" ><br/>
+            {!prodConfig1.name}</apex:outputLink>
+        <br/><br/>
+        <apex:outputPanel rendered="{!showflag}">
+            <b>Proposal Details: </b><br/><br/>
+            <table  cellspacing="0"   cellpadding = "0">
+                <tr>
+                    <td>
+                        Proposal ID:            
+                        <apex:outputField value="{!proposalSO.name}" label="Proposal ID:"/>
+                    </td>
+                </tr>            
+                <tr>
+                    <td>
+                        Proposal Currency:&nbsp;
+                        
+                        <apex:outputField value="{!proposalSO.CurrencyIsoCode}" label="Proposal Currency:"/>
+                    </td>
+                </tr> 
+                <tr>
+                    <td>
+                        Proposal Total:&nbsp;
+                       <!-- Replaced Quote_Total__c with  Net_Total__c due to I-191155 --> 
+                      <apex:outputField value="{!proposalSO.NetOrderAmount__c}" label="Proposal Total:"/> 
+                    
+
+                    </td>
+                </tr> 
+                <tr>
+                    <td>
+                        Total Discretionary Discount%:&nbsp;
+                        
+                        <apex:outputField value="{!proposalSO.TotalDiscount__c}" label="Total Discretionary Discount%:"/>
+                    </td>
+                </tr> 
+                <tr>
+                    <td>
+                        Proposal Net Total:&nbsp;
+                        
+                        <apex:outputField value="{!prodConfig1.APTS_Net_Total_With_Tax__c}" label="Proposal Net Total:"/>
+                    </td>
+                </tr> 
+                <tr>
+                    <td>
+                        Organization: &nbsp;
+                        
+                        <apex:outputField value="{!proposalSO.AccountOrganization__c}" label="Organization:"/>
+                    </td>
+                </tr> 
+                <tr>
+                    <td>
+                        Contract Start Date:&nbsp;
+                        
+                        <apex:outputField value="{!proposalSO.APTPS_Contract_Start_Date__c}" label="Contract Start Date: " />
+                    </td>
+                </tr> 
+                <tr>
+                    <td>
+                        Contract Category:&nbsp;
+                        
+                        <apex:outputField value="{!proposalSO.Contract_Category__c}" label="Contract Category:" />
+                    </td>
+                </tr> 
+                <tr>
+                    <td>
+                        Billing Start Date:&nbsp;
+                        
+                        <apex:outputField value="{!proposalSO.BillingStartDt__c}" label="Billing Start Date:" />
+                    </td>
+                </tr> 
+                <tr>
+                    <td>
+                        Earliest Product Start Date:&nbsp;
+                        
+                        <apex:outputField value="{!proposalSO.Earliest_Start_Date__c}" label="Earliest Product Start Date:" />
+                    </td>
+                </tr> 
+                <tr>
+                    <td>
+                        Latest Product End Date:&nbsp;
+                        
+                        <apex:outputField value="{!proposalSO.Latest_End_Date__c}" label="Latest Product End Date:" />  
+                    </td> 
+                </tr>
+                <tr>
+                    <td>
+                        Payment Method:&nbsp;
+                        
+                        <apex:outputField value="{!proposalSO.Payment_Method1__c}" label="Payment Method:" />
+                    </td>
+                </tr> 
+                <tr>
+                    <td>
+                        Payment Type:       &nbsp;                                       
+                        <apex:outputField value="{!proposalSO.Payment1_Term__c}" label="Payment Type:" />
+                        &nbsp;
+                        <apex:outputField value="{!proposalSO.Payment1_Frequency__c}" label="Payment Type:" />
+                        
+                    </td>
+                </tr> 
+                
+                
+            </table>
+            <br/>
+            <!--<apex:outputPanel rendered="{!ProductConversion}">-->
+            <apex:outputPanel >
+                <table  cellspacing="0"   cellpadding = "0">
+                    <tr>
+                        <td>
+                            <b>Existing Services </b>
+                            <br/>
+                        </td>
+                    </tr>
+                    <apex:repeat value="{!ListExistingLineItem}" var="ExLineItem">
+                        <tr>
+                            <td>
+                                Product Name:&nbsp;
+                                <apex:outputField value="{!ExLineItem.objLineItem.APTS_Product_Name__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                quantity: &nbsp;
+                                <apex:outputField value="{!ExLineItem.objLineItem.Apttus_Config2__Quantity__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Unit Price:&nbsp;
+                                <apex:outputField value="{!ExLineItem.objLineItem.Net_Unit_Price__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Conversion Amount:&nbsp;
+                                <apex:outputField value="{!ExLineItem.objLineItem.Net_Total__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Product Start:&nbsp;
+                                <apex:outputField value="{!ExLineItem.objLineItem.Apttus_Config2__StartDate__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Product End:&nbsp;
+                                <apex:outputField value="{!ExLineItem.objLineItem.Apttus_Config2__EndDate__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Comments:&nbsp;
+                                <apex:outputField value="{!ExLineItem.objLineItem.Apttus_Config2__Comments__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Product Attributes:&nbsp;
+                                <table>
+                                    <apex:repeat value="{!ExLineItem.fields}" var="fieldApi">
+                                        <tr>
+                                            <td>
+                                                <apex:outputLabel value="{!$ObjectType.Apttus_Config2__ProductAttributeValue__c.fields[fieldApi].Label}" />                                                
+                                            </td>
+                                           <td>
+                                                <apex:outputField value="{!ExLineItem.objApttusProductAttributeValue[fieldApi]}"/>
+                                            </td>
+                                        </tr>
+                                    </apex:repeat>
+                                </table>
+                            </td>
+                        </tr>
+                        
+                    </apex:repeat>
+                    
+                    <tr>
+                        <td>
+                            <br/>
+                            <b>New Services </b>
+                            <br/>
+                        </td>
+                    </tr>
+                    <apex:repeat value="{!ListNewLineItem}" var="ExLineItem"  >
+                        <tr>
+                            <td>
+                                Product Name:&nbsp;
+                                <apex:outputField value="{!ExLineItem.objLineItem.APTS_Product_Name__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                quantity: &nbsp;
+                                <apex:outputField value="{!ExLineItem.objLineItem.Apttus_Config2__Quantity__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Base Price:&nbsp;
+                                <apex:outputField value="{!ExLineItem.objLineItem.Apttus_Config2__BasePrice__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Discount%:&nbsp;
+                                <apex:outputField value="{!ExLineItem.objLineItem.Apts_Discount_del__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Effective Discount%:&nbsp;
+                                <apex:outputField value="{!ExLineItem.objLineItem.Apttus_Config2__NetAdjustmentPercent__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Gross unit price%:&nbsp;
+                                <apex:outputField value="{!ExLineItem.objLineItem.Gross_Unit_Price__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Base Total:&nbsp;
+                                <apex:outputField value="{!ExLineItem.objLineItem.APTS_Extended_List_Price__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Gross Total:&nbsp;
+                                <apex:outputField value="{!ExLineItem.objLineItem.Apttus_Config2__NetPrice__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Net total:&nbsp;
+                                <apex:outputField value="{!ExLineItem.objLineItem.Net_Total__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Product Start:&nbsp;
+                                <apex:outputField value="{!ExLineItem.objLineItem.Apttus_Config2__StartDate__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Product End:&nbsp;
+                                <apex:outputField value="{!ExLineItem.objLineItem.Apttus_Config2__EndDate__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Shopping Cart Comments:&nbsp;
+                                <apex:outputField value="{!ExLineItem.objLineItem.Apttus_Config2__Comments__c}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Product Attributes:&nbsp;
+                                <table style="Padding-left:100px;">
+                                    <apex:repeat value="{!ExLineItem.fields}" var="fieldApi">
+                                        <tr>
+                                            <td>
+                                                <apex:outputLabel value="{!$ObjectType.Apttus_Config2__ProductAttributeValue__c.fields[fieldApi].Label}: " />                                                
+                                            </td>
+                                           <td>
+                                                <apex:outputField value="{!ExLineItem.objApttusProductAttributeValue[fieldApi]}"/>
+                                            </td>
+                                        </tr>
+                                    </apex:repeat>
+                                </table>
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                    
+                </table>
+                <br/>
+            </apex:outputPanel>
+            <table>
+        <tr><td>Approval Request ID: {!ApprovalRequestObj.Id}</td></tr>
+        <tr><td>Approval User ID:    {!ApprovalRequestObj.Apttus_Approval__Assigned_To_Id__c}</td></tr>
+        <tr><td>Approval Request Status: {!ApprovalRequestObj.Apttus_Approval__Approval_Status__c}</td></tr>
+        <tr><td>Approval Request Date: <apex:outputtext value="{0,date,MM/dd/yyyy hh:mm a}"><apex:param value="{!ApprovalRequestObj.Apttus_Approval__DateAssigned__c}"/></apex:outputtext></td></tr>
+        <tr><td>Approval Request Assigned To: {!ApprovalRequestObj.Apttus_Approval__Assigned_To_Name__c}</td></tr>
+        <tr><td>Approval Request Comments:{!ApprovalRequestObj.Apttus_Approval__Approver_Comments__c}</td></tr>
+        <tr><td>Approval Submission Comments:{!ApprovalRequestObj.Apttus_Approval__SubmissionComment1__c}</td></tr>
+       </table>
+            
+            
+            <br/><br/>
+            <b>Approvals Details: </b><br/><br/>
+            
+            <table border="1"  >
+                <tr style="border-style:1px groove black;font-weight:bold;">
+                    <td >Step Name</td>
+                    <!-- <td >Product Description</td>-->
+                    <td >Approval Status</td>
+                    <td >Date</td>                                                                        
+                    <td >Assigned To</td>
+                    <td >Depends On</td> 
+                    <td >Actual Approver</td>
+                    <td >Approver Comments</td>
+                    <td >Requestor Comments</td>                      
+                </tr>
+                <apex:repeat value="{!ApprovalHistory}" var="Item">
+                    <tr >
+                        <td ><apex:outputField value="{!Item.Apttus_Approval__Step_Name__c}"/> </td>
+                        <td ><apex:outputField value="{!Item.Apttus_Approval__Approval_Status__c}"/></td>                                                
+                        <td ><apex:outputField value="{!Item.Apttus_Approval__Date__c}"/></td>                                                                    
+                        <td ><apex:outputField value="{!Item.Apttus_Approval__Assigned_To_Name__c}"/></td> 
+                        <td ><apex:outputField value="{!Item.Apttus_Approval__DependsOn__c}"/></td> 
+                        <td ><apex:outputField value="{!Item.Apttus_Approval__Actual_Approver__c}"/></td> 
+                        <td ><apex:outputField value="{!Item.Apttus_Approval__Approver_Comments__c}"/></td>  
+                        <td ><apex:outputField value="{!Item.Apttus_Approval__SubmissionComment1__c}"/></td>                                                               
+                    </tr>
+                </apex:repeat>
+            </table><br/><br/>
+        </apex:outputPanel>
+    </div>
+</apex:component>

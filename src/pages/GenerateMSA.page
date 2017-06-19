@@ -1,0 +1,24 @@
+<apex:page standardController="Apttus_Proposal__Proposal__c">
+    <apex:includeScript value="/soap/ajax/35.0/connection.js"/>
+    <apex:includeScript value="/soap/ajax/35.0/apex.js"/>
+    <script>
+        function updateAcc(){
+            sforce.connection.sessionId = "{!$Api.Session_ID}";
+            // identify the record 
+            
+            var acc = new sforce.SObject("Account"); 
+            acc.id = '{!Apttus_Proposal__Proposal__c.Apttus_Proposal__Account__c}'; 
+            
+            if(acc.id != null){ 
+                acc.MSA_Generated__c = true; 
+                // save the change 
+                sforce.connection.update([acc]); 
+            } 
+            window.location.href = '/apex/Apttus__DocumentGenerate?id={!Apttus_Proposal__Proposal__c.Apttus_Proposal__Account__c}&action=Generate_Document&templateType=Account';
+        }
+
+        updateAcc();
+
+        
+    </script>
+</apex:page>

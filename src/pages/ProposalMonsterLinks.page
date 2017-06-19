@@ -1,0 +1,9 @@
+<!--@Author: CloudSherpas
+    @Description: Will call the MonsterLinksComponent to display the links.
+    @@Date: 06/04/2014
+--->
+<apex:page sidebar="false" standardController="Apttus_Proposal__Proposal__c">
+    <apex:form > 
+    <c:MonsterLinksComponent />
+    </apex:form>
+</apex:page>

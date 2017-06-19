@@ -1,0 +1,3 @@
+<apex:page StandardController="Lead" extensions="NewLeadRedirectController" action="{!redirectUser}">
+ 
+</apex:page>

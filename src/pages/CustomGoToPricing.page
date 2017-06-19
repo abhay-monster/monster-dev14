@@ -1,0 +1,37 @@
+<apex:page controller="GoToPricingCustomController" action="{!processLines}"  showHeader="false" sidebar="false" title="Pricing">
+ 	<apex:form > 
+        <apex:pageMessages />
+ 		
+ 		<apex:outputPanel id="actionPannel" title="Actions" rendered="true" >
+            <apex:pageBlock >
+                <apex:pageBlockButtons location="bottom" >                
+                    <apex:commandButton action="{!doCancel}" value="Add More Products" />               
+                    <!--<apex:commandButton action="{!doAbandon}" value="Abandon"/>-->
+                    <apex:commandButton action="{!doGoToPricing}" value="Go To Pricing" rendered="true"/>
+                </apex:pageBlockButtons> 
+            </apex:pageBlock>    
+        </apex:outputPanel>
+        
+        <!--   <apex:outputPanel id="lineItemPanel" title="Line Items" rendered = "{!numNoLocationLines > 0}">
+        	<apex:pageBlock >
+                 <apex:pageBlockTable value="{!liSOList}" var="lineItem" width="80%">
+                 	<apex:column headerValue="Location" width="15%">
+                 		<apex:selectList id="locations1" value="{!lineItem.Apttus_Config2__LocationId__c}" size="1">
+                 			<apex:selectOptions value="{!LocationValues}"/>
+	                 		<apex:actionSupport event="onchange" rerender="lineItemPannel" action="{!setLineItem}" >
+	                 			<apex:param name="liSOID" value="{!lineItem.ID}"/>
+	                 		</apex:actionSupport>
+                 		</apex:selectList>
+                 	</apex:column>
+                 	<apex:column headerValue="Location" width="15%">
+                 		<apex:outputLink value="/{!lineItem.Apttus_Config2__ProductId__c}" target="_top">
+                 			<apex:outputText value="{!lineItem.Apttus_Config2__ProductID__r.NAME}"/>
+                 		</apex:outputLink>
+                 	</apex:column>
+ 				</apex:pageBlockTable>       	
+        	</apex:pageBlock>
+        </apex:outputPanel> -->
+        
+ 	</apex:form>
+
+</apex:page>

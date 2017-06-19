@@ -1,0 +1,83 @@
+<!-- 
+* @description step 2 of the merge accounts custom UI. Displays the winning and losing account. Allows the user to select the winning account and execute the merge. 
+* @author Cloudsherpas
+* @date 01-09-2015
+-->
+<apex:page controller="AccountMergeController">
+    <style>
+        .mergeHeader,.mergeField td {width:400px;}     
+    </style>
+    <script>
+        function assignId(fld){
+            if(fld.checked){
+                document.getElementById('{!$Component.frmSelection.hidAccId}').value = fld.value;
+            }
+        }
+    </script>
+    <apex:form id="frmSelection" >
+         
+        <apex:inputHidden id="hidAccId" value="{!selectedAccountId}"/>
+        <apex:sectionHeader title="{!$Label.CS_AccountMerge_Info_Title}"/>
+        <apex:pagemessages />
+        <apex:pageBlock title="{!$Label.CS_AccountMerge_Info_Step2}" id="pbSel">
+            <apex:pageBlockButtons style="float:right;">
+                <apex:commandButton value="{!$Label.CS_AccountMerge_Btn_Previous}" action="{!navigateToSearch}"/>
+                <apex:commandButton value="{!$Label.CS_AccountMerge_Btn_Finish}" status="performingMerge" action="{!performMerge}" reRender="frmSelection"/>
+                <apex:commandLink value="{!$Label.CS_AccountMerge_Btn_Cancel}" action="{!Cancel}"/>
+            </apex:pageBlockButtons>
+            
+            <div style="padding:1em">
+                <center>
+                    <apex:actionStatus id="performingMerge">
+                        <apex:facet name="stop">
+                        </apex:facet>
+                        <apex:facet name="start">
+                            <apex:image value="/img/loading.gif">Merging...&nbsp;</apex:image>
+                        </apex:facet>
+                    </apex:actionStatus>
+                </center>
+            </div>
+         
+            <apex:pageBlockTable value="{!selList}" var="sel" id="pbtSel">
+                <apex:column style="background-color: #0066CC; color: #FFFFFF;">
+                    <apex:outputText style="font-weight: bold;" value="{!sel.fieldName}" rendered="{!sel.isSel}"/>
+                    <apex:outputText value="{!sel.fieldName}" rendered="{!NOT(sel.isSel)}"/>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:outputPanel layout="block">
+                            <apex:outputText value="{!selAccList[0].Name}"/>
+                        </apex:outputPanel>
+                    </apex:facet>
+                    <apex:outputPanel layout="block" rendered="{!sel.isSel}">
+                        <input id="radFR" type="radio" name="radWin" value="{!selAccList[0].Id}" onclick="assignId(this);"/>
+                    </apex:outputPanel>
+                    <apex:outputText value="{!sel.frAccFldVal}" rendered="{!NOT(sel.isSel)}"/>
+                </apex:column>
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:outputPanel layout="block">
+                            <apex:outputText value="{!selAccList[1].Name}"/>
+                        </apex:outputPanel>
+                    </apex:facet>
+                    <apex:outputPanel layout="block" rendered="{!sel.isSel}">
+                        <input id="radSC" type="radio" name="radWin" value="{!selAccList[1].Id}" onclick="assignId(this);"/>
+                    </apex:outputPanel>
+                    <apex:outputText value="{!sel.scAccFldVal}" rendered="{!NOT(sel.isSel)}"/>
+                </apex:column>
+            </apex:pageBlockTable>
+            <script>
+                var frVal  = document.getElementById('radFR').value;
+                var scVal  = document.getElementById('radSC').value;
+                var accVal = document.getElementById('{!$Component.frmSelection.hidAccId}').value;
+                
+                if(frVal == accVal){
+                    document.getElementById('radFR').checked = 'checked';
+                }
+                else if(scVal == accVal){
+                    document.getElementById('radSC').checked = 'checked';
+                }
+            </script>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

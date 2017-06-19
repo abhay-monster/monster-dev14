@@ -1,0 +1,20 @@
+<apex:page standardController="Apttus_Proposal__Proposal__c" Extensions="APTS_QuoteHeaderOverride_Ctlr" action="{!doRedirect}">
+<apex:form >
+<apex:pageBlock rendered="{!addComments}">
+
+
+    <apex:pageBlockSection columns="1" title="Please Insert a Comment for Approval/Discount Justification">       
+             <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Comments for Approval" for="ApprovalComments"/>
+                <apex:inputField id="ApprovalComments" value="{!proposalSO.Approval_Comments__c}" required="true" style="width:400px; height:150px;"/>   
+            </apex:pageBlockSectionItem>            
+    </apex:pageBlockSection>
+            
+    <apex:pageblockButtons location="bottom">
+           <apex:commandButton action="{!submitforApprovalswithComment}" value="OK" style="width:50px;"/>
+    </apex:pageblockButtons>
+    
+       
+</apex:pageBlock>
+</apex:form>
+</apex:page>
