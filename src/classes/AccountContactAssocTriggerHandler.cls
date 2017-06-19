@@ -2,6 +2,7 @@
 ** @author : Cloud Sherpas Inc.
 ** @date : 03/07/2014
 ** @description : AccountContactAssociation__c trigger class to handle CRUD events. 
+**
 */
 
 public without sharing class AccountContactAssocTriggerHandler extends BaseTriggerHandler{
